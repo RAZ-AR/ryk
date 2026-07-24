@@ -54,7 +54,7 @@
 
 ### Инженерная задача / UI
 - Прогнаны тесты и сборка (зелёные), живой curl/скриншот показан.
-- UI проверен на **375 / 768 / 1280** px, в **light И dark**.
+- UI проверен на **375 / 768 / 1280** px. Тема — **только светлая (paper)**: тёмной в хендоффе нет, отложена ([ADR-007](ryk_docs/18-decisions-adr.md)).
 - Нет хардкод-токенов (grep по hex в компонентах — пусто), нет call-site оверрайдов примитивов.
 - Доступность: контраст, targets, `prefers-reduced-motion` (см. [17-design-system](ryk_docs/17-design-system.md)).
 - Нет тёмных паттернов вовлечения (streaks, счётчики стыда, обратный отсчёт-давление) — см. [banned patterns](ryk_docs/17-design-system.md).
@@ -73,7 +73,7 @@
 - **i18n:** en / ru / es (шрифты latin + Cyrillic). RTL не нужен.
 - **Пилот:** Белград, Нови-Сад, возможно Ереван → Supabase регион EU; события — в основном ручная курация (ADR-006).
 - **Данные:** Open-Meteo + OSM + Ticketmaster (Eventbrite ограничен) + concierge (ADR-006).
-- **Дизайн:** soft-UI, светлый фон, пастельные Aurora-градиенты + объём; шрифты Sora + Inter; референсы Unicorn (вид) + Sandow (структура) — [17-design-system](ryk_docs/17-design-system.md).
+- **Дизайн:** бумажный принт + метафора билета; розовый `#F387C8` на бумаге `#EBEAE7`, плоско, прямые углы; шрифты Golos Text · PT Serif · Cormorant · IBM Plex Mono · Caveat. Источник — hi-fi прототип `design_handoff_ryk/` (16 экранов) → [17-design-system](ryk_docs/17-design-system.md), [ADR-007](ryk_docs/18-decisions-adr.md).
 - **Tokens / Components / Test / Build paths:** _(заполнить после каркаса проекта)_
 - **Design source (Figma):** референсы в [ADR/17](ryk_docs/17-design-system.md); свой файл — _(когда появится)_
 

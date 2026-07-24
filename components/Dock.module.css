@@ -1,0 +1,46 @@
+/* Плавающий островок навигации (§7). Не приклеен к низу — приподнят на 18px. */
+.dock {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--ryk-space-1);
+  background: var(--ryk-ink);
+  padding: 7px;
+  border-radius: var(--ryk-radius-dock);
+  box-shadow: var(--ryk-shadow-dock);
+  max-width: calc(100% - 40px);
+  z-index: 6;
+}
+
+.item {
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 11px var(--ryk-space-4);
+  border-radius: var(--ryk-radius-dock-pill);
+  background: transparent;
+  color: var(--ryk-text-disabled);
+  white-space: nowrap;
+  transition:
+    background-color var(--ryk-duration-micro) var(--ryk-ease),
+    color var(--ryk-duration-micro) var(--ryk-ease);
+}
+
+/* Активный: розовая пилюля с ink-текстом (контраст ≈8:1). */
+.active {
+  background: var(--ryk-pink);
+  color: var(--ryk-ink);
+}
+
+/* На узких вьюпортах (Android от 360px) четыре пилюли не влезают
+   и «Баланс» обрезается — ужимаем горизонтальные поля, не трогая высоту. */
+@media (max-width: 400px) {
+  .item {
+    padding: 11px var(--ryk-space-3);
+  }
+}

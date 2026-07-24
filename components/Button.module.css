@@ -1,0 +1,50 @@
+.btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: var(--ryk-font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  border-radius: var(--ryk-radius-none);
+  padding: 17px var(--ryk-space-4);
+  min-height: 44px; /* touch target */
+  transition:
+    background-color var(--ryk-duration-micro) var(--ryk-ease),
+    color var(--ryk-duration-micro) var(--ryk-ease);
+}
+
+/* Основной CTA. Текст — ink, НЕ белый: контраст ≈8:1 (§9). */
+.primary {
+  background: var(--ryk-pink);
+  color: var(--ryk-ink);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--ryk-ink);
+  border: 1px solid var(--ryk-border-strong);
+  padding: 16px var(--ryk-space-4);
+}
+
+.grey {
+  background: var(--ryk-grey);
+  color: var(--ryk-paper);
+}
+
+/* Текстовая ссылка-действие в служебном регистре. */
+.ghost {
+  background: transparent;
+  color: var(--ryk-pink-text);
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 14px var(--ryk-space-2);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

@@ -1,0 +1,27 @@
+.svc {
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pink {
+  color: var(--ryk-pink-text);
+}
+
+.deep {
+  color: var(--ryk-pink-deep);
+}
+
+.ink {
+  color: var(--ryk-ink);
+}
+
+.muted {
+  color: var(--ryk-text-muted);
+}
+
+.faint {
+  color: var(--ryk-text-faint);
+}

@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Дизайн-хендофф — референс-артефакт, а не наш исходник: не линтим и не форматируем.
+    "design_handoff_ryk/**",
   ]),
 ]);
 
