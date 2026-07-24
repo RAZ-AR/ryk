@@ -1,0 +1,334 @@
+// Ryk — схема данных.
+// Источник: ryk_docs/12-technical-architecture.md (Data Model)
+// + Life Balance Model из ryk_docs/04-product-prd.md
+// + состояния из хендоффа design_handoff_ryk/.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────── Enums ───────────────────────────
+
+enum Locale {
+  EN
+  RU
+  ES
+}
+
+/// Life Balance Model — 9 категорий (PRD §6).
+/// Система замечает перекосы, но не навязывает идеальный баланс.
+enum LifeCategory {
+  JOY
+  CONNECTION
+  DISCOVERY
+  MOVEMENT
+  CULTURE
+  NATURE
+  CHALLENGE
+  REST
+  CONTRIBUTION
+}
+
+enum SocialMode {
+  SOLO
+  CLOSE_ONES
+  NEW_PEOPLE
+}
+
+enum OnboardingState {
+  NOT_STARTED
+  CATEGORIES
+  SWIPES
+  PARAMS
+  DONE
+}
+
+enum PreferenceSentiment {
+  LIKE
+  DISLIKE
+  NEUTRAL
+}
+
+enum PreferenceSource {
+  ONBOARDING_CATEGORY
+  ONBOARDING_SWIPE
+  BEHAVIOR
+  EXPLICIT
+  AI_INFERRED
+}
+
+enum WishStatus {
+  SOMEDAY
+  THIS_MONTH
+  SOON
+  HIDDEN
+  REALIZED
+}
+
+enum ExperienceSource {
+  WISHLIST
+  CURATED
+  PARTNER
+  AI_GENERATED
+  EVENT_API
+}
+
+/// Жизненный цикл истории недели.
+/// DEFERRED — «перенесено без вины», не провал (14-brand-and-copy).
+enum WeeklyStoryStatus {
+  SELECTED
+  COMMITTED
+  AT_RISK
+  RESCUED
+  COMPLETED
+  DEFERRED
+}
+
+enum BarrierType {
+  WEATHER
+  NO_ENERGY
+  TOO_EXPENSIVE
+  NOT_ALONE
+  CHANGED_MIND
+}
+
+enum Emotion {
+  DELIGHT
+  CALM
+  PRIDE
+  CLOSENESS
+}
+
+enum InterventionType {
+  NUDGE
+  PLANNING
+  BARRIER_PROMPT
+  RESCUE
+  CHECK_IN
+}
+
+enum InterventionOutcome {
+  PENDING
+  ACTED
+  IGNORED
+  DISMISSED
+}
+
+// ─────────────────────────── Models ───────────────────────────
+
+model User {
+  id String @id @default(uuid())
+
+  /// Идентификатор из Telegram Mini App (ADR-001), проверяется по initData.
+  telegramId String @unique
+
+  locale          Locale          @default(RU)
+  city            String?
+  radiusKm        Int             @default(30)
+  timezone        String          @default("Europe/Belgrade")
+  onboardingState OnboardingState @default(NOT_STARTED)
+
+  /// Рамки недели из онбординга (Flow A).
+  budgetMax  Int?
+  socialMode SocialMode?
+
+  /// Доля нового в подборке, % (в прототипе 70/30 → 30).
+  noveltyRatio Int @default(30)
+
+  notificationPreferences Json @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Мягкое удаление: пользователь владеет данными и может удалить профиль (PRD §8).
+  deletedAt DateTime?
+
+  preferences   Preference[]
+  wishes        Wish[]
+  weeklyStories WeeklyStory[]
+  interventions Intervention[]
+
+  @@map("users")
+}
+
+/// Модель вкусов: и заявленных, и выведенных из поведения.
+/// Пользователь должен видеть и удалять эту память (07-ai-companion).
+model Preference {
+  id     String @id @default(uuid())
+  userId String
+
+  category LifeCategory
+
+  /// Конкретика внутри категории: жанр, кухня, вид спорта.
+  entity    String?
+  sentiment PreferenceSentiment
+
+  /// 0..1 — насколько система уверена.
+  confidence Float            @default(0.5)
+  source     PreferenceSource
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category, entity])
+  @@index([userId])
+  @@map("preferences")
+}
+
+/// Желание пользователя (Flow B). Не задача — намерение без срока.
+model Wish {
+  id     String @id @default(uuid())
+  userId String
+
+  text       String
+  category   LifeCategory?
+  budget     Int?
+  season     String?
+  socialMode SocialMode?
+  status     WishStatus    @default(SOMEDAY)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weeklyStories WeeklyStory[]
+
+  @@index([userId, status])
+  @@map("wishes")
+}
+
+/// Конкретный реализуемый сценарий: место, время, цена.
+/// В MVP большая часть заводится вручную куратором (ADR-006).
+model Experience {
+  id     String           @id @default(uuid())
+  source ExperienceSource
+
+  title       String
+  description String?
+  category    LifeCategory
+
+  city        String?
+  location    String?
+  lat         Float?
+  lng         Float?
+  distanceKm  Float?
+  startTime   DateTime?
+  durationMin Int?
+
+  price    Int?
+  currency String @default("RSD")
+
+  bookingUrl String?
+
+  /// Спонсорское помечается явно и всегда видимо в UI (PRD §7).
+  sponsored Boolean @default(false)
+
+  metadata Json @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  weeklyStories WeeklyStory[]
+
+  @@index([city, category])
+  @@index([startTime])
+  @@map("experiences")
+}
+
+/// История недели — ядро продукта. Одна на пользователя в неделю.
+model WeeklyStory {
+  id           String  @id @default(uuid())
+  userId       String
+  experienceId String?
+  wishId       String?
+
+  /// Понедельник недели (ADR-004).
+  weekStart DateTime          @db.Date
+  status    WeeklyStoryStatus @default(SELECTED)
+
+  /// «Почему это подходит» — обязательное объяснение рекомендации (PRD §7).
+  whyExplanation String?
+
+  plannedFor    DateTime?
+  budget        Int?
+  socialMode    SocialMode?
+  companionName String?
+
+  /// Свидетель видит только обещание и итог — без деталей (08-social).
+  witnessName String?
+
+  barrier      BarrierType?
+  barrierState Json         @default("{}")
+  commitment   Json         @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experience    Experience?    @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+  wish          Wish?          @relation(fields: [wishId], references: [id], onDelete: SetNull)
+  memory        Memory?
+  interventions Intervention[]
+
+  @@unique([userId, weekStart])
+  @@index([userId, status])
+  @@map("weekly_stories")
+}
+
+/// Завершённая история. Единица ценности продукта — воспоминание, не отчёт.
+model Memory {
+  id            String @id @default(uuid())
+  weeklyStoryId String @unique
+
+  rating  Int?
+  emotion Emotion?
+
+  /// Одна фраза — больше не просим (Flow G).
+  note      String?
+  media     String[] @default([])
+  companion String?
+
+  completedAt DateTime?
+
+  /// Перенесено без вины: неделя не считается провалом.
+  deferred Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  weeklyStory WeeklyStory @relation(fields: [weeklyStoryId], references: [id], onDelete: Cascade)
+
+  @@map("memories")
+}
+
+/// Действие компаньона: контекстная подсказка, а не напоминание по таймеру.
+/// Одно действие на сообщение (07-ai-companion).
+model Intervention {
+  id            String  @id @default(uuid())
+  userId        String
+  weeklyStoryId String?
+
+  type InterventionType
+
+  /// Почему сработало — для объяснимости и разбора guardrail-метрик.
+  reason  String
+  content String
+
+  sentAt  DateTime?
+  outcome InterventionOutcome @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weeklyStory WeeklyStory? @relation(fields: [weeklyStoryId], references: [id], onDelete: Cascade)
+
+  @@index([userId, sentAt])
+  @@map("interventions")
+}

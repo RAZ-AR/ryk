@@ -14,6 +14,10 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Дизайн-хендофф — референс-артефакт, а не наш исходник: не линтим и не форматируем.
     "design_handoff_ryk/**",
+    // Сгенерированный клиент Prisma — не наш код.
+    "generated/**",
+    // Справочники Prisma, установленные CLI.
+    ".agents/**",
   ]),
 ]);
 
