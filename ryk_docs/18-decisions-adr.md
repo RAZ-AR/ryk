@@ -1,0 +1,131 @@
+# Architecture Decision Records (ADR)
+
+> Зачем: в [12-technical-architecture.md](12-technical-architecture.md) ключевые
+> выборы поданы как «либо/либо». Плейбук требует **решать и обосновывать**, иначе
+> следующая сессия начнёт заново. Здесь фиксируем решения, причины и последствия.
+>
+> **Статусы:** `Proposed` · `Accepted` · `Superseded by ADR-NNN`. Записи не удаляем.
+
+---
+
+## ADR-001 — Клиент: Telegram Mini App
+
+**Статус:** ✅ Accepted (2026-07-23)
+
+**Контекст.** [MVP](10-mvp-scope.md) — быстрый тест weekly loop на 50–200 пользователях в одном городе, низкое трение установки, встроенные push.
+
+**Решение.** Пилот — **Telegram Mini App**. Приглашения и мягкая ответственность (witness/buddy из [08-social](08-social-and-accountability.md)) естественно живут в мессенджере; push и идентификация «из коробки».
+
+**Последствия.**
+- Notification service — на Telegram push; mobile push позже.
+- Геолокацию можно запрашивать через Telegram Mini App API.
+- UI ограничен возможностями Mini App — учтено в [дизайн-системе](17-design-system.md).
+- При подтверждённом retention (Phase 2+) — рассмотреть PWA/нативное (заведём superseding-ADR).
+
+---
+
+## ADR-002 — Стек: full-stack TypeScript (Next.js)
+
+**Статус:** ✅ Accepted (2026-07-23) — разработка ведётся через Claude Code
+
+**Контекст.** Продукт строится через Claude Code, соло/малой командой. Нужен минимум языков и максимум связности типов. На старте тяжёлого ML in-process нет — recommendation engine это «concierge вручную + LLM API» ([MVP](10-mvp-scope.md)).
+
+**Решение.** **Один TypeScript-стек на Next.js**: Mini App (веб-приложение) + API routes как бэкенд. Prisma как ORM к PostgreSQL. AI Orchestrator — через LLM API с structured outputs.
+
+**Причина.** Единый TS end-to-end (общие типы фронт↔бэк) максимально удобен для разработки через Claude Code; нет отдельного сервера на старте; легко деплоится на бесплатный тариф (ADR-003).
+
+**Последствия.**
+- Если recommendation platform вырастет в тяжёлый ML — вынесем отдельный сервис (Python/FastAPI) позже, отдельным ADR. Nest/standalone-сервер не берём преждевременно.
+- `12-technical-architecture` компоненты (profile/wishlist/weekly/memory service) реализуются как модули внутри Next.js API, а не как отдельные сервисы.
+
+---
+
+## ADR-003 — Хостинг: бесплатный тариф (Vercel + Supabase)
+
+**Статус:** ✅ Accepted (2026-07-23) — требование «для начала бесплатно»
+
+**Контекст.** Нужен нулевой стартовый бюджет, staging + production, PostgreSQL.
+
+**Решение.**
+- **Приложение (Next.js Mini App + API):** **Vercel** free (Hobby) — preview-деплой на каждый PR ≈ staging, production по merge в `main`.
+- **База + auth + storage:** **Supabase** free (PostgreSQL, 2 проекта — можно под staging и prod). Альтернатива под БД: **Neon** (serverless Postgres, free).
+- **Секреты** — в Vercel Environment Variables (раздельно preview/production) и Supabase, не в коде.
+
+**Причина.** $0 на старте, ноль администрирования сервера, отличная связка с Next.js и Claude Code.
+
+**Последствия.**
+- Модель окружений из плейбука (staging noindex + basic-auth) реализуется через Vercel preview + защиту preview-деплоя; отдельный VPS не нужен.
+- **DigitalOcean дроплет** (исходный план плейбука) — это **Phase 2+**, когда важны контроль/стоимость на масштабе или long-running процессы. Тогда — superseding-ADR.
+
+---
+
+## ADR-004 — Начало недели: понедельник
+
+**Статус:** ✅ Accepted (2026-07-23)
+
+**Решение.** Пилот стартует **в понедельник** (совпадает с MVP weekly flow, [10](10-mvp-scope.md)). Понедельник vs четверг — A/B-тест после набора базовой когорты ([11-analytics](11-analytics-and-kpis.md)).
+
+---
+
+## ADR-005 — Аналитика: PostHog
+
+**Статус:** ✅ Accepted (2026-07-23)
+
+**Решение.** **PostHog** (облако, free tier): product analytics + воронка из 8 шагов + **feature flags** (полезны для experiment backlog из [11](11-analytics-and-kpis.md)) в одном. Amplitude — если понадобится зрелая аналитика на масштабе.
+
+---
+
+## ADR-006 — Провайдеры данных
+
+**Статус:** ✅ Accepted (2026-07-23) — старт на бесплатных/open-источниках + concierge
+
+**Контекст.** Нужны погода, места/POI, события, карты/маршруты, геолокация. Пилотные города — **Белград, Нови-Сад, возможно Ереван** (Сербия и Армения). Требование — бесплатно на старте. В concierge-MVP часть данных собирается вручную ([10](10-mvp-scope.md)). Важно: для Балкан/Кавказа глобальные event-API неполны → **основной источник событий в пилоте — ручная локальная курация + местные тикет-сайты.**
+
+**Рекомендация по категориям:**
+
+| Категория | Основной (free) | Запасной / позже | Заметки по покрытию |
+|---|---|---|---|
+| **Погода** | **Open-Meteo** (free, без ключа, глобально) | OpenWeatherMap free | Отлично покрывает EU + Сербию + Армению |
+| **Карты/тайлы** | **MapLibre + OSM** тайлы; **Mapbox** free (50k загрузок) | Google Maps (платно, позже) | OSM полон по Балканам и Кавказу |
+| **Геокодинг** | **Nominatim (OSM)** free | Mapbox Geocoding | Соблюдать usage policy Nominatim |
+| **Маршруты** | **OSRM** / **GraphHopper** (OSM) | Mapbox Directions | — |
+| **Места / POI** | **OSM Overpass** (free) + **Foursquare Places** (free tier) | Google Places (платно, лучшие данные) | Overpass силён в EU/Сербии/Армении |
+| **События** | **Ticketmaster Discovery API** (free) + **Eventbrite** (free) | PredictHQ (агрегатор, платно) | В EU сильно; в Сербии/Армении **тонко → concierge + локальные тикет-сайты** |
+| **Музыка/концерты** | **Bandsintown** / **Songkick** | — | Дополняет Ticketmaster |
+| **Геолокация** | Telegram Mini App location + браузерный Geolocation | — | С согласия пользователя ([12](12-technical-architecture.md)) |
+| **Бронь ресторанов** | — (нет хорошего free API) | Google Reserve / локальные | В MVP — deep links + concierge |
+
+**Решение.** MVP на **Open-Meteo + OSM (Overpass/Nominatim/MapLibre) + Ticketmaster/Eventbrite** как вспомогательных, а **основной источник событий для Белграда/Нови-Сада/Еревана — ручная локальная курация** (местные тикет-площадки и афиши) в рамках concierge-MVP.
+
+---
+
+## Открытые вопросы
+
+- **Языки интерфейса:** ✅ en / ru / es (решено). Шрифты — latin + Cyrillic ([17](17-design-system.md)).
+- **Города:** ✅ пилот — **Белград и Нови-Сад, возможно Ереван** (решено). Влияет на локальную курацию (ADR-006) и регион БД (Supabase EU).
+- **RTL:** ✅ не требуется — все три языка LTR ([17 §8](17-design-system.md)).
+- **Ключи провайдеров** — какие аккаунты завести: см. чек-лист ниже.
+
+---
+
+## Чек-лист аккаунтов и ключей (для поднятия MVP)
+
+Значения ключей пользователь заводит сам; в репо — только `.env.example` с именами ([CLAUDE.md](../CLAUDE.md)).
+
+**Нужно сейчас — всё бесплатно, кроме LLM:**
+- **GitHub** — репозиторий (уже есть).
+- **Vercel** — подключить к GitHub (app + preview/prod). Free.
+- **Supabase** — проект в **регионе EU** (Postgres + auth + storage). Free.
+- **Telegram @BotFather** — создать бота и Mini App (токен бота). Free.
+- **PostHog** — проект аналитики (EU-облако). Free.
+- **LLM API (Anthropic Claude)** — единственная реальная платная позиция; ключ для AI-компаньона/оркестратора. Оплата по использованию.
+
+**Провайдеры данных (по мере надобности):**
+- **Open-Meteo** — погода, **ключ не нужен**.
+- **OSM Nominatim / Overpass** — геокодинг/POI, **ключ не нужен** (соблюдать usage policy; на масштабе — self-host или платный геокодер).
+- **Mapbox** — опционально, если нужны красивые тайлы/геокодинг: бесплатный токен (50k загрузок/мес).
+- **Ticketmaster Discovery API** — бесплатный ключ (события в EU).
+- **Eventbrite** — API-ключ. ⚠️ публичный поиск чужих событий у них ограничен — полезен в основном для своих/партнёрских событий, не как главный discovery.
+- **Bandsintown / Songkick** — доступ по запросу (концерты), позже.
+
+**Опционально:** свой домен (Mini App работает и на URL Vercel; кастомный домен — по желанию).
