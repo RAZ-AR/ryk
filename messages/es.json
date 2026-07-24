@@ -1,0 +1,19 @@
+{
+  "nav": {
+    "week": "Semana",
+    "memory": "Recuerdos",
+    "wishes": "Deseos",
+    "balance": "Balance"
+  },
+  "app": {
+    "promise": "Una historia real cada semana",
+    "lead": "La vida no debería esperar al tiempo libre.",
+    "greeting": "Bienvenido de nuevo",
+    "weekActive": "Semana activa"
+  },
+  "auth": {
+    "connecting": "Conectando…",
+    "failed": "No se pudo entrar. Abre la app desde Telegram.",
+    "devEnter": "Entrar como usuario dev"
+  }
+}
