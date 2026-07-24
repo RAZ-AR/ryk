@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Caveat, Cormorant, Golos_Text, IBM_Plex_Mono, PT_Serif } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
+import Script from "next/script";
 import "./globals.css";
 
 /*
@@ -58,14 +61,21 @@ const fontVariables = [
   caveat.variable,
 ].join(" ");
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
-    <html lang="ru" className={fontVariables}>
-      <body>{children}</body>
+    // Telegram web-app.js дописывает --tg-viewport-* на <html> до гидрации —
+    // это ожидаемо, гасим предупреждение о несовпадении именно для <html>.
+    <html lang={locale} className={fontVariables} suppressHydrationWarning>
+      <body>
+        {/* SDK Telegram Mini App: даёт window.Telegram.WebApp (initData и т.п.). */}
+        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+      </body>
     </html>
   );
 }

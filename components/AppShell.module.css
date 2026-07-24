@@ -1,0 +1,32 @@
+.shell {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  padding: var(--ryk-screen-top) var(--ryk-screen-x) var(--ryk-screen-bottom-dock);
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  color: var(--ryk-ink);
+}
+
+.placeholder {
+  margin-top: var(--ryk-space-6);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ryk-text-secondary);
+}
