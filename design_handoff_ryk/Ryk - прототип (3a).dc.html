@@ -1,0 +1,2568 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&amp;family=PT+Serif:ital@0;1&amp;family=Golos+Text:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Cormorant:ital,wght@0,500;0,600;1,500&amp;display=swap"
+          rel="stylesheet"
+        />
+        <script src="./image-slot.js"></script>
+        <style>
+          body {
+            margin: 0;
+            background: #0d0d0d;
+            font-family: "Golos Text", system-ui, sans-serif;
+          }
+          a {
+            color: #f387c8;
+          }
+          a:hover {
+            color: #ebeae7;
+          }
+          .svc {
+            font-family: "IBM Plex Mono", monospace;
+            font-weight: 500;
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+          }
+          .colo {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 8px;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 9px;
+            line-height: 1.4;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #9a9a9a;
+          }
+          .btn {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            cursor: pointer;
+          }
+        </style>
+      </helmet>
+
+      <div
+        style="
+          min-height: 100vh;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 44px;
+          padding: 44px;
+          box-sizing: border-box;
+        "
+      >
+        <!-- Навигатор -->
+        <div style="width: 210px; flex-shrink: 0; position: sticky; top: 44px">
+          <div style="font-size: 34px; font-weight: 700; letter-spacing: -1.5px; color: #ebeae7">
+            RYK
+          </div>
+          <div class="svc" style="color: #f387c8; margin-top: 6px">Прототип · 3a</div>
+          <div style="font-size: 11px; color: #8a8a8a; margin-top: 12px; line-height: 1.55">
+            Кнопки в телефоне работают. Или перепрыгни на экран:
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 16px">
+            <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="8">
+              <div
+                onClick="{{ n.onClick }}"
+                style="display:flex; gap:10px; align-items:baseline; padding:7px 10px; cursor:pointer; background:{{ n.bg }}; color:{{ n.fg }}; font-size:12.5px;"
+              >
+                <span class="svc" style="font-size: 9px; opacity: 0.6">{{ n.num }}</span
+                ><span>{{ n.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- Телефон -->
+        <div
+          style="
+            width: 390px;
+            height: 844px;
+            background: #ebeae7;
+            border-radius: 48px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            flex-shrink: 0;
+            position: relative;
+          "
+        >
+          <!-- WELCOME -->
+          <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 30px 26px 26px;
+                box-sizing: border-box;
+                background: #f387c8;
+              "
+            >
+              <div
+                class="svc"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  color: rgba(255, 255, 255, 0.6);
+                "
+              >
+                <span>Life Experience Companion</span><span>MMXXVI / 001</span>
+              </div>
+              <div style="margin-top: 44px">
+                <div
+                  style="
+                    font-size: 118px;
+                    line-height: 0.78;
+                    font-weight: 700;
+                    letter-spacing: -6px;
+                    color: #ebeae7;
+                  "
+                >
+                  RYK
+                </div>
+                <div class="svc" style="letter-spacing: 0.18em; color: #f387c8; margin-top: 16px">
+                  Одна настоящая история<br />каждую неделю
+                </div>
+              </div>
+              <div style="margin: auto 0">
+                <div
+                  style="
+                    font-family: &quot;PT Serif&quot;, serif;
+                    font-size: 33px;
+                    line-height: 1.32;
+                    color: #000000;
+                    letter-spacing: -0.2px;
+                  "
+                >
+                  Жизнь не должна ждать свободного времени.
+                </div>
+                <div
+                  style="
+                    font-size: 17px;
+                    line-height: 1.55;
+                    color: #000000b8;
+                    margin-top: 20px;
+                    max-width: 300px;
+                  "
+                >
+                  Каждую неделю Ryk помогает прожить одно впечатление —
+                  <span style="color: #ebeae7; font-weight: 600">не задачу, а историю.</span>
+                </div>
+              </div>
+              <div
+                onClick="{{ goCategories }}"
+                class="btn"
+                style="background: #ebeae7; color: #f387c8; padding: 19px 0"
+              >
+                Начать жить чуть больше
+              </div>
+              <div
+                onClick="{{ goCandidate }}"
+                class="svc"
+                style="
+                  text-align: center;
+                  letter-spacing: 0.14em;
+                  color: rgba(255, 255, 255, 0.5);
+                  padding: 16px 0 0;
+                  cursor: pointer;
+                "
+              >
+                У меня уже есть профиль
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- CATEGORIES -->
+          <sc-if value="{{ isCategories }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 26px;
+                box-sizing: border-box;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Онбординг 1/4</span><span>≈ 4 мин</span>
+              </div>
+              <div
+                style="
+                  font-size: 33px;
+                  font-weight: 700;
+                  letter-spacing: -1px;
+                  color: #111;
+                  margin-top: 22px;
+                  text-wrap: balance;
+                "
+              >
+                Что делает тебя живым?
+              </div>
+              <div style="font-size: 14px; line-height: 1.5; color: #8a8a8a; margin-top: 8px">
+                Выбери всё, что откликается — можно нажимать.
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  margin-top: 24px;
+                  border: 1px solid #111;
+                "
+              >
+                <sc-for list="{{ cats }}" as="c" hint-placeholder-count="8">
+                  <div
+                    onClick="{{ c.onClick }}"
+                    style="padding:17px 15px; border-right:{{ c.br }}; border-bottom:{{ c.bb }}; background:{{ c.bg }}; color:{{ c.fg }}; cursor:pointer;"
+                  >
+                    <span class="svc" style="font-size: 10px; opacity: 0.7">{{ c.num }}</span>
+                    <div style="font-size: 17px; font-weight: 600; margin-top: 5px">
+                      {{ c.label }}
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div
+                style="
+                  font:
+                    600 18px &quot;Caveat&quot;,
+                    cursive;
+                  color: #d65aa6;
+                  margin-top: 14px;
+                  transform: rotate(-2deg);
+                "
+              >
+                выбрано {{ catCount }} — уже достаточно!
+              </div>
+              <div style="margin-top: auto; display: flex; gap: 10px">
+                <div
+                  onClick="{{ goWelcome }}"
+                  class="btn"
+                  style="width: 100px; border: 1px solid #111; color: #111; padding: 15px 0"
+                >
+                  Назад
+                </div>
+                <div
+                  onClick="{{ goSwipe }}"
+                  class="btn"
+                  style="flex: 1; background: #919597; color: #ebeae7; padding: 16px 0"
+                >
+                  Дальше →
+                </div>
+              </div>
+              <div class="colo" style="margin-top: 18px">
+                <span>Onboarding<br />Interests</span><span>Шаг 1/4<br />Категории</span
+                ><span>Свайпы<br />дальше →</span><span>002</span>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- SWIPE -->
+          <sc-if value="{{ isSwipe }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 26px;
+                box-sizing: border-box;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Онбординг 2/4</span><span>Идея {{ ideaNum }}/15</span>
+              </div>
+              <div
+                style="
+                  font-size: 24px;
+                  font-weight: 700;
+                  letter-spacing: -0.5px;
+                  color: #111;
+                  margin-top: 14px;
+                "
+              >
+                Пошёл бы?
+              </div>
+              <!-- ТИКЕТ-ИДЕЯ -->
+              <div
+                style="
+                  margin-top: 16px;
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                "
+              >
+                <div
+                  style="
+                    background: #fff;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                    border-radius: 16px 16px 0 0;
+                  "
+                >
+                  <div style="padding: 12px 12px 0">
+                    <div style="height: 236px; border-radius: 10px; overflow: hidden">
+                      <image-slot id="pt-idea" shape="rect" placeholder="Фото идеи"></image-slot>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: baseline;
+                      padding: 16px 18px 0;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;IBM Plex Mono&quot;, monospace;
+                        font-size: 14px;
+                        color: #111;
+                      "
+                      >{{ idea.no }}</span
+                    >
+                    <span
+                      style="
+                        flex: 1;
+                        border-top: 1px solid #111;
+                        margin: 0 12px;
+                        transform: translateY(-4px);
+                      "
+                    ></span>
+                    <span
+                      style="
+                        font-family: &quot;IBM Plex Mono&quot;, monospace;
+                        font-size: 14px;
+                        color: #111;
+                      "
+                      >15</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      font-family: &quot;Cormorant&quot;, serif;
+                      font-size: 34px;
+                      line-height: 1.08;
+                      font-weight: 600;
+                      text-align: center;
+                      padding: 6px 18px 18px;
+                      letter-spacing: 0.04em;
+                      color: #111;
+                      text-transform: uppercase;
+                    "
+                  >
+                    {{ idea.title }}
+                  </div>
+                </div>
+                <div
+                  style="
+                    position: relative;
+                    background: #dad9d6;
+                    padding: 16px 20px 18px;
+                    border-top: 2px dashed rgba(17, 17, 17, 0.4);
+                  "
+                >
+                  <div
+                    style="
+                      position: absolute;
+                      left: -11px;
+                      top: -11px;
+                      width: 22px;
+                      height: 22px;
+                      border-radius: 50%;
+                      background: #ebeae7;
+                    "
+                  ></div>
+                  <div
+                    style="
+                      position: absolute;
+                      right: -11px;
+                      top: -11px;
+                      width: 22px;
+                      height: 22px;
+                      border-radius: 50%;
+                      background: #ebeae7;
+                    "
+                  ></div>
+                  <div style="display: flex; justify-content: space-between; gap: 14px">
+                    <div>
+                      <div class="svc" style="font-size: 9px; color: #111">● {{ idea.cat }}</div>
+                      <div
+                        style="
+                          font-size: 12px;
+                          line-height: 1.5;
+                          color: #2b2b2b;
+                          margin-top: 7px;
+                          max-width: 180px;
+                        "
+                      >
+                        {{ idea.note }}
+                      </div>
+                      <div
+                        style="
+                          font-family: &quot;IBM Plex Mono&quot;, monospace;
+                          font-size: 12px;
+                          color: #111;
+                          margin-top: 8px;
+                        "
+                      >
+                        {{ idea.price }} · {{ idea.time }}
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        width: 52px;
+                        align-self: stretch;
+                        background: repeating-linear-gradient(
+                          90deg,
+                          #111 0 2px,
+                          transparent 2px 4px,
+                          #111 4px 7px,
+                          transparent 7px 9px,
+                          #111 9px 10px,
+                          transparent 10px 13px
+                        );
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 16px">
+                <div
+                  onClick="{{ swipeNo }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    border: 1px solid #111;
+                    color: #111;
+                    padding: 17px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Не моё
+                </div>
+                <div
+                  onClick="{{ swipeYes }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    background: #919597;
+                    color: #ebeae7;
+                    padding: 18px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Хочу это ✓
+                </div>
+              </div>
+              <div
+                onClick="{{ goParams }}"
+                class="svc"
+                style="
+                  text-align: center;
+                  letter-spacing: 0.1em;
+                  color: #9a9a9a;
+                  padding: 12px 0 0;
+                  cursor: pointer;
+                "
+              >
+                Хватит — дальше →
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- PARAMS -->
+          <sc-if value="{{ isParams }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 26px;
+                box-sizing: border-box;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Онбординг 3/4</span><span>Рамки</span>
+              </div>
+              <div
+                style="
+                  font-size: 33px;
+                  font-weight: 700;
+                  letter-spacing: -1px;
+                  color: #111;
+                  margin-top: 22px;
+                "
+              >
+                Твои рамки недели
+              </div>
+              <div style="margin-top: 22px; border-top: 1px solid #d5d4d1">
+                <div style="padding: 16px 2px; border-bottom: 1px solid #d5d4d1">
+                  <div class="svc" style="color: #8a8a8a">Бюджет на историю</div>
+                  <div style="display: flex; gap: 8px; margin-top: 11px">
+                    <sc-for list="{{ budgets }}" as="b" hint-placeholder-count="3">
+                      <span
+                        onClick="{{ b.onClick }}"
+                        style="border:1px solid #111; padding:9px 14px; font-size:13px; color:{{ b.fg }}; background:{{ b.bg }}; font-weight:{{ b.fw }}; cursor:pointer;"
+                        >{{ b.label }}</span
+                      >
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="padding: 16px 2px; border-bottom: 1px solid #d5d4d1">
+                  <div class="svc" style="color: #8a8a8a">С кем</div>
+                  <div style="display: flex; gap: 8px; margin-top: 11px; flex-wrap: wrap">
+                    <sc-for list="{{ socials }}" as="s" hint-placeholder-count="3">
+                      <span
+                        onClick="{{ s.onClick }}"
+                        style="border:1px solid #111; padding:9px 14px; font-size:13px; color:{{ s.fg }}; background:{{ s.bg }}; font-weight:{{ s.fw }}; cursor:pointer;"
+                        >{{ s.label }}</span
+                      >
+                    </sc-for>
+                  </div>
+                </div>
+                <div
+                  style="
+                    padding: 16px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <div>
+                    <div class="svc" style="color: #8a8a8a">Город и радиус</div>
+                    <div style="font-size: 16px; color: #111; margin-top: 6px">Санкт-Петербург</div>
+                  </div>
+                  <span
+                    style="
+                      border: 1px solid #111;
+                      padding: 8px 13px;
+                      font-size: 13px;
+                      color: #2b2b2b;
+                    "
+                    >± 30 км</span
+                  >
+                </div>
+                <div
+                  style="
+                    padding: 16px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <div>
+                    <div class="svc" style="color: #8a8a8a">Доля нового</div>
+                    <div style="font-size: 14px; color: #2b2b2b; margin-top: 6px">
+                      Больше знакомого, чуть-чуть нового
+                    </div>
+                  </div>
+                  <span
+                    style="font-size: 24px; font-weight: 700; letter-spacing: -1px; color: #f387c8"
+                    >70/30</span
+                  >
+                </div>
+              </div>
+              <div
+                style="
+                  font:
+                    600 18px &quot;Caveat&quot;,
+                    cursive;
+                  color: #d65aa6;
+                  margin-top: 12px;
+                  transform: rotate(-2deg);
+                "
+              >
+                всё можно поменять потом
+              </div>
+              <div
+                onClick="{{ goCandidate }}"
+                class="btn"
+                style="margin-top: auto; background: #f387c8; color: #ebeae7; padding: 18px 0"
+              >
+                Показать первые истории →
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- CANDIDATE -->
+          <sc-if value="{{ isCandidate }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div style="display: flex; justify-content: space-between; align-items: flex-start">
+                <div>
+                  <div class="svc" style="color: #f387c8">Неделя 30 / Выбор истории</div>
+                  <div
+                    style="
+                      font-size: 30px;
+                      font-weight: 700;
+                      letter-spacing: -1.5px;
+                      color: #111;
+                      margin-top: 6px;
+                    "
+                  >
+                    Кандидат
+                  </div>
+                </div>
+                <span
+                  style="
+                    font-size: 52px;
+                    line-height: 0.8;
+                    font-weight: 700;
+                    letter-spacing: -2.5px;
+                    color: #f387c8;
+                  "
+                  >{{ candNum }}<span style="font-size: 20px; color: #9a9a9a">/3</span></span
+                >
+              </div>
+              <!-- ТИКЕТ-КАНДИДАТ -->
+              <div
+                style="
+                  margin-top: 16px;
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                "
+              >
+                <div
+                  style="
+                    background: #fff;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                    border-radius: 16px 16px 0 0;
+                  "
+                >
+                  <div style="padding: 12px 12px 0">
+                    <div style="height: 250px; border-radius: 10px; overflow: hidden">
+                      <image-slot
+                        id="pt-cand"
+                        shape="rect"
+                        placeholder="Фото впечатления"
+                      ></image-slot>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: baseline;
+                      padding: 16px 18px 0;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;IBM Plex Mono&quot;, monospace;
+                        font-size: 14px;
+                        color: #111;
+                      "
+                      >{{ cand.day }}</span
+                    >
+                    <span
+                      style="
+                        flex: 1;
+                        border-top: 1px solid #111;
+                        margin: 0 12px;
+                        transform: translateY(-4px);
+                      "
+                    ></span>
+                    <span
+                      style="
+                        font-family: &quot;IBM Plex Mono&quot;, monospace;
+                        font-size: 14px;
+                        color: #111;
+                      "
+                      >{{ cand.hour }}<span
+                        style="display: block; font-size: 9px; color: #9a9a9a; text-align: right"
+                        >{{ cand.cat }}</span
+                      ></span
+                    >
+                  </div>
+                  <div
+                    style="
+                      font-family: &quot;Cormorant&quot;, serif;
+                      font-size: 34px;
+                      line-height: 1.06;
+                      font-weight: 600;
+                      text-align: center;
+                      padding: 6px 18px 16px;
+                      letter-spacing: 0.04em;
+                      color: #111;
+                      text-transform: uppercase;
+                    "
+                  >
+                    {{ cand.title }}
+                  </div>
+                </div>
+                <div
+                  style="
+                    position: relative;
+                    background: #f387c8;
+                    padding: 15px 20px 17px;
+                    border-top: 2px dashed rgba(17, 17, 17, 0.4);
+                  "
+                >
+                  <div
+                    style="
+                      position: absolute;
+                      left: -11px;
+                      top: -11px;
+                      width: 22px;
+                      height: 22px;
+                      border-radius: 50%;
+                      background: #ebeae7;
+                    "
+                  ></div>
+                  <div
+                    style="
+                      position: absolute;
+                      right: -11px;
+                      top: -11px;
+                      width: 22px;
+                      height: 22px;
+                      border-radius: 50%;
+                      background: #ebeae7;
+                    "
+                  ></div>
+                  <div class="svc" style="font-size: 9px; color: #111">
+                    ● История недели · кандидат
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      gap: 14px;
+                      margin-top: 9px;
+                    "
+                  >
+                    <div style="font-size: 11.5px; line-height: 1.6; color: #1a2740">
+                      <b>Почему:</b> {{ cand.why }}<br /><b>Погода:</b> {{ cand.weather }}<br /><b
+                        >{{ cand.time }} · {{ cand.budget }}</b
+                      >
+                    </div>
+                    <div
+                      style="
+                        width: 50px;
+                        align-self: stretch;
+                        background: repeating-linear-gradient(
+                          90deg,
+                          #111 0 2px,
+                          transparent 2px 4px,
+                          #111 4px 7px,
+                          transparent 7px 9px,
+                          #111 9px 10px,
+                          transparent 10px 13px
+                        );
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 14px">
+                <div
+                  onClick="{{ nextCand }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    border: 1px solid #111;
+                    color: #111;
+                    padding: 15px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Дальше
+                </div>
+                <div
+                  onClick="{{ goCommitment }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    background: #f387c8;
+                    color: #fff;
+                    padding: 16px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Выбрать
+                </div>
+              </div>
+              <div
+                class="svc"
+                style="
+                  text-align: center;
+                  letter-spacing: 0.1em;
+                  color: #f387c8;
+                  padding: 12px 0 0;
+                  cursor: pointer;
+                "
+                onClick="{{ goSurprise }}"
+              >
+                Выбери за меня →
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- SURPRISE -->
+          <sc-if value="{{ isSurprise }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 100px;
+                box-sizing: border-box;
+                color: #fff;
+                background-color: #949598;
+              "
+            >
+              <div
+                class="svc"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  color: rgba(255, 255, 255, 0.6);
+                "
+              >
+                <span>Режим спонтанности</span
+                ><span onClick="{{ goCandidate }}" style="cursor: pointer">✕</span>
+              </div>
+              <div
+                style="
+                  font-size: 120px;
+                  line-height: 0.8;
+                  font-weight: 700;
+                  letter-spacing: -4px;
+                  margin-top: 36px;
+                  color: #f387c8;
+                "
+              >
+                ?
+              </div>
+              <div
+                style="
+                  font-size: 36px;
+                  font-weight: 700;
+                  line-height: 1.12;
+                  letter-spacing: -1.2px;
+                  margin-top: 24px;
+                  color: #ffffff;
+                "
+              >
+                Ryk выбрал за тебя.
+              </div>
+              <div style="margin-top: 28px; border-top: 1px solid rgba(255, 255, 255, 0.35)">
+                <div style="padding: 16px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.35)">
+                  <div class="svc" style="opacity: 0.7">Природа · СБ 19:30</div>
+                  <div style="font-size: 26px; font-weight: 600; margin-top: 8px">
+                    Ночной поход к маяку
+                  </div>
+                </div>
+                <div
+                  style="
+                    font-family: &quot;PT Serif&quot;, serif;
+                    font-size: 17px;
+                    font-style: italic;
+                    line-height: 1.5;
+                    padding: 16px 0;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+                    opacity: 0.92;
+                  "
+                >
+                  Ты просил «звёзды без города», в субботу ясно, и это в твоём бюджете.
+                </div>
+              </div>
+              <div
+                style="
+                  font:
+                    600 19px &quot;Caveat&quot;,
+                    cursive;
+                  color: #f387c8;
+                  margin-top: 16px;
+                  transform: rotate(-2deg);
+                "
+              >
+                довериться — тоже выбор
+              </div>
+              <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px">
+                <div
+                  onClick="{{ goSupport }}"
+                  class="btn"
+                  style="background: #ebeae7; color: #f387c8; padding: 18px 0"
+                >
+                  Принимаю — это история недели
+                </div>
+                <div
+                  onClick="{{ goCandidate }}"
+                  class="svc"
+                  style="
+                    text-align: center;
+                    letter-spacing: 0.1em;
+                    opacity: 0.7;
+                    padding: 6px 0;
+                    cursor: pointer;
+                  "
+                >
+                  Нет, покажи кандидатов
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- COMMITMENT -->
+          <sc-if value="{{ isCommitment }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Неделя 30 · Решение</span
+                ><span onClick="{{ goCandidate }}" style="cursor: pointer">✕</span>
+              </div>
+              <div
+                style="
+                  font-size: 38px;
+                  font-weight: 700;
+                  line-height: 1.12;
+                  letter-spacing: -1.2px;
+                  color: #111;
+                  margin-top: 24px;
+                  text-wrap: balance;
+                "
+              >
+                Сделаем это
+                <span style="background: #f387c8; padding: 0 6px">историей недели?</span>
+              </div>
+              <div
+                style="
+                  font-family: &quot;PT Serif&quot;, serif;
+                  font-size: 20px;
+                  font-style: italic;
+                  color: #f387c8;
+                  margin-top: 12px;
+                "
+              >
+                {{ cand.title }}
+              </div>
+              <div style="margin-top: 22px; border-top: 1px solid #d5d4d1">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                  "
+                >
+                  <span class="svc" style="color: #8a8a8a">Когда</span
+                  ><span style="font-size: 15px; color: #111">{{ cand.when }}</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                  "
+                >
+                  <span class="svc" style="color: #8a8a8a">Бюджет</span
+                  ><span style="font-size: 15px; color: #111">до {{ cand.budget }}</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                  "
+                >
+                  <span class="svc" style="color: #8a8a8a">Компания</span
+                  ><span
+                    onClick="{{ goInvite }}"
+                    style="
+                      font-size: 14px;
+                      background: #f387c8;
+                      color: #fff;
+                      padding: 5px 12px;
+                      cursor: pointer;
+                    "
+                    >Позвать Аню →</span
+                  >
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                  "
+                >
+                  <span class="svc" style="color: #8a8a8a">Свидетель</span
+                  ><span
+                    onClick="{{ goWitness }}"
+                    style="font-size: 14px; color: #2b2b2b; cursor: pointer"
+                    >Выбрать →</span
+                  >
+                </div>
+              </div>
+              <div
+                style="
+                  font:
+                    600 18px &quot;Caveat&quot;,
+                    cursive;
+                  color: #d65aa6;
+                  margin-top: 14px;
+                  transform: rotate(-2deg);
+                "
+              >
+                перенести или отменить можно без штрафа
+              </div>
+              <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px">
+                <div
+                  onClick="{{ goSupport }}"
+                  class="btn"
+                  style="background: #f387c8; color: #fff; padding: 18px 0"
+                >
+                  Да, история недели
+                </div>
+                <div
+                  onClick="{{ goCandidate }}"
+                  class="svc"
+                  style="
+                    text-align: center;
+                    letter-spacing: 0.1em;
+                    color: #9a9a9a;
+                    padding: 6px 0;
+                    cursor: pointer;
+                  "
+                >
+                  Показать другое
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- INVITE -->
+          <sc-if value="{{ isInvite }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Неделя 30 · Приглашение</span
+                ><span onClick="{{ goCommitment }}" style="cursor: pointer">✕</span>
+              </div>
+              <div
+                style="
+                  font-size: 26px;
+                  font-weight: 700;
+                  line-height: 1.14;
+                  letter-spacing: -1px;
+                  color: #111;
+                  margin-top: 14px;
+                "
+              >
+                Позвать <span style="background: #f387c8; padding: 0 6px">{{ inviteName }}?</span>
+              </div>
+              <!-- ТИКЕТ-ПРИГЛАШЕНИЕ -->
+              <div
+                style="
+                  margin-top: 16px;
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                "
+              >
+                <div
+                  style="
+                    background: #fff;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                    border-radius: 16px 16px 0 0;
+                  "
+                >
+                  <div style="padding: 12px 12px 0">
+                    <div style="height: 180px; border-radius: 10px; overflow: hidden">
+                      <image-slot id="pt-invite" shape="rect" placeholder="Фото маяка"></image-slot>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: baseline;
+                      padding: 14px 18px 0;
+                    "
+                  >
+                    <span
+                      style="
+                        font-family: &quot;IBM Plex Mono&quot;, monospace;
+                        font-size: 13px;
+                        color: #111;
+                      "
+                      >СБ</span
+                    >
+                    <span
+                      style="
+                        flex: 1;
+                        border-top: 1px solid #111;
+                        margin: 0 12px;
+                        transform: translateY(-4px);
+                      "
+                    ></span>
+                    <span
+                      style="
+                        font-family: &quot;IBM Plex Mono&quot;, monospace;
+                        font-size: 13px;
+                        color: #111;
+                      "
+                      >19:30</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      font-family: &quot;Cormorant&quot;, serif;
+                      font-size: 29px;
+                      line-height: 1.06;
+                      font-weight: 600;
+                      text-align: center;
+                      padding: 6px 18px 8px;
+                      letter-spacing: 0.04em;
+                      color: #111;
+                      text-transform: uppercase;
+                    "
+                  >
+                    Ночной поход<br />к маяку
+                  </div>
+                  <div
+                    style="
+                      font-family: &quot;PT Serif&quot;, serif;
+                      font-size: 14px;
+                      font-style: italic;
+                      line-height: 1.45;
+                      color: #2b2b2b;
+                      text-align: center;
+                      padding: 0 22px 16px;
+                    "
+                  >
+                    «{{ inviteMsg }}»
+                  </div>
+                </div>
+                <div
+                  style="
+                    position: relative;
+                    background: #919597;
+                    padding: 14px 20px 16px;
+                    border-top: 2px dashed rgba(17, 17, 17, 0.4);
+                  "
+                >
+                  <div
+                    style="
+                      position: absolute;
+                      left: -11px;
+                      top: -11px;
+                      width: 22px;
+                      height: 22px;
+                      border-radius: 50%;
+                      background: #ebeae7;
+                    "
+                  ></div>
+                  <div
+                    style="
+                      position: absolute;
+                      right: -11px;
+                      top: -11px;
+                      width: 22px;
+                      height: 22px;
+                      border-radius: 50%;
+                      background: #ebeae7;
+                    "
+                  ></div>
+                  <div style="display: flex; justify-content: space-between; align-items: center">
+                    <div>
+                      <div class="svc" style="font-size: 9px; color: #111">
+                        ● Приглашение · кому
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px">
+                        <span
+                          style="
+                            width: 30px;
+                            height: 30px;
+                            border-radius: 50%;
+                            background: #f387c8;
+                            color: #fff;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 13px;
+                            font-weight: 600;
+                          "
+                          >{{ inviteInitial }}</span
+                        >
+                        <span style="font-size: 16px; color: #111; font-weight: 600"
+                          >{{ inviteName }}</span
+                        >
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        width: 50px;
+                        align-self: stretch;
+                        min-height: 44px;
+                        background: repeating-linear-gradient(
+                          90deg,
+                          #111 0 2px,
+                          transparent 2px 4px,
+                          #111 4px 7px,
+                          transparent 7px 9px,
+                          #111 9px 10px,
+                          transparent 10px 13px
+                        );
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 14px">
+                <div
+                  onClick="{{ pickAnya }}"
+                  class="btn"
+                  style="flex:1; border:1px solid {{ anyaBorder }}; background:{{ anyaBg }}; color:{{ anyaFg }}; padding:12px 0; font-size:13px;"
+                >
+                  Аня · своб. СБ
+                </div>
+                <div
+                  onClick="{{ pickMark }}"
+                  class="btn"
+                  style="flex:1; border:1px solid {{ markBorder }}; background:{{ markBg }}; color:{{ markFg }}; padding:12px 0; font-size:13px;"
+                >
+                  Марк · спросить
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px">
+                <div
+                  onClick="{{ inviteSent }}"
+                  class="btn"
+                  style="background: #f387c8; color: #fff; padding: 16px 0"
+                >
+                  Отправить приглашение
+                </div>
+                <div
+                  onClick="{{ goCommitment }}"
+                  class="svc"
+                  style="
+                    text-align: center;
+                    letter-spacing: 0.1em;
+                    color: #9a9a9a;
+                    padding: 2px 0;
+                    cursor: pointer;
+                  "
+                >
+                  Пойду один
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- WITNESS -->
+          <sc-if value="{{ isWitness }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Мягкая ответственность</span
+                ><span onClick="{{ goCommitment }}" style="cursor: pointer">✕</span>
+              </div>
+              <div
+                style="
+                  font-size: 33px;
+                  font-weight: 700;
+                  line-height: 1.14;
+                  letter-spacing: -1px;
+                  color: #111;
+                  margin-top: 24px;
+                  text-wrap: balance;
+                "
+              >
+                Сказать кому-то о намерении?
+              </div>
+              <div style="font-size: 14px; line-height: 1.6; color: #8a8a8a; margin-top: 12px">
+                Свидетель увидит только короткое обещание и итог недели:
+                <span style="color: #5a8036; font-weight: 600">получилось</span> или
+                <span style="color: #8a8a8a; font-weight: 600">перенесено</span>. Без рейтингов и
+                наказаний.
+              </div>
+              <div
+                style="
+                  margin-top: 24px;
+                  background: #f3f2ef;
+                  border-left: 3px solid #f387c8;
+                  padding: 16px 18px;
+                "
+              >
+                <div class="svc" style="color: #8a8a8a">Что увидит Марк</div>
+                <div
+                  style="
+                    font-family: &quot;PT Serif&quot;, serif;
+                    font-size: 18px;
+                    line-height: 1.45;
+                    color: #2b2b2b;
+                    margin-top: 10px;
+                    font-style: italic;
+                  "
+                >
+                  «На этой неделе я иду в ночной поход к маяку. Итог — в воскресенье.»
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 12px">
+                  <span class="svc" style="background: #f387c8; color: #6b5a1a; padding: 3px 8px"
+                    >дедлайн: ВС</span
+                  ><span
+                    class="svc"
+                    style="border: 1px solid #bfbebb; color: #8a8a8a; padding: 3px 8px"
+                    >без деталей</span
+                  >
+                </div>
+              </div>
+              <div
+                style="
+                  font:
+                    600 18px &quot;Caveat&quot;,
+                    cursive;
+                  color: #d65aa6;
+                  margin-top: 16px;
+                  transform: rotate(-2deg);
+                "
+              >
+                никаких публичных стриков — обещание, не отчёт
+              </div>
+              <div style="margin-top: auto; display: flex; gap: 10px">
+                <div
+                  onClick="{{ goCommitment }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    border: 1px solid #111;
+                    color: #111;
+                    padding: 15px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Не в этот раз
+                </div>
+                <div
+                  onClick="{{ goCommitment }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    background: #919597;
+                    color: #ebeae7;
+                    padding: 16px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Сказать Марку
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- SUPPORT -->
+          <sc-if value="{{ isSupport }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Неделя 30 / Активна</span><span>Nudge 02</span>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 22px">
+                <span
+                  style="
+                    font-size: 82px;
+                    line-height: 0.8;
+                    font-weight: 700;
+                    letter-spacing: -4px;
+                    color: #111;
+                  "
+                  >2</span
+                >
+                <div style="padding-bottom: 6px">
+                  <div
+                    style="font-size: 22px; font-weight: 600; letter-spacing: -0.5px; color: #111"
+                  >
+                    дня
+                  </div>
+                  <div class="svc" style="letter-spacing: 0.06em; color: #8a8a8a">до субботы</div>
+                </div>
+              </div>
+              <div
+                style="
+                  font-family: &quot;PT Serif&quot;, serif;
+                  font-size: 20px;
+                  font-style: italic;
+                  color: #f387c8;
+                  margin-top: 6px;
+                "
+              >
+                {{ cand.title }}
+              </div>
+              <div
+                style="
+                  background: #f3f2ef;
+                  border-left: 3px solid #f387c8;
+                  padding: 16px 16px 16px 18px;
+                  margin-top: 24px;
+                "
+              >
+                <div class="svc" style="color: #8a8a8a; margin-bottom: 8px">Ryk напоминает</div>
+                <div style="font-size: 16px; line-height: 1.7; color: #2b2b2b">
+                  План держится.
+                  <span style="background: #ebeae7; padding: 1px 4px"
+                    >Аня подтвердила субботу.</span
+                  >
+                  Маршрут построен — 40 минут на электричке, небо ясное, +8°. Осталось одно:
+                  <span style="background: #f387c8; padding: 1px 4px">найти фонарик</span> — можно
+                  одолжить у Ани.
+                </div>
+              </div>
+              <div class="svc" style="color: #8a8a8a; margin-top: 24px">
+                Подготовка · нажми, чтобы отметить
+              </div>
+              <div style="margin-top: 10px; border-top: 1px solid #d5d4d1">
+                <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="4">
+                  <div
+                    onClick="{{ t.onClick }}"
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      padding: 13px 2px;
+                      border-bottom: 1px solid #d5d4d1;
+                      cursor: pointer;
+                    "
+                  >
+                    <span
+                      style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        font-size: 15px;
+                        color: #2b2b2b;
+                      "
+                      ><span
+                        style="width:9px; height:9px; border-radius:50%; background:{{ t.dot }};"
+                      ></span
+                      >{{ t.label }}</span
+                    >
+                    <span class="svc" style="color:{{ t.stFg }};">{{ t.status }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top: auto; display: flex; gap: 10px">
+                <div
+                  onClick="{{ goRescue }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    border: 1.5px solid #111;
+                    color: #111;
+                    padding: 15px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Не складывается
+                </div>
+                <div
+                  onClick="{{ goCheckin }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    background: #f387c8;
+                    color: #ebeae7;
+                    padding: 16.5px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Событие прошло →
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- RESCUE -->
+          <sc-if value="{{ isRescue }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #d65aa6"
+              >
+                <span>Неделя 30 · План под угрозой</span
+                ><span onClick="{{ goSupport }}" style="cursor: pointer">✕</span>
+              </div>
+              <div
+                style="
+                  font-size: 32px;
+                  font-weight: 700;
+                  line-height: 1.16;
+                  letter-spacing: -1px;
+                  color: #111;
+                  margin-top: 22px;
+                  text-wrap: balance;
+                "
+              >
+                Большой план не сложился.
+                <span style="background: #f387c8; padding: 0 6px">Неделю ещё можно спасти.</span>
+              </div>
+              <div class="svc" style="color: #8a8a8a; margin-top: 16px">Что сейчас мешает?</div>
+              <div style="display: flex; gap: 8px; margin-top: 11px; flex-wrap: wrap">
+                <sc-for list="{{ barriers }}" as="b" hint-placeholder-count="5">
+                  <span
+                    onClick="{{ b.onClick }}"
+                    style="border:1px solid #111; padding:8px 13px; font-size:13px; color:{{ b.fg }}; background:{{ b.bg }}; font-weight:{{ b.fw }}; cursor:pointer;"
+                    >{{ b.label }}</span
+                  >
+                </sc-for>
+              </div>
+              <div style="margin-top: 22px; border: 1px solid #111">
+                <div
+                  onClick="{{ rescuePick }}"
+                  style="
+                    display: grid;
+                    grid-template-columns: 34px 1fr auto;
+                    gap: 12px;
+                    align-items: center;
+                    padding: 16px;
+                    border-bottom: 1px solid #111;
+                    cursor: pointer;
+                  "
+                >
+                  <span class="svc" style="font-size: 14px; color: #f387c8">I</span>
+                  <div>
+                    <div style="font-size: 17px; font-weight: 600; color: #111">
+                      Перенести на воскресенье
+                    </div>
+                    <div style="font-size: 12px; color: #8a8a8a; margin-top: 3px">
+                      ВС — ясно. Тот же план, те же звёзды.
+                    </div>
+                  </div>
+                  <span style="font-size: 16px">→</span>
+                </div>
+                <div
+                  onClick="{{ rescuePick }}"
+                  style="
+                    display: grid;
+                    grid-template-columns: 34px 1fr auto;
+                    gap: 12px;
+                    align-items: center;
+                    padding: 16px;
+                    border-bottom: 1px solid #111;
+                    cursor: pointer;
+                  "
+                >
+                  <span class="svc" style="font-size: 14px; color: #f387c8">II</span>
+                  <div>
+                    <div style="font-size: 17px; font-weight: 600; color: #111">
+                      Планетарий вместо неба
+                    </div>
+                    <div style="font-size: 12px; color: #8a8a8a; margin-top: 3px">
+                      Те же звёзды, но под крышей. 600 ₽.
+                    </div>
+                  </div>
+                  <span style="font-size: 16px">→</span>
+                </div>
+                <div
+                  onClick="{{ rescuePick }}"
+                  style="
+                    display: grid;
+                    grid-template-columns: 34px 1fr auto;
+                    gap: 12px;
+                    align-items: center;
+                    padding: 16px;
+                    cursor: pointer;
+                  "
+                >
+                  <span class="svc" style="font-size: 14px; color: #f387c8">III</span>
+                  <div>
+                    <div style="font-size: 17px; font-weight: 600; color: #111">
+                      Короткая версия
+                    </div>
+                    <div style="font-size: 12px; color: #8a8a8a; margin-top: 3px">
+                      Прогулка до старого маяка в городе, 1 час.
+                    </div>
+                  </div>
+                  <span style="font-size: 16px">→</span>
+                </div>
+              </div>
+              <div
+                style="
+                  font:
+                    600 18px &quot;Caveat&quot;,
+                    cursive;
+                  color: #d65aa6;
+                  margin-top: 14px;
+                  transform: rotate(-2deg);
+                "
+              >
+                это не провал — просто погода
+              </div>
+              <div
+                onClick="{{ goMemory }}"
+                class="svc"
+                style="
+                  margin-top: auto;
+                  text-align: center;
+                  letter-spacing: 0.1em;
+                  color: #9a9a9a;
+                  padding: 8px 0;
+                  cursor: pointer;
+                "
+              >
+                Пропустить неделю без вины
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- CHECKIN -->
+          <sc-if value="{{ isCheckin }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Неделя 30 · Воскресенье</span><span>Check-in</span>
+              </div>
+              <div
+                style="
+                  font-size: 38px;
+                  font-weight: 700;
+                  line-height: 1.1;
+                  letter-spacing: -1.2px;
+                  color: #111;
+                  margin-top: 24px;
+                "
+              >
+                Этот момент <span style="background: #f387c8; padding: 0 6px">теперь твой.</span>
+              </div>
+              <div
+                style="
+                  font-family: &quot;PT Serif&quot;, serif;
+                  font-size: 18px;
+                  font-style: italic;
+                  color: #f387c8;
+                  margin-top: 14px;
+                "
+              >
+                {{ cand.title }} — получилось?
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 18px">
+                <div
+                  onClick="{{ markDone }}"
+                  class="btn"
+                  style="flex:1; background:{{ doneBg }}; color:{{ doneFg }}; border:1px solid #111; padding:15px 0; font-size:14px;"
+                >
+                  Сделано ✓
+                </div>
+                <div
+                  onClick="{{ goRescue }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    border: 1px solid #111;
+                    color: #111;
+                    padding: 15px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Перенесено
+                </div>
+              </div>
+              <div class="svc" style="color: #8a8a8a; margin-top: 24px">
+                Какое чувство осталось?
+              </div>
+              <div style="display: flex; gap: 8px; margin-top: 11px; flex-wrap: wrap">
+                <sc-for list="{{ emotions }}" as="e" hint-placeholder-count="4">
+                  <span
+                    onClick="{{ e.onClick }}"
+                    style="border:1px solid #111; padding:10px 16px; font-size:14px; color:{{ e.fg }}; background:{{ e.bg }}; font-weight:{{ e.fw }}; cursor:pointer;"
+                    >{{ e.label }}</span
+                  >
+                </sc-for>
+              </div>
+              <div
+                style="
+                  margin-top: 20px;
+                  border: 1px dashed #bfbebb;
+                  height: 130px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 12px;
+                  color: #9a9a9a;
+                  cursor: pointer;
+                "
+              >
+                + фото момента (необязательно)
+              </div>
+              <div
+                style="
+                  border-bottom: 1px solid #111;
+                  margin-top: 16px;
+                  padding-bottom: 8px;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: flex-end;
+                "
+              >
+                <span
+                  style="
+                    font:
+                      600 20px &quot;Caveat&quot;,
+                      cursive;
+                    color: #111;
+                  "
+                  >звёзды — как в детстве</span
+                ><span class="svc" style="color: #9a9a9a">одна фраза</span>
+              </div>
+              <div
+                onClick="{{ goMemory }}"
+                class="btn"
+                style="margin-top: auto; background: #f387c8; color: #fff; padding: 17px 0"
+              >
+                Сохранить в память
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- MEMORY -->
+          <sc-if value="{{ isMemory }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div style="display: flex; justify-content: space-between; align-items: flex-start">
+                <div>
+                  <div class="svc" style="color: #f387c8">Архив впечатлений · 2026</div>
+                  <div
+                    style="
+                      font-size: 44px;
+                      font-weight: 700;
+                      letter-spacing: -2px;
+                      color: #111;
+                      margin-top: 6px;
+                    "
+                  >
+                    Память
+                  </div>
+                </div>
+                <span
+                  style="font-size: 44px; font-weight: 700; letter-spacing: -2px; color: #f387c8"
+                  >31</span
+                >
+              </div>
+              <div style="font-size: 13px; color: #8a8a8a; margin-top: 10px">
+                Историй, которых могло не случиться.
+              </div>
+              <div
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px"
+              >
+                <div
+                  style="
+                    background: #f3f2ef;
+                    border: 1px solid #c6c5c2;
+                    padding: 18px 16px 14px;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 178px;
+                  "
+                >
+                  <div class="svc" style="font-size: 10px; color: #9a9a9a">Неделя 30</div>
+                  <div
+                    style="
+                      font-family: &quot;PT Serif&quot;, serif;
+                      font-size: 18px;
+                      line-height: 1.25;
+                      color: #111;
+                      margin-top: 8px;
+                    "
+                  >
+                    Ночной поход к маяку
+                  </div>
+                  <div
+                    style="
+                      font:
+                        600 16px &quot;Caveat&quot;,
+                        cursive;
+                      color: #d65aa6;
+                      margin-top: 6px;
+                      transform: rotate(-2deg);
+                    "
+                  >
+                    «звёзды — как в детстве»
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-top: auto;
+                    "
+                  >
+                    <span style="font-size: 11px; color: #8a8a8a">с Аней</span
+                    ><span
+                      style="width: 11px; height: 11px; border-radius: 50%; background: #f387c8"
+                    ></span>
+                  </div>
+                </div>
+                <div
+                  style="
+                    background: #f3f2ef;
+                    border: 1px solid #c6c5c2;
+                    padding: 18px 16px 14px;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 178px;
+                  "
+                >
+                  <div class="svc" style="font-size: 10px; color: #9a9a9a">Неделя 29</div>
+                  <div
+                    style="
+                      font-family: &quot;PT Serif&quot;, serif;
+                      font-size: 18px;
+                      line-height: 1.25;
+                      color: #111;
+                      margin-top: 8px;
+                    "
+                  >
+                    Гончарная мастерская
+                  </div>
+                  <div
+                    style="
+                      font:
+                        600 16px &quot;Caveat&quot;,
+                        cursive;
+                      color: #d65aa6;
+                      margin-top: 6px;
+                      transform: rotate(-2deg);
+                    "
+                  >
+                    «кружка кривая, но моя»
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-top: auto;
+                    "
+                  >
+                    <span style="font-size: 11px; color: #8a8a8a">с Аней</span
+                    ><span
+                      style="width: 11px; height: 11px; border-radius: 50%; background: #c99bb0"
+                    ></span>
+                  </div>
+                </div>
+                <div
+                  style="
+                    background: #f3f2ef;
+                    border: 1px solid #c6c5c2;
+                    padding: 18px 16px 14px;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 178px;
+                  "
+                >
+                  <div class="svc" style="font-size: 10px; color: #9a9a9a">Неделя 27</div>
+                  <div
+                    style="
+                      font-family: &quot;PT Serif&quot;, serif;
+                      font-size: 18px;
+                      line-height: 1.25;
+                      color: #111;
+                      margin-top: 8px;
+                    "
+                  >
+                    Рассвет на крыше
+                  </div>
+                  <div
+                    style="
+                      font:
+                        600 16px &quot;Caveat&quot;,
+                        cursive;
+                      color: #d65aa6;
+                      margin-top: 6px;
+                      transform: rotate(-2deg);
+                    "
+                  >
+                    «в 4 утра город другой»
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-top: auto;
+                    "
+                  >
+                    <span style="font-size: 11px; color: #8a8a8a">один</span
+                    ><span
+                      style="width: 11px; height: 11px; border-radius: 50%; background: #d9c55a"
+                    ></span>
+                  </div>
+                </div>
+                <div
+                  style="
+                    background: #e0dfdc;
+                    border: 1px dashed #a6a5a2;
+                    padding: 18px 16px 14px;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 178px;
+                  "
+                >
+                  <div class="svc" style="font-size: 10px; color: #8a8a8a">Неделя 28</div>
+                  <div
+                    style="
+                      font-family: &quot;PT Serif&quot;, serif;
+                      font-size: 18px;
+                      line-height: 1.25;
+                      color: #8a8a8a;
+                      margin-top: 8px;
+                    "
+                  >
+                    Перенесено — без вины
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-top: auto;
+                    "
+                  >
+                    <span style="font-size: 11px; color: #8a8a8a">вернётся</span
+                    ><span
+                      style="
+                        width: 11px;
+                        height: 11px;
+                        border-radius: 50%;
+                        border: 1px solid #8a8a8a;
+                        box-sizing: border-box;
+                      "
+                    ></span>
+                  </div>
+                </div>
+              </div>
+              <div
+                onClick="{{ goCandidate }}"
+                class="svc"
+                style="
+                  margin-top: auto;
+                  text-align: center;
+                  letter-spacing: 0.1em;
+                  color: #f387c8;
+                  cursor: pointer;
+                "
+              >
+                ← Новая неделя
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- WISHLIST -->
+          <sc-if value="{{ isWishlist }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div style="display: flex; justify-content: space-between; align-items: flex-start">
+                <div>
+                  <div class="svc" style="color: #f387c8">Твои желания</div>
+                  <div
+                    style="
+                      font-size: 44px;
+                      font-weight: 700;
+                      letter-spacing: -2px;
+                      color: #111;
+                      margin-top: 6px;
+                    "
+                  >
+                    Wishlist
+                  </div>
+                </div>
+                <span
+                  style="font-size: 44px; font-weight: 700; letter-spacing: -2px; color: #f387c8"
+                  >{{ wishCount }}</span
+                >
+              </div>
+              <div
+                style="margin-top: 20px; border-top: 1px solid #d5d4d1; flex: 1; overflow: hidden"
+              >
+                <sc-for list="{{ wishes }}" as="w" hint-placeholder-count="5">
+                  <div
+                    style="padding:14px 12px; border-bottom:1px solid #D5D4D1; background:{{ w.rowBg }}; margin:0 -12px;"
+                  >
+                    <div
+                      style="display: flex; justify-content: space-between; align-items: baseline"
+                    >
+                      <span style="font-size:18px; color:{{ w.titleFg }}; font-weight:{{ w.fw }};"
+                        >{{ w.title }}</span
+                      >
+                      <span
+                        class="svc"
+                        style="background:{{ w.tagBg }}; color:{{ w.tagFg }}; border:{{ w.tagBorder }}; padding:3px 8px;"
+                        >{{ w.tag }}</span
+                      >
+                    </div>
+                    <div style="font-size:12px; color:{{ w.metaFg }}; margin-top:4px;">
+                      {{ w.meta }}
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div
+                onClick="{{ goAddwish }}"
+                class="btn"
+                style="margin-top: 16px; background: #f387c8; color: #fff; padding: 17px 0"
+              >
+                + Добавить желание
+              </div>
+              <div
+                onClick="{{ goMemory }}"
+                class="svc"
+                style="
+                  margin-top: 12px;
+                  text-align: center;
+                  letter-spacing: 0.1em;
+                  color: #9a9a9a;
+                  cursor: pointer;
+                "
+              >
+                ← Память
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ADDWISH -->
+          <sc-if value="{{ isAddwish }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div
+                class="svc"
+                style="display: flex; justify-content: space-between; color: #f387c8"
+              >
+                <span>Новое желание</span
+                ><span onClick="{{ goWishlist }}" style="cursor: pointer">✕</span>
+              </div>
+              <div
+                style="
+                  font-size: 33px;
+                  font-weight: 700;
+                  letter-spacing: -1px;
+                  color: #111;
+                  margin-top: 22px;
+                "
+              >
+                Чего хочется?
+              </div>
+              <div
+                style="border: 1px solid #111; margin-top: 18px; padding: 18px; min-height: 100px"
+              >
+                <div
+                  style="
+                    font-family: &quot;PT Serif&quot;, serif;
+                    font-size: 19px;
+                    line-height: 1.45;
+                    color: #2b2b2b;
+                    font-style: italic;
+                  "
+                >
+                  «Хочу как-нибудь научиться печь хлеб»
+                </div>
+              </div>
+              <div class="svc" style="color: #8a8a8a; margin-top: 24px">Ryk понял так</div>
+              <div style="margin-top: 12px; border-top: 1px solid #d5d4d1">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 13px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                  "
+                >
+                  <span class="svc" style="color: #8a8a8a">Категория</span
+                  ><span
+                    style="font-size: 14px; background: #f387c8; color: #fff; padding: 4px 10px"
+                    >Joy · дома</span
+                  >
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 13px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                  "
+                >
+                  <span class="svc" style="color: #8a8a8a">Бюджет</span
+                  ><span style="font-size: 15px; color: #111">~500 ₽</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 13px 2px;
+                    border-bottom: 1px solid #d5d4d1;
+                  "
+                >
+                  <span class="svc" style="color: #8a8a8a">Когда</span>
+                  <div style="display: flex; gap: 6px">
+                    <span
+                      style="
+                        background: #919597;
+                        color: #ebeae7;
+                        padding: 6px 10px;
+                        font-size: 12px;
+                      "
+                      >Скоро</span
+                    ><span
+                      style="
+                        border: 1px solid #111;
+                        padding: 6px 10px;
+                        font-size: 12px;
+                        color: #2b2b2b;
+                      "
+                      >Когда-нибудь</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  font:
+                    600 18px &quot;Caveat&quot;,
+                    cursive;
+                  color: #d65aa6;
+                  margin-top: 14px;
+                  transform: rotate(-2deg);
+                "
+              >
+                Ryk подскажет удачный момент ✓
+              </div>
+              <div
+                onClick="{{ addWish }}"
+                class="btn"
+                style="margin-top: auto; background: #919597; color: #ebeae7; padding: 17px 0"
+              >
+                Сохранить в желания
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- BALANCE -->
+          <sc-if value="{{ isBalance }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 28px 26px 104px;
+                box-sizing: border-box;
+                overflow-y: auto;
+              "
+            >
+              <div style="display: flex; justify-content: space-between; align-items: flex-start">
+                <div>
+                  <div class="svc" style="color: #f387c8">31 неделя · 2026</div>
+                  <div
+                    style="
+                      font-size: 44px;
+                      font-weight: 700;
+                      letter-spacing: -2px;
+                      color: #111;
+                      margin-top: 6px;
+                    "
+                  >
+                    Баланс
+                  </div>
+                </div>
+              </div>
+              <div style="font-size: 13px; color: #8a8a8a; margin-top: 10px">
+                Не идеал, а зеркало. Ryk только замечает перекосы.
+              </div>
+              <div style="margin-top: 22px; border-top: 1px solid #d5d4d1">
+                <sc-for list="{{ balance }}" as="b" hint-placeholder-count="6">
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: 104px 1fr 26px;
+                      gap: 12px;
+                      align-items: center;
+                      padding: 12px 2px;
+                      border-bottom: 1px solid #d5d4d1;
+                    "
+                  >
+                    <span class="svc" style="color:{{ b.fg }};">{{ b.label }}</span>
+                    <div
+                      style="height:14px; background:{{ b.color }}; width:{{ b.width }}; border:{{ b.border }}; box-sizing:border-box;"
+                    ></div>
+                    <span style="font-size:14px; font-weight:600; color:{{ b.numFg }};"
+                      >{{ b.num }}</span
+                    >
+                  </div>
+                </sc-for>
+              </div>
+              <div
+                style="
+                  font:
+                    600 19px &quot;Caveat&quot;,
+                    cursive;
+                  color: #d65aa6;
+                  margin-top: 16px;
+                  transform: rotate(-2deg);
+                "
+              >
+                отдых просел — заметил? ↑
+              </div>
+              <div
+                style="
+                  margin-top: 14px;
+                  background: #f3f2ef;
+                  border-left: 3px solid #f387c8;
+                  padding: 14px 16px;
+                  font-size: 15px;
+                  line-height: 1.55;
+                  color: #2b2b2b;
+                "
+              >
+                <div class="svc" style="color: #8a8a8a; margin-bottom: 6px">Ryk</div>
+                За месяц не было ни одной тихой недели. Хочешь, следующая история будет про
+                <span style="background: #f387c8; padding: 1px 4px">восстановление?</span>
+              </div>
+              <div style="margin-top: auto; display: flex; gap: 10px">
+                <div
+                  onClick="{{ goMemory }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    border: 1px solid #111;
+                    color: #111;
+                    padding: 15px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Нет, всё ок
+                </div>
+                <div
+                  onClick="{{ goCandidate }}"
+                  class="btn"
+                  style="
+                    flex: 1;
+                    background: #919597;
+                    color: #ebeae7;
+                    padding: 16px 0;
+                    font-size: 14px;
+                  "
+                >
+                  Да, давай
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- DOCK -->
+          <sc-if value="{{ showDock }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                position: absolute;
+                left: 50%;
+                bottom: 18px;
+                transform: translateX(-50%);
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                background: #111;
+                padding: 7px;
+                border-radius: 22px;
+                box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+                z-index: 6;
+                max-width: calc(100% - 40px);
+              "
+            >
+              <sc-for list="{{ dockItems }}" as="d" hint-placeholder-count="4">
+                <div
+                  onClick="{{ d.onClick }}"
+                  class="svc"
+                  style="font-size:10px; letter-spacing:0.08em; padding:11px 16px; border-radius:16px; background:{{ d.bg }}; color:{{ d.fg }}; cursor:pointer; white-space:nowrap;"
+                >
+                  {{ d.label }}
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- Тост -->
+          <sc-if value="{{ toastVisible }}" hint-placeholder-val="{{ false }}">
+            <div
+              style="
+                position: absolute;
+                left: 26px;
+                right: 26px;
+                bottom: 96px;
+                background: #919597;
+                color: #ebeae7;
+                padding: 14px 18px;
+                font-size: 13px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+                z-index: 5;
+              "
+            >
+              {{ toastText }}
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1400,"height":940}}'>
+      class Component extends DCLogic {
+        state = {
+          screen: 'welcome',
+          cats: [true, false, true, false, false, true, false, false],
+          ideaIdx: 0, candIdx: 0, budget: 1, social: 0, barrier: 0, emotion: 0, done: true, invitee: 'anya',
+          tasks: [2, 2, 1, 0],
+          wishesAdded: 0, toast: '', toastTimer: null
+        };
+        go(s) { return () => this.setState({ screen: s }); }
+        showToast(text, next) {
+          clearTimeout(this.state.toastTimer);
+          const t = setTimeout(() => this.setState({ toast: '' }), 2200);
+          this.setState({ toast: text, toastTimer: t, ...(next ? { screen: next } : {}) });
+        }
+        renderVals() {
+          const s = this.state;
+          const CATS = ['Природа','Культура','Новое','Движение','Люди','Радость','Вызов','Отдых'];
+          const NUMS = ['I','II','III','IV','V','VI','VII','VIII'];
+          const IDEAS = [
+            { no:'07', cat:'VII · Вызов', title:'Скалодром для новичков', price:'800 ₽', time:'1,5 ч', note:'Инструктор и снаряжение включены. Можно прийти одному.' },
+            { no:'08', cat:'I · Природа', title:'Каякинг на рассвете', price:'1 200 ₽', time:'2 ч', note:'Группа до 6 человек. Опыт не нужен.' },
+            { no:'09', cat:'II · Культура', title:'Ночь в филармонии', price:'600 ₽', time:'2 ч', note:'Орган при свечах. Билеты обычно есть.' }
+          ];
+          const CANDS = [
+            { cat:'Природа', when:'СБ 19:30', day:'СБ', hour:'19:30', title:'Ночной поход к маяку', why:'3 сохранения «звёзды»', weather:'СБ — ясно, 8°', time:'3 часа · 12 км', budget:'1 500 ₽', info:'Идти вдвоём лучше. Аня свободна в субботу.' },
+            { cat:'Люди', when:'ВС 12:00', day:'ВС', hour:'12:00', title:'Гончарная с Аней', why:'Давно не виделись', weather:'Под крышей', time:'2 часа · 4 км', budget:'2 000 ₽', info:'Мастер оставит кружку на обжиг.' },
+            { cat:'Культура', when:'ПТ 20:00', day:'ПТ', hour:'20:00', title:'Концерт в планетарии', why:'Любишь звёзды и музыку', weather:'Под куполом', time:'1,5 часа · 6 км', budget:'900 ₽', info:'Осталось 14 билетов.' }
+          ];
+          const TASKLABELS = ['Маршрут построен','Аня подтвердила','Собрать рюкзак','Фонарик'];
+          const TSTYLE = [ { dot:'#F387C8', st:'решить', stFg:'#c0559b' }, { dot:'#B9BCBE', st:'план', stFg:'#7d8183' }, { dot:'#111', st:'готово', stFg:'#111' } ];
+          const BARRIERS = ['Погода','Нет сил','Дорого','Не хочу один','Передумал'];
+          const EMOTIONS = ['Восторг','Спокойствие','Гордость','Близость'];
+          const BUDGETS = ['до 500 ₽','до 2 000 ₽','не важно'];
+          const SOCIALS = ['Один','С близкими','С новыми людьми'];
+          const baseWishes = [
+            { title:'Увидеть северное сияние', tag:'зима', meta:'Discovery · большой бюджет · когда-нибудь' },
+            { title:'Звёзды без города', tag:'неделя 30', tagBg:'#F387C8', tagFg:'#fff', rowBg:'#F387C8', fw:700, meta:'Nature · 1 500 ₽ · выбрано', metaFg:'#7a4265' },
+            { title:'Концерт органной музыки', tag:'скоро', tagFg:'#8a8a8a', meta:'Culture · 900 ₽ · с Марком' },
+            { title:'Научиться печь хлеб', tag:'скоро', tagFg:'#8a8a8a', meta:'Joy · дома · в этом месяце', _added:true },
+            { title:'Прыжок с парашютом', tag:'скрыто', tagBorder:'1px solid #BFBEBB', tagFg:'#B5B4B1', titleFg:'#B5B4B1', metaFg:'#C0BFBC', meta:'Challenge · вернуться весной' }
+          ];
+          const wishes = baseWishes.filter(w => !w._added || s.wishesAdded > 0).map(w => ({
+            title:w.title, tag:w.tag, meta:w.meta,
+            tagBg:w.tagBg || 'transparent', tagFg:w.tagFg || '#8a8a8a', tagBorder:w.tagBorder || 'none',
+            rowBg:w.rowBg || 'transparent', fw:w.fw || 400, titleFg:w.titleFg || '#111', metaFg:w.metaFg || '#8a8a8a'
+          }));
+          const screens = ['welcome','categories','swipe','params','candidate','surprise','commitment','invite','witness','support','rescue','checkin','memory','wishlist','addwish','balance'];
+          const labels = ['Приветствие','Категории','Свайп идей','Рамки','Кандидаты','Выбери за меня','Commitment','Приглашение','Свидетель','Сопровождение','Спасение недели','Check-in','Память','Желания','Новое желание','Баланс'];
+          const GBAR = '#F387C8';
+          const BAL = [
+            { label:'Nature', color:GBAR, width:'85%', num:'9' },
+            { label:'Connection', color:GBAR, width:'65%', num:'7' },
+            { label:'Discovery', color:GBAR, width:'55%', num:'6' },
+            { label:'Culture', color:GBAR, width:'45%', num:'5' },
+            { label:'Movement', color:GBAR, width:'25%', num:'3' },
+            { label:'Rest', color:'#DAD9D6', width:'10%', num:'1', fg:'#8a8a8a', numFg:'#111', border:'1px solid #C6C5C2' }
+          ];
+          const GC = '#F387C8';
+          const GK = '#919597';
+          const DOCK = [
+            { label:'Неделя', screen:'candidate', group:['candidate','surprise','commitment','invite','witness','support','rescue','checkin'] },
+            { label:'Память', screen:'memory', group:['memory'] },
+            { label:'Желания', screen:'wishlist', group:['wishlist','addwish'] },
+            { label:'Баланс', screen:'balance', group:['balance'] }
+          ];
+          const onboardingScreens = ['welcome','categories','swipe','params'];
+          const chip = (on, onColor) => ({ bg: on ? (onColor||GK) : 'transparent', fg: on ? '#fff' : '#2b2b2b', fw: on ? 600 : 400 });
+          return {
+            isWelcome: s.screen==='welcome', isCategories: s.screen==='categories', isSwipe: s.screen==='swipe',
+            isParams: s.screen==='params', isCandidate: s.screen==='candidate', isSurprise: s.screen==='surprise',
+            isCommitment: s.screen==='commitment', isInvite: s.screen==='invite', isWitness: s.screen==='witness',
+            isSupport: s.screen==='support', isRescue: s.screen==='rescue', isCheckin: s.screen==='checkin',
+            isMemory: s.screen==='memory', isWishlist: s.screen==='wishlist', isAddwish: s.screen==='addwish', isBalance: s.screen==='balance',
+            goWelcome:this.go('welcome'), goCategories:this.go('categories'), goSwipe:this.go('swipe'), goParams:this.go('params'),
+            goCandidate:this.go('candidate'), goSurprise:this.go('surprise'), goCommitment:this.go('commitment'),
+            goInvite:this.go('invite'), goWitness:this.go('witness'), goSupport:this.go('support'), goRescue:this.go('rescue'),
+            goCheckin:this.go('checkin'), goMemory:this.go('memory'), goWishlist:this.go('wishlist'), goAddwish:this.go('addwish'), goBalance:this.go('balance'),
+            navItems: screens.map((sc, i) => ({
+              num: String(i+1).padStart(2,'0'), label: labels[i],
+              bg: s.screen===sc ? GC : 'rgba(255,255,255,0.06)',
+              fg: s.screen===sc ? '#fff' : '#cfc9b8',
+              onClick: this.go(sc)
+            })),
+            cats: CATS.map((label, i) => ({
+              label, num: NUMS[i],
+              br: i % 2 === 0 ? '1px solid #111' : 'none',
+              bb: i < 6 ? '1px solid #111' : 'none',
+              bg: s.cats[i] ? GC : 'transparent',
+              fg: s.cats[i] ? '#fff' : '#111',
+              onClick: () => this.setState(st => { const c=[...st.cats]; c[i]=!c[i]; return { cats:c }; })
+            })),
+            catCount: s.cats.filter(Boolean).length,
+            ideaNum: 7 + s.ideaIdx, idea: IDEAS[s.ideaIdx % 3],
+            swipeYes: () => s.ideaIdx >= 2 ? this.setState({ screen:'params' }) : this.setState({ ideaIdx: s.ideaIdx+1 }),
+            swipeNo: () => s.ideaIdx >= 2 ? this.setState({ screen:'params' }) : this.setState({ ideaIdx: s.ideaIdx+1 }),
+            budgets: BUDGETS.map((label,i) => ({ label, ...chip(s.budget===i), onClick: () => this.setState({ budget:i }) })),
+            socials: SOCIALS.map((label,i) => ({ label, ...chip(s.social===i,GC), onClick: () => this.setState({ social:i }) })),
+            cand: CANDS[s.candIdx], candNum: s.candIdx + 1,
+            nextCand: () => this.setState({ candIdx: (s.candIdx+1) % 3 }),
+            inviteName: s.invitee==='anya' ? 'Аню' : 'Марка',
+            inviteInitial: s.invitee==='anya' ? 'А' : 'М',
+            inviteMsg: s.invitee==='anya'
+              ? 'В субботу иду смотреть на звёзды к маяку. Небо будет чистейшее. Пойдёшь со мной?'
+              : 'Есть странный план на субботу — ночной поход к маяку. Ты же любишь такое. Со мной?',
+            pickAnya: () => this.setState({ invitee:'anya' }), pickMark: () => this.setState({ invitee:'mark' }),
+            anyaBg: s.invitee==='anya' ? GK:'transparent', anyaFg: s.invitee==='anya' ? '#F5EFDC':'#111', anyaBorder: s.invitee==='anya' ? '#111':'#C4BEAC',
+            markBg: s.invitee==='mark' ? GK:'transparent', markFg: s.invitee==='mark' ? '#F5EFDC':'#111', markBorder: s.invitee==='mark' ? '#111':'#C4BEAC',
+            inviteSent: () => this.showToast('Приглашение отправлено ' + (s.invitee==='anya'?'Ане':'Марку') + ' ✓', 'commitment'),
+            tasks: TASKLABELS.map((label,i) => ({
+              label, dot: TSTYLE[s.tasks[i]].dot, status: TSTYLE[s.tasks[i]].st, stFg: TSTYLE[s.tasks[i]].stFg,
+              onClick: () => this.setState(st => { const t=[...st.tasks]; t[i]=(t[i]+1)%3; return { tasks:t }; })
+            })),
+            barriers: BARRIERS.map((label,i) => ({ label, ...chip(s.barrier===i), onClick: () => this.setState({ barrier:i }) })),
+            rescuePick: () => this.showToast('План обновлён. Неделя спасена ✓', 'support'),
+            emotions: EMOTIONS.map((label,i) => ({ label, ...chip(s.emotion===i,GC), onClick: () => this.setState({ emotion:i }) })),
+            markDone: () => this.setState({ done: true }),
+            doneBg: s.done ? GK : 'transparent', doneFg: s.done ? '#F5EFDC' : '#111',
+            wishes, wishCount: 12 + s.wishesAdded,
+            addWish: () => { if (s.wishesAdded === 0) this.setState({ wishesAdded: 1 }); this.showToast('Сохранено. Ryk подскажет момент ✓', 'wishlist'); },
+            balance: BAL.map(b => ({ ...b, fg: b.fg || '#2A2620', numFg: b.numFg || '#111', border: b.border || 'none' })),
+            showDock: !onboardingScreens.includes(s.screen),
+            dockItems: DOCK.map(d => {
+              const active = d.group.includes(s.screen);
+              return { label:d.label, bg: active ? GC : 'transparent', fg: active ? '#111' : '#B5B4B1', onClick: this.go(d.screen) };
+            }),
+            toastVisible: !!s.toast, toastText: s.toast
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,17 +1,23 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import "./tokens.css";
+
+/* Ryk base — бумажный фон, прямые углы, спокойное движение. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  padding: 0;
+  margin: 0;
 }
 
 html {
   height: 100%;
+  /* Тёмная тема в MVP не поддерживается: в хендоффе её нет (ADR-007).
+     Палитру не переключаем — сообщаем браузеру, что страница светлая. */
+  color-scheme: light;
 }
 
 html,
@@ -24,26 +30,35 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ryk-paper);
+  color: var(--ryk-ink);
+  font-family: var(--ryk-font-ui);
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
 a {
-  color: inherit;
+  color: var(--ryk-pink-text);
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

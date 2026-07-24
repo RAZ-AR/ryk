@@ -1,0 +1,137 @@
+/* Сигнатурный компонент — отрывной билет (дизайн-система §6). */
+
+.ticket {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Верх: белая часть с фото и заголовком --- */
+.top {
+  background: var(--ryk-white);
+  border-radius: var(--ryk-radius-ticket) var(--ryk-radius-ticket) 0 0;
+  box-shadow: var(--ryk-shadow-ticket);
+}
+
+.photo {
+  padding: var(--ryk-space-3) var(--ryk-space-3) 0;
+}
+
+.photoInner {
+  border-radius: var(--ryk-radius-photo);
+  overflow: hidden;
+  background: var(--ryk-surface-card);
+  border: 1px dashed var(--ryk-border-dashed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  color: var(--ryk-text-faint);
+  font-size: 12px;
+}
+
+/* Строка «день ——— час» */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--ryk-space-4) 18px 0;
+  font-family: var(--ryk-font-mono);
+  font-size: 14px;
+  color: var(--ryk-ink);
+}
+
+.rule {
+  flex: 1;
+  border-top: 1px solid var(--ryk-border-strong);
+  margin: 0 var(--ryk-space-3);
+  transform: translateY(-4px);
+}
+
+.metaRight {
+  text-align: right;
+}
+
+.metaSub {
+  display: block;
+  font-size: 9px;
+  color: var(--ryk-text-faint);
+}
+
+.title {
+  font-family: var(--ryk-font-ticket);
+  font-size: 34px;
+  line-height: 1.06;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 18px 18px;
+  letter-spacing: 0.04em;
+  color: var(--ryk-ink);
+  text-transform: uppercase;
+}
+
+.note {
+  font-family: var(--ryk-font-serif);
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--ryk-text-secondary);
+  text-align: center;
+  padding: 0 22px var(--ryk-space-4);
+}
+
+/* --- Корешок: перфорация, вырезы, штрихкод --- */
+.stub {
+  position: relative;
+  padding: 15px var(--ryk-space-5) 17px;
+  border-top: var(--ryk-perforation);
+}
+
+.pink {
+  background: var(--ryk-pink);
+}
+
+.neutral {
+  background: var(--ryk-surface-stub);
+}
+
+.grey {
+  background: var(--ryk-grey);
+}
+
+/* Два выреза-полукруга цвета бумаги */
+.notch {
+  position: absolute;
+  top: calc(var(--ryk-notch-size) / -2);
+  width: var(--ryk-notch-size);
+  height: var(--ryk-notch-size);
+  border-radius: 50%;
+  background: var(--ryk-paper);
+}
+
+.notchLeft {
+  left: calc(var(--ryk-notch-size) / -2);
+}
+
+.notchRight {
+  right: calc(var(--ryk-notch-size) / -2);
+}
+
+.stubBody {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 9px;
+}
+
+.stubContent {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--ryk-ink);
+}
+
+.barcode {
+  width: 50px;
+  align-self: stretch;
+  min-height: 44px;
+  background: var(--ryk-barcode);
+}

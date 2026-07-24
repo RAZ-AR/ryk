@@ -1,0 +1,18 @@
+/* Рукописная ремарка. Всегда с поворотом -2deg и цветом pink-deep (§4, §10). */
+.hand {
+  display: inline-block;
+  font-family: var(--ryk-font-hand);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--ryk-pink-deep);
+  transform: rotate(-2deg);
+}
+
+.large {
+  font-size: 20px;
+}
+
+.onInk {
+  color: var(--ryk-pink);
+}

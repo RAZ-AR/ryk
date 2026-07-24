@@ -3,3 +3,6 @@ node_modules
 pnpm-lock.yaml
 public
 *.md
+
+# Дизайн-хендофф — референс-артефакт «как задумано»: не переформатируем.
+design_handoff_ryk

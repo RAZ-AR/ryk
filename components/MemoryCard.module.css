@@ -1,0 +1,62 @@
+.card {
+  background: var(--ryk-surface-card);
+  border: 1px solid var(--ryk-border-card);
+  border-radius: var(--ryk-radius-none);
+  padding: 18px var(--ryk-space-4) 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 178px;
+}
+
+/* «Перенесено» — без вины: приглушённая заливка и пунктир, не «провал» (§11.7). */
+.deferred {
+  background: var(--ryk-surface-muted);
+  border: 1px dashed var(--ryk-border-muted-dash);
+}
+
+.title {
+  font-family: var(--ryk-font-serif);
+  font-size: 18px;
+  line-height: 1.25;
+  color: var(--ryk-ink);
+  margin-top: var(--ryk-space-2);
+}
+
+.deferred .title {
+  color: var(--ryk-text-muted);
+}
+
+.quote {
+  margin-top: 6px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  font-size: 11px;
+  color: var(--ryk-text-muted);
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.pink {
+  background: var(--ryk-dot-pink);
+}
+
+.rose {
+  background: var(--ryk-dot-rose);
+}
+
+.gold {
+  background: var(--ryk-dot-gold);
+}
+
+.empty {
+  border: 1px solid var(--ryk-text-muted);
+}

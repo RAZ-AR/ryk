@@ -1,0 +1,95 @@
+/*
+ * Ryk design tokens — единственный источник значений в коде.
+ * Соответствует ryk_docs/17-design-system.md (v0.2, хендофф «бумага + билет»).
+ * Правило: hex-литералов в компонентах нет. Новый оттенок — сначала в док, потом сюда.
+ */
+
+:root {
+  /* --- Бренд и действие --- */
+  --ryk-pink: #f387c8;
+  --ryk-pink-deep: #d65aa6;
+  --ryk-pink-text: #b0468a; /* мелкий розовый текст на бумаге (контраст, §9) */
+  --ryk-grey: #919597;
+  --ryk-grey-surface: #949598;
+
+  /* --- Бумага и поверхности --- */
+  --ryk-paper: #ebeae7;
+  --ryk-white: #ffffff;
+  --ryk-surface-card: #f3f2ef;
+  --ryk-surface-stub: #dad9d6;
+  --ryk-surface-muted: #e0dfdc;
+
+  /* --- Текст --- */
+  --ryk-ink: #111111;
+  --ryk-text-secondary: #2b2b2b;
+  --ryk-text-muted: #8a8a8a;
+  --ryk-text-faint: #9a9a9a;
+  --ryk-text-disabled: #b5b4b1;
+  --ryk-text-on-pink: #7a4265;
+
+  /* --- Границы --- */
+  --ryk-border-strong: #111111;
+  --ryk-border-card: #c6c5c2;
+  --ryk-border-row: #d5d4d1;
+  --ryk-border-dashed: #bfbebb;
+  --ryk-border-muted-dash: #a6a5a2;
+
+  /* --- Семантика и акценты --- */
+  --ryk-success: #5a8036;
+  --ryk-dot-pink: #f387c8;
+  --ryk-dot-rose: #c99bb0;
+  --ryk-dot-gold: #d9c55a;
+  --ryk-task-todo: #f387c8;
+  --ryk-task-plan: #b9bcbe;
+  --ryk-task-done: #111111;
+
+  /* --- Отступы --- */
+  --ryk-space-1: 4px;
+  --ryk-space-2: 8px;
+  --ryk-space-3: 12px;
+  --ryk-space-4: 16px;
+  --ryk-space-5: 20px;
+  --ryk-space-6: 24px;
+  --ryk-space-7: 28px;
+  --ryk-space-8: 32px;
+  --ryk-screen-x: 26px;
+  --ryk-screen-top: 28px;
+  --ryk-screen-bottom-dock: 104px; /* CTA не уходят под dock */
+
+  /* --- Радиусы: по умолчанию 0, исключения точечные --- */
+  --ryk-radius-none: 0;
+  --ryk-radius-photo: 10px;
+  --ryk-radius-ticket: 16px;
+  --ryk-radius-dock: 22px;
+  --ryk-radius-dock-pill: 16px;
+
+  /* --- Тени: всего три --- */
+  --ryk-shadow-ticket: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --ryk-shadow-dock: 0 14px 34px rgba(0, 0, 0, 0.4);
+  --ryk-shadow-toast: 0 8px 24px rgba(0, 0, 0, 0.3);
+
+  /* --- Motion --- */
+  --ryk-duration-micro: 120ms;
+  --ryk-duration-standard: 200ms;
+  --ryk-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* --- Гарнитуры (переменные приходят из next/font в layout.tsx) --- */
+  --ryk-font-ui: var(--font-golos), system-ui, sans-serif;
+  --ryk-font-serif: var(--font-pt-serif), Georgia, serif;
+  --ryk-font-ticket: var(--font-cormorant), Georgia, serif;
+  --ryk-font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --ryk-font-hand: var(--font-caveat), cursive;
+
+  /* --- Детали билета --- */
+  --ryk-perforation: 2px dashed rgba(17, 17, 17, 0.4);
+  --ryk-notch-size: 22px;
+  --ryk-barcode: repeating-linear-gradient(
+    90deg,
+    #111 0 2px,
+    transparent 2px 4px,
+    #111 4px 7px,
+    transparent 7px 9px,
+    #111 9px 10px,
+    transparent 10px 13px
+  );
+}
