@@ -15,6 +15,7 @@ import { Input } from "@/components/Input";
 import { RykNote } from "@/components/RykNote";
 import { SvcLabel } from "@/components/SvcLabel";
 import { Ticket } from "@/components/Ticket";
+import { CheckinView } from "./CheckinView";
 import { RescueView } from "./RescueView";
 import styles from "./WeekSection.module.css";
 
@@ -82,6 +83,43 @@ export function WeekSection({ view }: { view: WeeklyView }) {
       {extra}
     </Ticket>
   );
+
+  // ─────────────── Check-in: день истории наступил ───────────────
+  if (view.kind === "checkin") {
+    return <CheckinView story={view.story} />;
+  }
+
+  // ─────────────── Completed: история прожита ───────────────
+  if (view.kind === "completed") {
+    const { story, memory } = view;
+    return (
+      <div className={styles.wrap}>
+        <SvcLabel tone="pink">{t("completedKicker")}</SvcLabel>
+        <div className={styles.ticketWrap}>
+          {storyTicket(
+            story,
+            t("completedStub"),
+            <>
+              {memory.emotion ? (
+                <>
+                  <br />
+                  <b>{t(`emotion.${memory.emotion}`)}</b>
+                </>
+              ) : null}
+            </>,
+          )}
+        </div>
+        {memory.note ? (
+          <div className={styles.note}>
+            <HandNote size="large">«{memory.note}»</HandNote>
+          </div>
+        ) : null}
+        <div className={styles.note}>
+          <HandNote>{t("completedNote")}</HandNote>
+        </div>
+      </div>
+    );
+  }
 
   // ─────────────── Deferred: неделя перенесена без вины ───────────────
   if (view.kind === "deferred") {

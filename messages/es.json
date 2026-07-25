@@ -111,7 +111,25 @@
       "NEARBY": "cerca de ti",
       "CURATED": "elección del curador",
       "FRESH": "nuevo para ti"
-    }
+    },
+    "checkinKicker": "Check-in",
+    "checkinTitle": "Este momento ya es tuyo.",
+    "checkinQuestion": "{story} — ¿salió?",
+    "done": "Hecho ✓",
+    "moved": "Aplazado",
+    "emotionQuestion": "¿Qué sensación quedó?",
+    "emotion": {
+      "DELIGHT": "Entusiasmo",
+      "CALM": "Calma",
+      "PRIDE": "Orgullo",
+      "CLOSENESS": "Cercanía"
+    },
+    "phrasePlaceholder": "una frase, si te apetece",
+    "saveMemory": "Guardar en recuerdos",
+    "savingMemory": "Guardando…",
+    "completedKicker": "Historia vivida",
+    "completedNote": "esta semana ya no te la quitan",
+    "completedStub": "Historia de la semana · vivida"
   },
   "wishes": {
     "title": "Wishlist",
@@ -225,5 +243,14 @@
       "finish": "Mostrar mis primeras historias →",
       "saving": "Guardando…"
     }
+  },
+  "memory": {
+    "kicker": "Archivo de experiencias",
+    "title": "Recuerdos",
+    "subtitle": "Historias que podrían no haber pasado.",
+    "empty": "Aquí aparecerán las historias vividas.",
+    "deferredCard": "Aplazado — sin culpa",
+    "willReturn": "volverá",
+    "alone": "solo"
   }
 }
