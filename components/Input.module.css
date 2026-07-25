@@ -1,0 +1,21 @@
+.input {
+  width: 100%;
+  border: 1px solid var(--ryk-border-strong);
+  border-radius: var(--ryk-radius-none);
+  background: var(--ryk-white);
+  color: var(--ryk-ink);
+  font-family: var(--ryk-font-ui);
+  font-size: 16px;
+  line-height: 1.4;
+  padding: 13px 14px;
+  min-height: 44px;
+}
+
+.input::placeholder {
+  color: var(--ryk-text-faint);
+}
+
+.input:focus {
+  outline: 2px solid var(--ryk-pink);
+  outline-offset: -1px;
+}

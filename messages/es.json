@@ -15,5 +15,96 @@
     "connecting": "Conectando…",
     "failed": "No se pudo entrar. Abre la app desde Telegram.",
     "devEnter": "Entrar como usuario dev"
+  },
+  "categories": {
+    "NATURE": "Naturaleza",
+    "CULTURE": "Cultura",
+    "DISCOVERY": "Nuevo",
+    "MOVEMENT": "Movimiento",
+    "CONNECTION": "Gente",
+    "JOY": "Alegría",
+    "CHALLENGE": "Reto",
+    "REST": "Descanso"
+  },
+  "onboarding": {
+    "welcome": {
+      "kicker": "Life Experience Companion",
+      "promise": "Una historia real cada semana",
+      "lead": "La vida no debería esperar al tiempo libre.",
+      "sub": "Cada semana Ryk te ayuda a vivir una experiencia — no una tarea, sino una historia.",
+      "start": "Empieza a vivir un poco más",
+      "skip": "Ya tengo un perfil"
+    },
+    "categories": {
+      "step": "Onboarding 1/4",
+      "time": "≈ 4 min",
+      "title": "¿Qué te hace sentir vivo?",
+      "hint": "Elige todo lo que resuene — solo toca.",
+      "counter": "{count} elegidas — ¡ya es suficiente!",
+      "counterEmpty": "elige al menos un par",
+      "back": "Atrás",
+      "next": "Siguiente →"
+    },
+    "swipe": {
+      "step": "Onboarding 2/4",
+      "counter": "Idea {current}/{total}",
+      "title": "¿Irías?",
+      "no": "No es lo mío",
+      "yes": "Lo quiero ✓",
+      "enough": "Suficiente — siguiente →"
+    },
+    "ideas": {
+      "climb": {
+        "title": "Escalada para principiantes",
+        "note": "Instructor y equipo incluidos. Puedes venir solo.",
+        "meta": "1500 RSD · 1,5 h"
+      },
+      "kayak": {
+        "title": "Kayak al amanecer",
+        "note": "Grupos de hasta 6. No hace falta experiencia.",
+        "meta": "2200 RSD · 2 h"
+      },
+      "organ": {
+        "title": "Órgano a la luz de velas",
+        "note": "Programa clásico en una sala antigua. Suele haber entradas.",
+        "meta": "1800 RSD · 2 h"
+      },
+      "pottery": {
+        "title": "Taller de cerámica",
+        "note": "El maestro hornea tu pieza. Ven en pareja.",
+        "meta": "3500 RSD · 2,5 h"
+      },
+      "dinner": {
+        "title": "Cena con desconocidos",
+        "note": "Ocho personas en una mesa común, cocina casera.",
+        "meta": "2600 RSD · 2,5 h"
+      },
+      "rooftop": {
+        "title": "Amanecer en una azotea",
+        "note": "Madrugar — y la ciudad se siente nueva.",
+        "meta": "gratis · 1,5 h"
+      }
+    },
+    "params": {
+      "step": "Onboarding 3/4",
+      "title": "Los límites de tu semana",
+      "budgetLabel": "Presupuesto por historia",
+      "budgetLow": "hasta 1500 RSD",
+      "budgetMid": "hasta 4000 RSD",
+      "budgetAny": "cualquiera",
+      "socialLabel": "Con quién",
+      "socialSolo": "Solo",
+      "socialClose": "Con cercanos",
+      "socialNew": "Con gente nueva",
+      "cityLabel": "Ciudad",
+      "cityPlaceholder": "Belgrado",
+      "noveltyLabel": "Cuánto de nuevo",
+      "noveltyCalm": "Tranquilo",
+      "noveltyBalance": "Equilibrio",
+      "noveltyBold": "Más audaz",
+      "note": "puedes cambiar todo esto después",
+      "finish": "Mostrar mis primeras historias →",
+      "saving": "Guardando…"
+    }
   }
 }
