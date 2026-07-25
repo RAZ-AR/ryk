@@ -16,6 +16,32 @@
     "failed": "Couldn't sign in. Open the app from Telegram.",
     "devEnter": "Enter as dev user"
   },
+  "week": {
+    "kicker": "Choose your story",
+    "candidate": "Candidate",
+    "next": "Next",
+    "choose": "Choose",
+    "choosing": "Choosing…",
+    "stubLabel": "Week's story · candidate",
+    "whyLabel": "Why",
+    "selectedKicker": "Your week's story",
+    "selectedStub": "Week's story · chosen",
+    "selectedNote": "you can reschedule or cancel without penalty",
+    "empty": "No fitting ideas this week yet.",
+    "sponsored": "sponsored",
+    "priceFree": "free",
+    "hours": "h",
+    "minutes": "min",
+    "km": "km",
+    "currencyRSD": "RSD",
+    "why": {
+      "LIKED_CATEGORY": "you like {category}",
+      "IN_BUDGET": "within your budget",
+      "NEARBY": "close to you",
+      "CURATED": "curator's pick",
+      "FRESH": "fresh for you"
+    }
+  },
   "wishes": {
     "title": "Wishlist",
     "add": "+ Add a wish",

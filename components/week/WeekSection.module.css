@@ -1,0 +1,61 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.heading {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  color: var(--ryk-ink);
+  margin-top: 6px;
+}
+
+.counter {
+  font-size: 52px;
+  line-height: 0.8;
+  font-weight: 700;
+  letter-spacing: -2.5px;
+  color: var(--ryk-pink);
+}
+
+.counterTotal {
+  font-size: 20px;
+  color: var(--ryk-text-faint);
+}
+
+.ticketWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: var(--ryk-space-4);
+}
+
+.actions {
+  margin-top: var(--ryk-space-4);
+  display: flex;
+  gap: var(--ryk-space-2);
+}
+
+.grow {
+  flex: 1;
+}
+
+.empty {
+  margin-top: var(--ryk-space-6);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ryk-text-muted);
+}
+
+.note {
+  margin-top: var(--ryk-space-4);
+}
