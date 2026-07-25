@@ -12,8 +12,10 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { HandNote } from "@/components/HandNote";
 import { Input } from "@/components/Input";
+import { RykNote } from "@/components/RykNote";
 import { SvcLabel } from "@/components/SvcLabel";
 import { Ticket } from "@/components/Ticket";
+import { RescueView } from "./RescueView";
 import styles from "./WeekSection.module.css";
 
 const SOCIAL_KEYS = ["SOLO", "CLOSE_ONES", "NEW_PEOPLE"] as const;
@@ -25,6 +27,7 @@ export function WeekSection({ view }: { view: WeeklyView }) {
 
   const [idx, setIdx] = useState(0);
   const [choosing, startChoose] = useTransition();
+  const [showRescue, setShowRescue] = useState(false);
 
   // Состояние формы подтверждения.
   const [day, setDay] = useState<string | null>(null);
@@ -80,9 +83,42 @@ export function WeekSection({ view }: { view: WeeklyView }) {
     </Ticket>
   );
 
+  // ─────────────── Deferred: неделя перенесена без вины ───────────────
+  if (view.kind === "deferred") {
+    return (
+      <div className={styles.wrap}>
+        <SvcLabel tone="muted">{t("deferredKicker")}</SvcLabel>
+        <h1 className={styles.deferredTitle}>{t("deferredTitle")}</h1>
+        <p className={styles.deferredBody}>{t("deferredBody")}</p>
+        <div className={styles.note}>
+          <HandNote>{t("deferredNote")}</HandNote>
+        </div>
+      </div>
+    );
+  }
+
   // ─────────────── Committed: план недели ───────────────
   if (view.kind === "committed") {
-    const { story, commitment, weather } = view;
+    const { story, commitment, weather, nudge } = view;
+
+    if (showRescue) return <RescueView onBack={() => setShowRescue(false)} />;
+
+    // Русская форма «день / дня / дней» — иначе счётчик читается коряво.
+    const daysLabel = (n: number) => {
+      const mod10 = n % 10;
+      const mod100 = n % 100;
+      if (mod10 === 1 && mod100 !== 11) return t("daysLeftOne", { count: n });
+      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14))
+        return t("daysLeftFew", { count: n });
+      return t("daysLeftMany", { count: n });
+    };
+
+    // Для WEATHER_SWAP подставляем предложенный день и его погоду.
+    const suggested = nudge.suggestedDate ? new Date(`${nudge.suggestedDate}T12:00:00.000Z`) : null;
+    const nudgeText = t(`nudge.${nudge.code}`, {
+      day: suggested ? t(`days.${suggested.getUTCDay() === 0 ? 7 : suggested.getUTCDay()}`) : "",
+      weather: nudge.suggestedWeather ? t(`weather.${nudge.suggestedWeather.kind}`) : "",
+    });
     const plannedDay = commitment.plannedFor
       ? new Date(`${commitment.plannedFor}T12:00:00.000Z`)
       : null;
@@ -101,6 +137,21 @@ export function WeekSection({ view }: { view: WeeklyView }) {
     return (
       <div className={styles.wrap}>
         <SvcLabel tone="pink">{t("planKicker")}</SvcLabel>
+
+        {nudge.daysLeft != null && nudge.daysLeft > 0 ? (
+          <div className={styles.countdown}>
+            <span className={styles.countdownNum}>{nudge.daysLeft}</span>
+            <div>
+              <div className={styles.countdownUnit}>{daysLabel(nudge.daysLeft)}</div>
+              <SvcLabel tone="muted">{t("untilStory")}</SvcLabel>
+            </div>
+          </div>
+        ) : null}
+
+        <div className={styles.nudge}>
+          <RykNote label={t("nudgeLabel")}>{nudgeText}</RykNote>
+        </div>
+
         <div className={styles.ticketWrap}>
           {storyTicket(
             story,
@@ -141,7 +192,10 @@ export function WeekSection({ view }: { view: WeeklyView }) {
         </div>
 
         <div className={styles.footerCol}>
-          <Button variant="secondary" disabled={changing} onClick={change}>
+          <Button variant="secondary" onClick={() => setShowRescue(true)}>
+            {t("notWorking")}
+          </Button>
+          <Button variant="ghost" disabled={changing} onClick={change}>
             {changing ? t("changing") : t("change")}
           </Button>
         </div>
