@@ -16,6 +16,28 @@
     "failed": "No se pudo entrar. Abre la app desde Telegram.",
     "devEnter": "Entrar como usuario dev"
   },
+  "wishes": {
+    "title": "Wishlist",
+    "add": "+ Añadir un deseo",
+    "empty": "Aún nada. Añade tu primer deseo.",
+    "addTitle": "¿Qué quieres?",
+    "placeholder": "p. ej. aprender a hornear pan",
+    "analyze": "Analizar",
+    "analyzing": "Ryk está pensando…",
+    "understood": "Ryk lo entendió así",
+    "categoryLabel": "Categoría",
+    "budgetLabel": "Presupuesto",
+    "whenLabel": "Cuándo",
+    "budgetUnknown": "cualquiera",
+    "budgetUnit": "RSD",
+    "save": "Guardar en deseos",
+    "saving": "Guardando…",
+    "cancel": "Cancelar",
+    "hide": "Ocultar",
+    "timingSOON": "Pronto",
+    "timingTHIS_MONTH": "Este mes",
+    "timingSOMEDAY": "Algún día"
+  },
   "categories": {
     "NATURE": "Naturaleza",
     "CULTURE": "Cultura",
