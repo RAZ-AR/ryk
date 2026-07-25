@@ -16,6 +16,28 @@
     "failed": "Не удалось войти. Открой приложение из Telegram.",
     "devEnter": "Войти как dev-пользователь"
   },
+  "wishes": {
+    "title": "Wishlist",
+    "add": "+ Добавить желание",
+    "empty": "Пока пусто. Добавь первое желание.",
+    "addTitle": "Чего хочется?",
+    "placeholder": "Например: научиться печь хлеб",
+    "analyze": "Разобрать",
+    "analyzing": "Ryk думает…",
+    "understood": "Ryk понял так",
+    "categoryLabel": "Категория",
+    "budgetLabel": "Бюджет",
+    "whenLabel": "Когда",
+    "budgetUnknown": "не важно",
+    "budgetUnit": "дин",
+    "save": "Сохранить в желания",
+    "saving": "Сохраняем…",
+    "cancel": "Отмена",
+    "hide": "Скрыть",
+    "timingSOON": "Скоро",
+    "timingTHIS_MONTH": "В этом месяце",
+    "timingSOMEDAY": "Когда-нибудь"
+  },
   "categories": {
     "NATURE": "Природа",
     "CULTURE": "Культура",

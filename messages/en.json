@@ -16,6 +16,28 @@
     "failed": "Couldn't sign in. Open the app from Telegram.",
     "devEnter": "Enter as dev user"
   },
+  "wishes": {
+    "title": "Wishlist",
+    "add": "+ Add a wish",
+    "empty": "Nothing yet. Add your first wish.",
+    "addTitle": "What do you want?",
+    "placeholder": "e.g. learn to bake bread",
+    "analyze": "Break it down",
+    "analyzing": "Ryk is thinking…",
+    "understood": "Ryk understood",
+    "categoryLabel": "Category",
+    "budgetLabel": "Budget",
+    "whenLabel": "When",
+    "budgetUnknown": "any",
+    "budgetUnit": "RSD",
+    "save": "Save to wishes",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "hide": "Hide",
+    "timingSOON": "Soon",
+    "timingTHIS_MONTH": "This month",
+    "timingSOMEDAY": "Someday"
+  },
   "categories": {
     "NATURE": "Nature",
     "CULTURE": "Culture",

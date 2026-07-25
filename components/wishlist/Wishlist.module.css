@@ -1,0 +1,155 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--ryk-ink);
+  margin-top: 6px;
+}
+
+.count {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--ryk-pink);
+}
+
+.list {
+  margin-top: var(--ryk-space-5);
+  border-top: 1px solid var(--ryk-border-row);
+  flex: 1;
+}
+
+.row {
+  padding: var(--ryk-space-4) 2px;
+  border-bottom: 1px solid var(--ryk-border-row);
+}
+
+.rowTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--ryk-space-3);
+}
+
+.rowTitle {
+  font-size: 18px;
+  color: var(--ryk-ink);
+}
+
+.tag {
+  flex-shrink: 0;
+  border: 1px solid var(--ryk-border-dashed);
+  color: var(--ryk-text-muted);
+  padding: 3px 8px;
+}
+
+.rowMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--ryk-text-muted);
+}
+
+.hide {
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ryk-text-faint);
+  padding: 4px 6px;
+}
+
+.empty {
+  margin-top: var(--ryk-space-6);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ryk-text-muted);
+}
+
+.addBtn {
+  margin-top: var(--ryk-space-4);
+}
+
+/* --- Add view --- */
+.addTitle {
+  font-size: 33px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: var(--ryk-ink);
+  margin-top: var(--ryk-space-2);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 18px;
+  border: 1px solid var(--ryk-border-strong);
+  border-radius: var(--ryk-radius-none);
+  background: var(--ryk-white);
+  color: var(--ryk-text-secondary);
+  font-family: var(--ryk-font-serif);
+  font-size: 19px;
+  font-style: italic;
+  line-height: 1.45;
+  padding: 18px;
+  resize: none;
+}
+
+.textarea:focus {
+  outline: 2px solid var(--ryk-pink);
+  outline-offset: -1px;
+}
+
+.understood {
+  margin-top: var(--ryk-space-6);
+}
+
+.rows {
+  margin-top: var(--ryk-space-3);
+  border-top: 1px solid var(--ryk-border-row);
+}
+
+.understoodRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--ryk-border-row);
+}
+
+.value {
+  font-size: 15px;
+  color: var(--ryk-ink);
+}
+
+.valuePink {
+  background: var(--ryk-pink);
+  color: var(--ryk-ink);
+  padding: 4px 10px;
+  font-size: 14px;
+}
+
+.actions {
+  margin-top: auto;
+  padding-top: var(--ryk-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}

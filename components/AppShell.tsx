@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
 import { Dock, type DockLabels, type DockSection } from "./Dock";
 import { SvcLabel } from "./SvcLabel";
 import styles from "./AppShell.module.css";
 
 /*
  * Каркас Mini App: контент + плавающий dock (§7).
- * Пока разделы — заглушки; экраны придут в Фазах 4–9.
+ * Неделя / Память / Баланс — заглушки (Фазы 6–10); Желания — живой раздел.
  */
-export function AppShell() {
+export function AppShell({ wishes }: { wishes: WishView[] }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
   const [section, setSection] = useState<DockSection>("week");
@@ -25,11 +26,17 @@ export function AppShell() {
   return (
     <div className={styles.shell}>
       <div className={styles.content}>
-        <header className={styles.header}>
-          <SvcLabel tone="pink">{app("weekActive")}</SvcLabel>
-          <h1 className={styles.title}>{labels[section]}</h1>
-        </header>
-        <p className={styles.placeholder}>{app("lead")}</p>
+        {section === "wishes" ? (
+          <Wishlist wishes={wishes} />
+        ) : (
+          <>
+            <header className={styles.header}>
+              <SvcLabel tone="pink">{app("weekActive")}</SvcLabel>
+              <h1 className={styles.title}>{labels[section]}</h1>
+            </header>
+            <p className={styles.placeholder}>{app("lead")}</p>
+          </>
+        )}
       </div>
       <Dock
         active={section}
