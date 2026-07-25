@@ -69,7 +69,7 @@
 - **DB:** PostgreSQL через **Supabase** (ADR-003).
 - **Хостинг:** **Vercel** (app, free) + Supabase — preview-деплой = staging, `main` = prod (ADR-003).
 - **Аналитика:** **PostHog** (+ feature flags для экспериментов) (ADR-005).
-- **AI:** Anthropic Claude API со structured outputs (AI Orchestrator как модуль Next.js). Единственная платная позиция на старте.
+- **AI:** цепочка провайдеров со structured outputs (ADR-008): **Gemini Flash** (бесплатный tier, по умолчанию) → Claude (опционально, платно) → эвристика. Платных позиций на старте нет.
 - **i18n:** en / ru / es (шрифты latin + Cyrillic). RTL не нужен.
 - **Пилот:** Белград, Нови-Сад, возможно Ереван → Supabase регион EU; события — в основном ручная курация (ADR-006).
 - **Данные:** Open-Meteo + OSM + Ticketmaster (Eventbrite ограничен) + concierge (ADR-006).
