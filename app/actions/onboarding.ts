@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { LifeCategory, SocialMode } from "@/generated/prisma/enums";
+import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 
@@ -115,6 +116,11 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Onboar
   } catch {
     return { ok: false, reason: "db_error" };
   }
+
+  await track(session.userId, {
+    name: "onboarding_completed",
+    props: { categories: categories.length, hasBudget: budgetMax != null },
+  });
 
   revalidatePath("/");
   return { ok: true };

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { Emotion } from "@/generated/prisma/enums";
+import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
 import { weekStartUTC } from "@/lib/engine/weekly";
 import { prisma } from "@/lib/prisma";
@@ -73,6 +74,13 @@ export async function completeStory(input: CompleteInput): Promise<CompleteResul
     return { ok: false, reason: "db_error" };
   }
 
+  // Два события: шаг воронки и факт сохранения воспоминания.
+  await track(session.userId, {
+    name: "story_completed",
+    props: { emotion, hasNote: note != null },
+  });
+  await track(session.userId, { name: "memory_saved", props: { deferred: false } });
+
   revalidatePath("/");
   return { ok: true };
 }
@@ -106,6 +114,9 @@ export async function deferStory(): Promise<CompleteResult> {
   } catch {
     return { ok: false, reason: "db_error" };
   }
+
+  await track(session.userId, { name: "week_deferred", props: { stage: "checkin" } });
+  await track(session.userId, { name: "memory_saved", props: { deferred: true } });
 
   revalidatePath("/");
   return { ok: true };

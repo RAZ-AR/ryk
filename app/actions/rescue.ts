@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { BarrierType } from "@/generated/prisma/enums";
+import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
 import { weekStartUTC } from "@/lib/engine/weekly";
 import { getRescueOptions, type RescueOption } from "@/lib/engine/rescue";
@@ -67,6 +68,8 @@ export async function startRescue(barrier: BarrierType): Promise<RescueResult> {
     return { ok: false, reason: "db_error" };
   }
 
+  await track(session.userId, { name: "barrier_named", props: { barrier } });
+
   revalidatePath("/");
   return { ok: true, options };
 }
@@ -118,6 +121,8 @@ export async function applyRescue(experienceId: string): Promise<ApplyResult> {
     return { ok: false, reason: "db_error" };
   }
 
+  await track(session.userId, { name: "rescue_applied", props: { barrier: story.barrier } });
+
   revalidatePath("/");
   return { ok: true };
 }
@@ -135,6 +140,8 @@ export async function deferWeek(): Promise<ApplyResult> {
   } catch {
     return { ok: false, reason: "db_error" };
   }
+
+  await track(session.userId, { name: "week_deferred", props: { stage: "plan" } });
 
   revalidatePath("/");
   return { ok: true };
