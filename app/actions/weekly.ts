@@ -18,7 +18,7 @@ export async function selectStory(experienceId: string): Promise<SelectResult> {
 
   // Проверяем, что кандидат действительно из недельной выборки этого пользователя.
   const view = await getWeeklyView(session.userId);
-  if (view.kind === "selected") return { ok: true }; // уже выбрано
+  if (view.kind !== "choose") return { ok: true }; // история недели уже есть
   const candidate = view.candidates.find((c) => c.experienceId === experienceId);
   if (!candidate) return { ok: false, reason: "not_a_candidate" };
 

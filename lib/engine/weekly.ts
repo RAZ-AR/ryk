@@ -1,5 +1,6 @@
-import type { LifeCategory } from "@/generated/prisma/enums";
+import type { LifeCategory, SocialMode } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
 
 /*
  * Experience Engine v0 (ryk_docs/06-experience-engine.md).
@@ -33,9 +34,36 @@ export type SelectedStory = {
   whyCategory: LifeCategory | null;
 };
 
+/** Подтверждение недели (Flow C → PRD 5.4): день, бюджет, компания, свидетель. */
+export type Commitment = {
+  plannedFor: string | null;
+  budget: number | null;
+  socialMode: SocialMode | null;
+  companionName: string | null;
+  witnessName: string | null;
+};
+
+/** Варианты дня для подтверждения: ближайшие дни недели + погода. */
+export type DayOption = {
+  /** ISO-дата YYYY-MM-DD. */
+  date: string;
+  /** 1=пн … 7=вс — для локализованной подписи. */
+  weekday: number;
+  weather: DayWeather | null;
+};
+
 export type WeeklyView =
-  | { kind: "selected"; weekStart: string; story: SelectedStory }
-  | { kind: "choose"; weekStart: string; candidates: Candidate[] };
+  | { kind: "choose"; weekStart: string; candidates: Candidate[] }
+  /** История выбрана, но не подтверждена — экран commitment. */
+  | { kind: "commit"; weekStart: string; story: SelectedStory; days: DayOption[] }
+  /** История подтверждена — план недели. */
+  | {
+      kind: "committed";
+      weekStart: string;
+      story: SelectedStory;
+      commitment: Commitment;
+      weather: DayWeather | null;
+    };
 
 /** Понедельник текущей недели в UTC (ADR-004), для weekly_stories.weekStart (@db.Date). */
 export function weekStartUTC(now: Date = new Date()): Date {
@@ -57,6 +85,31 @@ function pickWhy(
   return { whyCode: "CURATED", whyCategory: null };
 }
 
+/**
+ * Дни для выбора: от сегодня до конца недели (вс), минимум 3 варианта —
+ * чтобы в четверг-воскресенье выбор не схлопывался в один день.
+ */
+function buildDayOptions(byDate: Map<string, DayWeather>): DayOption[] {
+  const today = new Date();
+  const start = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+  const dow = start.getUTCDay() === 0 ? 7 : start.getUTCDay(); // 1=пн..7=вс
+  const untilSunday = 7 - dow + 1; // включая сегодня
+  const count = Math.min(7, Math.max(3, untilSunday));
+
+  const days: DayOption[] = [];
+  for (let i = 0; i < count; i++) {
+    const d = new Date(start);
+    d.setUTCDate(d.getUTCDate() + i);
+    const date = d.toISOString().slice(0, 10);
+    days.push({
+      date,
+      weekday: d.getUTCDay() === 0 ? 7 : d.getUTCDay(),
+      weather: byDate.get(date) ?? null,
+    });
+  }
+  return days;
+}
+
 export async function getWeeklyView(userId: string): Promise<WeeklyView> {
   const weekStart = weekStartUTC();
   const weekStartIso = weekStart.toISOString().slice(0, 10);
@@ -69,20 +122,47 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
   if (existing?.experience) {
     const e = existing.experience;
     const whyCode = (existing.whyExplanation as WhyCode) || "CURATED";
-    return {
-      kind: "selected",
-      weekStart: weekStartIso,
-      story: {
-        title: e.title,
-        category: e.category,
-        price: e.price,
-        currency: e.currency,
-        location: e.location,
-        whyCode,
-        // Для LIKED_CATEGORY «понравившаяся» категория = категория впечатления.
-        whyCategory: whyCode === "LIKED_CATEGORY" ? e.category : null,
-      },
+    const story: SelectedStory = {
+      title: e.title,
+      category: e.category,
+      price: e.price,
+      currency: e.currency,
+      location: e.location,
+      whyCode,
+      // Для LIKED_CATEGORY «понравившаяся» категория = категория впечатления.
+      whyCategory: whyCode === "LIKED_CATEGORY" ? e.category : null,
     };
+
+    const owner = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { city: true },
+    });
+    const forecast = await getWeekForecast(owner?.city ?? null, e.lat, e.lng);
+    const byDate = new Map(forecast.map((d) => [d.date, d]));
+
+    // Подтверждена — показываем план недели с погодой выбранного дня.
+    if (existing.status !== "SELECTED") {
+      const plannedIso = existing.plannedFor
+        ? existing.plannedFor.toISOString().slice(0, 10)
+        : null;
+      return {
+        kind: "committed",
+        weekStart: weekStartIso,
+        story,
+        commitment: {
+          plannedFor: plannedIso,
+          budget: existing.budget,
+          socialMode: existing.socialMode,
+          companionName: existing.companionName,
+          witnessName: existing.witnessName,
+        },
+        weather: plannedIso ? (byDate.get(plannedIso) ?? null) : null,
+      };
+    }
+
+    // Выбрана, но не подтверждена — экран commitment с вариантами дня.
+    const days: DayOption[] = buildDayOptions(byDate);
+    return { kind: "commit", weekStart: weekStartIso, story, days };
   }
 
   const [user, prefs, experiences] = await Promise.all([
