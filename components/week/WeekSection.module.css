@@ -59,3 +59,112 @@
 .note {
   margin-top: var(--ryk-space-4);
 }
+
+/* --- Commitment --- */
+.commitTitle {
+  font-size: 33px;
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -1px;
+  color: var(--ryk-ink);
+  margin-top: var(--ryk-space-5);
+  text-wrap: balance;
+}
+
+.storyName {
+  font-family: var(--ryk-font-serif);
+  font-size: 20px;
+  font-style: italic;
+  color: var(--ryk-pink-text);
+  margin-top: var(--ryk-space-3);
+}
+
+.rows {
+  margin-top: var(--ryk-space-5);
+  border-top: 1px solid var(--ryk-border-row);
+}
+
+.row {
+  padding: var(--ryk-space-4) 2px;
+  border-bottom: 1px solid var(--ryk-border-row);
+}
+
+.rowLabel {
+  display: block;
+  margin-bottom: 11px;
+}
+
+.rowInline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 2px;
+  border-bottom: 1px solid var(--ryk-border-row);
+}
+
+.value {
+  font-size: 15px;
+  color: var(--ryk-ink);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ryk-space-2);
+}
+
+/* Кнопка-день: дата + погода, прямые углы (§5). */
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  border: 1px solid var(--ryk-border-strong);
+  background: transparent;
+  color: var(--ryk-ink);
+  padding: 10px 14px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.dayOn {
+  background: var(--ryk-pink);
+}
+
+.dayWeather {
+  font-size: 11px;
+  color: var(--ryk-text-muted);
+}
+
+.dayOn .dayWeather {
+  color: var(--ryk-text-on-pink);
+}
+
+.hint {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ryk-text-muted);
+  margin-top: var(--ryk-space-2);
+}
+
+.footerCol {
+  margin-top: auto;
+  padding-top: var(--ryk-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}
+
+/* --- Plan (committed) --- */
+.planWeather {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ryk-space-2);
+  margin-top: var(--ryk-space-2);
+}
+
+.planTemp {
+  font-family: var(--ryk-font-mono);
+  font-size: 14px;
+  color: var(--ryk-ink);
+}

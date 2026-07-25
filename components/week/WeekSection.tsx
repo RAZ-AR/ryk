@@ -3,20 +3,36 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { commitStory, uncommitStory } from "@/app/actions/commitment";
 import { selectStory } from "@/app/actions/weekly";
-import type { Candidate, WeeklyView, WhyCode } from "@/lib/engine/weekly";
+import type { SocialMode } from "@/generated/prisma/enums";
+import type { Candidate, SelectedStory, WeeklyView, WhyCode } from "@/lib/engine/weekly";
+import type { DayWeather } from "@/lib/weather/openMeteo";
 import { Button } from "@/components/Button";
+import { Chip } from "@/components/Chip";
 import { HandNote } from "@/components/HandNote";
+import { Input } from "@/components/Input";
 import { SvcLabel } from "@/components/SvcLabel";
 import { Ticket } from "@/components/Ticket";
 import styles from "./WeekSection.module.css";
+
+const SOCIAL_KEYS = ["SOLO", "CLOSE_ONES", "NEW_PEOPLE"] as const;
 
 export function WeekSection({ view }: { view: WeeklyView }) {
   const t = useTranslations("week");
   const tCat = useTranslations("categories");
   const router = useRouter();
+
   const [idx, setIdx] = useState(0);
   const [choosing, startChoose] = useTransition();
+
+  // Состояние формы подтверждения.
+  const [day, setDay] = useState<string | null>(null);
+  const [social, setSocial] = useState<SocialMode | null>(null);
+  const [companion, setCompanion] = useState("");
+  const [witness, setWitness] = useState("");
+  const [committing, startCommit] = useTransition();
+  const [changing, startChange] = useTransition();
 
   const priceLabel = (price: number | null, currency: string) => {
     if (price == null) return "";
@@ -35,39 +51,202 @@ export function WeekSection({ view }: { view: WeeklyView }) {
   const whyText = (code: WhyCode, category: string | null) =>
     t(`why.${code}`, { category: category ?? "" });
 
-  // ─────────────── Selected ───────────────
-  if (view.kind === "selected") {
-    const s = view.story;
+  const weatherText = (w: DayWeather | null) =>
+    w ? `${t(`weather.${w.kind}`)}, ${w.tempMax > 0 ? "+" : ""}${w.tempMax}°` : null;
+
+  const socialLabel = (mode: SocialMode) =>
+    mode === "SOLO" ? t("socialSolo") : mode === "CLOSE_ONES" ? t("socialClose") : t("socialNew");
+
+  /** Билет истории — общий для commit и committed. */
+  const storyTicket = (story: SelectedStory, stubLabel: string, extra?: React.ReactNode) => (
+    <Ticket
+      photoPlaceholder="Ryk"
+      metaLeft={durationLabel(null)}
+      metaRight={priceLabel(story.price, story.currency)}
+      metaRightSub={tCat(story.category)}
+      title={story.title}
+      stubTone="pink"
+      stubLabel={stubLabel}
+    >
+      <b>{t("whyLabel")}:</b>{" "}
+      {whyText(story.whyCode, story.whyCategory ? tCat(story.whyCategory) : null)}
+      {story.location ? (
+        <>
+          <br />
+          {story.location}
+        </>
+      ) : null}
+      {extra}
+    </Ticket>
+  );
+
+  // ─────────────── Committed: план недели ───────────────
+  if (view.kind === "committed") {
+    const { story, commitment, weather } = view;
+    const plannedDay = commitment.plannedFor
+      ? new Date(`${commitment.plannedFor}T12:00:00.000Z`)
+      : null;
+    // Короткая дата «ВС · 26.07» — билет не место для ISO-строки.
+    const plannedLabel = plannedDay
+      ? `${t(`days.${plannedDay.getUTCDay() === 0 ? 7 : plannedDay.getUTCDay()}`)} · ` +
+        `${String(plannedDay.getUTCDate()).padStart(2, "0")}.${String(plannedDay.getUTCMonth() + 1).padStart(2, "0")}`
+      : t("notPlanned");
+
+    const change = () =>
+      startChange(async () => {
+        const res = await uncommitStory();
+        if (res.ok) router.refresh();
+      });
+
     return (
       <div className={styles.wrap}>
-        <SvcLabel tone="pink">{t("selectedKicker")}</SvcLabel>
+        <SvcLabel tone="pink">{t("planKicker")}</SvcLabel>
         <div className={styles.ticketWrap}>
-          <Ticket
-            photoPlaceholder="Ryk"
-            metaLeft={durationLabel(null)}
-            metaRight={priceLabel(s.price, s.currency)}
-            metaRightSub={tCat(s.category)}
-            title={s.title}
-            stubTone="pink"
-            stubLabel={t("selectedStub")}
-          >
-            <b>{t("whyLabel")}:</b> {whyText(s.whyCode, s.whyCategory ? tCat(s.whyCategory) : null)}
-            {s.location ? (
-              <>
-                <br />
-                {s.location}
-              </>
-            ) : null}
-          </Ticket>
+          {storyTicket(
+            story,
+            t("planStub"),
+            <>
+              <br />
+              <b>{plannedLabel}</b>
+              {weather ? ` · ${weatherText(weather)}` : ""}
+            </>,
+          )}
         </div>
+
+        <div className={styles.rows}>
+          {commitment.budget != null ? (
+            <div className={styles.rowInline}>
+              <SvcLabel tone="muted">{t("budgetLabel")}</SvcLabel>
+              <span className={styles.value}>{priceLabel(commitment.budget, story.currency)}</span>
+            </div>
+          ) : null}
+          {commitment.socialMode ? (
+            <div className={styles.rowInline}>
+              <SvcLabel tone="muted">{t("companyLabel")}</SvcLabel>
+              <span className={styles.value}>
+                {commitment.companionName || socialLabel(commitment.socialMode)}
+              </span>
+            </div>
+          ) : null}
+          {commitment.witnessName ? (
+            <div className={styles.rowInline}>
+              <SvcLabel tone="muted">{t("witnessLabel")}</SvcLabel>
+              <span className={styles.value}>{commitment.witnessName}</span>
+            </div>
+          ) : null}
+        </div>
+
         <div className={styles.note}>
           <HandNote>{t("selectedNote")}</HandNote>
+        </div>
+
+        <div className={styles.footerCol}>
+          <Button variant="secondary" disabled={changing} onClick={change}>
+            {changing ? t("changing") : t("change")}
+          </Button>
         </div>
       </div>
     );
   }
 
-  // ─────────────── Choose ───────────────
+  // ─────────────── Commit: подтверждение ───────────────
+  if (view.kind === "commit") {
+    const { story, days } = view;
+
+    const confirm = () =>
+      startCommit(async () => {
+        if (!day) return;
+        const res = await commitStory({
+          plannedFor: day,
+          budget: story.price,
+          socialMode: social,
+          companionName: companion || null,
+          witnessName: witness || null,
+        });
+        if (res.ok) router.refresh();
+      });
+
+    return (
+      <div className={styles.wrap}>
+        <SvcLabel tone="pink">{t("commitKicker")}</SvcLabel>
+        <h1 className={styles.commitTitle}>{t("commitTitle")}</h1>
+        <div className={styles.storyName}>{story.title}</div>
+
+        <div className={styles.rows}>
+          <div className={styles.row}>
+            <SvcLabel tone="muted" className={styles.rowLabel}>
+              {t("whenLabel")}
+            </SvcLabel>
+            <div className={styles.chips}>
+              {days.map((d) => {
+                const on = day === d.date;
+                return (
+                  <button
+                    key={d.date}
+                    type="button"
+                    aria-pressed={on}
+                    className={[styles.day, on && styles.dayOn].filter(Boolean).join(" ")}
+                    onClick={() => setDay(d.date)}
+                  >
+                    <SvcLabel tone="ink">{t(`days.${d.weekday}`)}</SvcLabel>
+                    <span className={styles.dayWeather}>{weatherText(d.weather) ?? "—"}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className={styles.row}>
+            <SvcLabel tone="muted" className={styles.rowLabel}>
+              {t("companyLabel")}
+            </SvcLabel>
+            <div className={styles.chips}>
+              {SOCIAL_KEYS.map((k) => (
+                <Chip key={k} tone="pink" selected={social === k} onClick={() => setSocial(k)}>
+                  {socialLabel(k)}
+                </Chip>
+              ))}
+            </div>
+            {social !== "SOLO" ? (
+              <div style={{ marginTop: 11 }}>
+                <Input
+                  value={companion}
+                  onChange={(e) => setCompanion(e.target.value)}
+                  placeholder={t("companyPlaceholder")}
+                  maxLength={80}
+                />
+              </div>
+            ) : null}
+          </div>
+
+          <div className={styles.row}>
+            <SvcLabel tone="muted" className={styles.rowLabel}>
+              {t("witnessLabel")}
+            </SvcLabel>
+            <Input
+              value={witness}
+              onChange={(e) => setWitness(e.target.value)}
+              placeholder={t("witnessPlaceholder")}
+              maxLength={80}
+            />
+            <p className={styles.hint}>{t("witnessHint")}</p>
+          </div>
+        </div>
+
+        <div className={styles.note}>
+          <HandNote>{t("selectedNote")}</HandNote>
+        </div>
+
+        <div className={styles.footerCol}>
+          <Button variant="primary" disabled={committing || !day} onClick={confirm}>
+            {committing ? t("confirming") : t("confirm")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─────────────── Choose: кандидаты ───────────────
   const candidates = view.candidates;
   if (candidates.length === 0) {
     return (
