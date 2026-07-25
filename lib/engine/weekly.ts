@@ -1,4 +1,4 @@
-import type { LifeCategory, SocialMode } from "@/generated/prisma/enums";
+import type { Emotion, LifeCategory, SocialMode } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
 import { buildNudge, type Nudge } from "@/lib/engine/nudges";
 import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
@@ -68,8 +68,24 @@ export type WeeklyView =
       /** Уже назван барьер — план под угрозой (Flow F). */
       atRisk: boolean;
     }
+  /** День истории наступил — время спросить, как прошло (Flow G). */
+  | { kind: "checkin"; weekStart: string; story: SelectedStory }
+  /** История прожита и сохранена — воспоминание этой недели. */
+  | { kind: "completed"; weekStart: string; story: SelectedStory; memory: MemoryView }
   /** Неделя перенесена без вины — тупика и упрёка здесь быть не должно. */
   | { kind: "deferred"; weekStart: string; story: SelectedStory };
+
+/** Воспоминание для показа (архив и завершённая неделя). */
+export type MemoryView = {
+  id: string;
+  weekLabel: string;
+  title: string;
+  note: string | null;
+  emotion: Emotion | null;
+  companion: string | null;
+  category: LifeCategory | null;
+  deferred: boolean;
+};
 
 /** Понедельник текущей недели в UTC (ADR-004), для weekly_stories.weekStart (@db.Date). */
 export function weekStartUTC(now: Date = new Date()): Date {
@@ -123,7 +139,7 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
   // Уже выбранная история недели?
   const existing = await prisma.weeklyStory.findUnique({
     where: { userId_weekStart: { userId, weekStart } },
-    include: { experience: true },
+    include: { experience: true, memory: true },
   });
   if (existing?.experience) {
     const e = existing.experience;
@@ -146,6 +162,25 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     const forecast = await getWeekForecast(owner?.city ?? null, e.lat, e.lng);
     const byDate = new Map(forecast.map((d) => [d.date, d]));
 
+    // История прожита — показываем воспоминание этой недели.
+    if (existing.status === "COMPLETED" && existing.memory) {
+      return {
+        kind: "completed",
+        weekStart: weekStartIso,
+        story,
+        memory: {
+          id: existing.memory.id,
+          weekLabel: weekStartIso,
+          title: e.title,
+          note: existing.memory.note,
+          emotion: existing.memory.emotion,
+          companion: existing.memory.companion,
+          category: e.category,
+          deferred: existing.memory.deferred,
+        },
+      };
+    }
+
     // Неделя перенесена без вины — отдельный спокойный вид.
     if (existing.status === "DEFERRED") {
       return { kind: "deferred", weekStart: weekStartIso, story };
@@ -156,6 +191,13 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     // Подтверждена (или под угрозой) — план недели с подсказкой.
     if (existing.status === "COMMITTED" || existing.status === "AT_RISK") {
       const todayIso = new Date().toISOString().slice(0, 10);
+
+      // День истории наступил или прошёл — пора спросить, как всё сложилось.
+      // Не подгоняем и не упрекаем: на самом экране есть и «перенесено».
+      if (plannedIso && plannedIso <= todayIso) {
+        return { kind: "checkin", weekStart: weekStartIso, story };
+      }
+
       return {
         kind: "committed",
         weekStart: weekStartIso,

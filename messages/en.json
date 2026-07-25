@@ -111,7 +111,25 @@
       "NEARBY": "close to you",
       "CURATED": "curator's pick",
       "FRESH": "fresh for you"
-    }
+    },
+    "checkinKicker": "Check-in",
+    "checkinTitle": "This moment is yours now.",
+    "checkinQuestion": "{story} — did it happen?",
+    "done": "Done ✓",
+    "moved": "Postponed",
+    "emotionQuestion": "What feeling stayed?",
+    "emotion": {
+      "DELIGHT": "Delight",
+      "CALM": "Calm",
+      "PRIDE": "Pride",
+      "CLOSENESS": "Closeness"
+    },
+    "phrasePlaceholder": "one line, if you feel like it",
+    "saveMemory": "Save to memory",
+    "savingMemory": "Saving…",
+    "completedKicker": "Story lived",
+    "completedNote": "this week can't be taken away",
+    "completedStub": "Week's story · lived"
   },
   "wishes": {
     "title": "Wishlist",
@@ -225,5 +243,14 @@
       "finish": "Show my first stories →",
       "saving": "Saving…"
     }
+  },
+  "memory": {
+    "kicker": "Archive of experiences",
+    "title": "Memory",
+    "subtitle": "Stories that might never have happened.",
+    "empty": "Lived stories will show up here.",
+    "deferredCard": "Postponed — no guilt",
+    "willReturn": "will return",
+    "alone": "solo"
   }
 }

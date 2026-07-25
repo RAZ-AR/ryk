@@ -1,0 +1,47 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.heading {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--ryk-ink);
+  margin-top: 6px;
+}
+
+.count {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--ryk-pink);
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--ryk-text-muted);
+  margin-top: 10px;
+}
+
+/* Сетка 2×N — как в хендоффе. */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ryk-space-3);
+  margin-top: var(--ryk-space-5);
+}
+
+.empty {
+  margin-top: var(--ryk-space-6);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ryk-text-muted);
+}

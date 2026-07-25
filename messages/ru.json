@@ -75,6 +75,24 @@
     "deferWeek": "Пропустить неделю без вины",
     "deferring": "Хорошо…",
     "backToPlan": "Вернуться к плану",
+    "checkinKicker": "Check-in",
+    "checkinTitle": "Этот момент теперь твой.",
+    "checkinQuestion": "{story} — получилось?",
+    "done": "Сделано ✓",
+    "moved": "Перенесено",
+    "emotionQuestion": "Какое чувство осталось?",
+    "emotion": {
+      "DELIGHT": "Восторг",
+      "CALM": "Спокойствие",
+      "PRIDE": "Гордость",
+      "CLOSENESS": "Близость"
+    },
+    "phrasePlaceholder": "одна фраза, если хочется",
+    "saveMemory": "Сохранить в память",
+    "savingMemory": "Сохраняем…",
+    "completedKicker": "История прожита",
+    "completedStub": "История недели · прожито",
+    "completedNote": "этой недели уже не отнять",
     "deferredKicker": "Неделя перенесена",
     "deferredTitle": "Эта неделя — тихая. И это нормально.",
     "deferredNote": "история никуда не денется",
@@ -112,6 +130,15 @@
       "CURATED": "куратор советует",
       "FRESH": "свежее для тебя"
     }
+  },
+  "memory": {
+    "kicker": "Архив впечатлений",
+    "title": "Память",
+    "subtitle": "Историй, которых могло не случиться.",
+    "empty": "Здесь появятся прожитые истории.",
+    "deferredCard": "Перенесено — без вины",
+    "willReturn": "вернётся",
+    "alone": "один"
   },
   "wishes": {
     "title": "Wishlist",
