@@ -1,5 +1,6 @@
 import type { LifeCategory, SocialMode } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
+import { buildNudge, type Nudge } from "@/lib/engine/nudges";
 import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
 
 /*
@@ -54,16 +55,21 @@ export type DayOption = {
 
 export type WeeklyView =
   | { kind: "choose"; weekStart: string; candidates: Candidate[] }
-  /** История выбрана, но не подтверждена — экран commitment. */
+  /** История выбрана (или спасена) но день не подтверждён — экран commitment. */
   | { kind: "commit"; weekStart: string; story: SelectedStory; days: DayOption[] }
-  /** История подтверждена — план недели. */
+  /** История подтверждена — план недели с контекстной подсказкой. */
   | {
       kind: "committed";
       weekStart: string;
       story: SelectedStory;
       commitment: Commitment;
       weather: DayWeather | null;
-    };
+      nudge: Nudge;
+      /** Уже назван барьер — план под угрозой (Flow F). */
+      atRisk: boolean;
+    }
+  /** Неделя перенесена без вины — тупика и упрёка здесь быть не должно. */
+  | { kind: "deferred"; weekStart: string; story: SelectedStory };
 
 /** Понедельник текущей недели в UTC (ADR-004), для weekly_stories.weekStart (@db.Date). */
 export function weekStartUTC(now: Date = new Date()): Date {
@@ -140,11 +146,16 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     const forecast = await getWeekForecast(owner?.city ?? null, e.lat, e.lng);
     const byDate = new Map(forecast.map((d) => [d.date, d]));
 
-    // Подтверждена — показываем план недели с погодой выбранного дня.
-    if (existing.status !== "SELECTED") {
-      const plannedIso = existing.plannedFor
-        ? existing.plannedFor.toISOString().slice(0, 10)
-        : null;
+    // Неделя перенесена без вины — отдельный спокойный вид.
+    if (existing.status === "DEFERRED") {
+      return { kind: "deferred", weekStart: weekStartIso, story };
+    }
+
+    const plannedIso = existing.plannedFor ? existing.plannedFor.toISOString().slice(0, 10) : null;
+
+    // Подтверждена (или под угрозой) — план недели с подсказкой.
+    if (existing.status === "COMMITTED" || existing.status === "AT_RISK") {
+      const todayIso = new Date().toISOString().slice(0, 10);
       return {
         kind: "committed",
         weekStart: weekStartIso,
@@ -157,10 +168,18 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
           witnessName: existing.witnessName,
         },
         weather: plannedIso ? (byDate.get(plannedIso) ?? null) : null,
+        nudge: buildNudge({
+          plannedFor: plannedIso,
+          forecast,
+          socialMode: existing.socialMode,
+          companionName: existing.companionName,
+          todayIso,
+        }),
+        atRisk: existing.status === "AT_RISK",
       };
     }
 
-    // Выбрана, но не подтверждена — экран commitment с вариантами дня.
+    // SELECTED или RESCUED — день ещё не выбран, показываем commitment.
     const days: DayOption[] = buildDayOptions(byDate);
     return { kind: "commit", weekStart: weekStartIso, story, days };
   }
