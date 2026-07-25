@@ -15,5 +15,96 @@
     "connecting": "Connecting…",
     "failed": "Couldn't sign in. Open the app from Telegram.",
     "devEnter": "Enter as dev user"
+  },
+  "categories": {
+    "NATURE": "Nature",
+    "CULTURE": "Culture",
+    "DISCOVERY": "New",
+    "MOVEMENT": "Movement",
+    "CONNECTION": "People",
+    "JOY": "Joy",
+    "CHALLENGE": "Challenge",
+    "REST": "Rest"
+  },
+  "onboarding": {
+    "welcome": {
+      "kicker": "Life Experience Companion",
+      "promise": "One real story every week",
+      "lead": "Life shouldn't wait for free time.",
+      "sub": "Every week Ryk helps you live one experience — not a task, but a story.",
+      "start": "Start living a little more",
+      "skip": "I already have a profile"
+    },
+    "categories": {
+      "step": "Onboarding 1/4",
+      "time": "≈ 4 min",
+      "title": "What makes you feel alive?",
+      "hint": "Pick everything that resonates — just tap.",
+      "counter": "{count} picked — that's plenty!",
+      "counterEmpty": "pick at least a couple",
+      "back": "Back",
+      "next": "Next →"
+    },
+    "swipe": {
+      "step": "Onboarding 2/4",
+      "counter": "Idea {current}/{total}",
+      "title": "Would you go?",
+      "no": "Not for me",
+      "yes": "I want this ✓",
+      "enough": "Enough — next →"
+    },
+    "ideas": {
+      "climb": {
+        "title": "Beginner climbing gym",
+        "note": "Instructor and gear included. Come solo if you like.",
+        "meta": "1500 RSD · 1.5h"
+      },
+      "kayak": {
+        "title": "Sunrise kayaking",
+        "note": "Groups up to 6. No experience needed.",
+        "meta": "2200 RSD · 2h"
+      },
+      "organ": {
+        "title": "Organ by candlelight",
+        "note": "A classical program in an old hall. Tickets usually available.",
+        "meta": "1800 RSD · 2h"
+      },
+      "pottery": {
+        "title": "Pottery workshop",
+        "note": "The master fires your piece. Come as a pair.",
+        "meta": "3500 RSD · 2.5h"
+      },
+      "dinner": {
+        "title": "Dinner with strangers",
+        "note": "Eight people at a shared table, home cooking.",
+        "meta": "2600 RSD · 2.5h"
+      },
+      "rooftop": {
+        "title": "Sunrise on a rooftop",
+        "note": "An early start — and the city feels brand new.",
+        "meta": "free · 1.5h"
+      }
+    },
+    "params": {
+      "step": "Onboarding 3/4",
+      "title": "Your week's boundaries",
+      "budgetLabel": "Budget for a story",
+      "budgetLow": "up to 1500 RSD",
+      "budgetMid": "up to 4000 RSD",
+      "budgetAny": "any",
+      "socialLabel": "With whom",
+      "socialSolo": "Solo",
+      "socialClose": "With close ones",
+      "socialNew": "With new people",
+      "cityLabel": "City",
+      "cityPlaceholder": "Belgrade",
+      "noveltyLabel": "How much new",
+      "noveltyCalm": "Calm",
+      "noveltyBalance": "Balance",
+      "noveltyBold": "Bolder",
+      "note": "you can change all of this later",
+      "finish": "Show my first stories →",
+      "saving": "Saving…"
+    }
   }
 }

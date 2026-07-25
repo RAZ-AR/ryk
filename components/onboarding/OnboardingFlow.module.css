@@ -1,0 +1,185 @@
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ryk-screen-top) var(--ryk-screen-x) var(--ryk-space-6);
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.title {
+  font-size: 33px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1.14;
+  color: var(--ryk-ink);
+  margin-top: var(--ryk-space-5);
+  text-wrap: balance;
+}
+
+.hint {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ryk-text-muted);
+  margin-top: var(--ryk-space-2);
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: var(--ryk-space-5);
+  display: flex;
+  gap: var(--ryk-space-2);
+}
+
+.footerCol {
+  margin-top: auto;
+  padding-top: var(--ryk-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}
+
+.grow {
+  flex: 1;
+}
+
+.narrow {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+/* --- Welcome --- */
+.welcome {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 30px var(--ryk-screen-x) var(--ryk-space-6);
+  box-sizing: border-box;
+  background: var(--ryk-pink);
+}
+
+.welcomeKicker {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ryk-ink);
+  opacity: 0.6;
+}
+
+.logo {
+  font-size: 118px;
+  line-height: 0.78;
+  font-weight: 700;
+  letter-spacing: -6px;
+  color: var(--ryk-paper);
+  margin-top: 44px;
+}
+
+.welcomePromise {
+  margin-top: var(--ryk-space-4);
+  color: var(--ryk-ink);
+}
+
+.welcomeBody {
+  margin: auto 0;
+}
+
+.welcomeLead {
+  font-family: var(--ryk-font-serif);
+  font-size: 33px;
+  line-height: 1.32;
+  letter-spacing: -0.2px;
+  color: var(--ryk-ink);
+}
+
+.welcomeSub {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ryk-ink);
+  opacity: 0.85;
+  margin-top: var(--ryk-space-5);
+  max-width: 300px;
+}
+
+.welcomeStart {
+  background: var(--ryk-paper);
+  color: var(--ryk-pink-text);
+  padding: 19px 0;
+}
+
+.welcomeSkip {
+  text-align: center;
+  padding: 16px 0 0;
+  color: var(--ryk-ink);
+  opacity: 0.6;
+}
+
+/* --- Categories grid --- */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: var(--ryk-space-6);
+  border-top: 1px solid var(--ryk-border-strong);
+  border-left: 1px solid var(--ryk-border-strong);
+}
+
+.cell {
+  padding: 17px 15px;
+  border-right: 1px solid var(--ryk-border-strong);
+  border-bottom: 1px solid var(--ryk-border-strong);
+  background: transparent;
+  color: var(--ryk-ink);
+  text-align: left;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+/* Выбрано: заливка pink, текст ink (правило контраста §9). */
+.cellOn {
+  background: var(--ryk-pink);
+}
+
+.cellLabel {
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.note {
+  margin-top: var(--ryk-space-3);
+}
+
+/* --- Swipe --- */
+.ticketWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: var(--ryk-space-4);
+}
+
+/* --- Params rows --- */
+.rows {
+  margin-top: var(--ryk-space-5);
+  border-top: 1px solid var(--ryk-border-row);
+}
+
+.row {
+  padding: var(--ryk-space-4) 2px;
+  border-bottom: 1px solid var(--ryk-border-row);
+}
+
+.rowLabel {
+  display: block;
+  margin-bottom: 11px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ryk-space-2);
+}
