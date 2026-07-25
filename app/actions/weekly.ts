@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
 import { getWeeklyView, weekStartUTC } from "@/lib/engine/weekly";
 import { prisma } from "@/lib/prisma";
@@ -39,6 +40,11 @@ export async function selectStory(experienceId: string): Promise<SelectResult> {
   } catch {
     return { ok: false, reason: "db_error" };
   }
+
+  await track(session.userId, {
+    name: "story_selected",
+    props: { category: candidate.category, whyCode: candidate.whyCode },
+  });
 
   revalidatePath("/");
   return { ok: true };

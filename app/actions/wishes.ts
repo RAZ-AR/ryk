@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
 import { structureWish, type StructuredWish } from "@/lib/ai/structureWish";
 import { prisma } from "@/lib/prisma";
@@ -45,6 +46,16 @@ export async function addWish(text: string, structured: StructuredWish): Promise
   } catch {
     return { ok: false, reason: "db_error" };
   }
+
+  // Отмечаем, сработал ли AI или эвристика — иначе не поймём, стоит ли
+  // качество разбора включённого ключа (ADR-008).
+  await track(session.userId, {
+    name: "wish_added",
+    props: {
+      category: structured.category,
+      source: process.env.GEMINI_API_KEY || process.env.ANTHROPIC_API_KEY ? "ai" : "heuristic",
+    },
+  });
 
   revalidatePath("/");
   return { ok: true };

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { SocialMode } from "@/generated/prisma/enums";
+import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
 import { weekStartUTC } from "@/lib/engine/weekly";
 import { prisma } from "@/lib/prisma";
@@ -66,6 +67,13 @@ export async function commitStory(input: CommitInput): Promise<CommitResult> {
   } catch {
     return { ok: false, reason: "db_error" };
   }
+
+  // Насколько заранее человек планирует — сигнал качества сопровождения.
+  const daysAhead = Math.round((planned.getTime() - Date.now()) / 86_400_000);
+  await track(session.userId, {
+    name: "commitment_confirmed",
+    props: { daysAhead, hasCompanion: companionName != null, hasWitness: witnessName != null },
+  });
 
   revalidatePath("/");
   return { ok: true };

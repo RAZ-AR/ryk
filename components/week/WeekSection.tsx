@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { trackCandidatesViewed } from "@/app/actions/analytics";
 import { commitStory, uncommitStory } from "@/app/actions/commitment";
 import { selectStory } from "@/app/actions/weekly";
 import type { SocialMode } from "@/generated/prisma/enums";
@@ -37,6 +38,16 @@ export function WeekSection({ view }: { view: WeeklyView }) {
   const [witness, setWitness] = useState("");
   const [committing, startCommit] = useTransition();
   const [changing, startChange] = useTransition();
+
+  // Первый шаг воронки: кандидатов показали. Ref-guard, чтобы повторные
+  // рендеры не раздували метрику.
+  const viewedRef = useRef(false);
+  const candidateCount = view.kind === "choose" ? view.candidates.length : 0;
+  useEffect(() => {
+    if (candidateCount === 0 || viewedRef.current) return;
+    viewedRef.current = true;
+    void trackCandidatesViewed(candidateCount);
+  }, [candidateCount]);
 
   const priceLabel = (price: number | null, currency: string) => {
     if (price == null) return "";
