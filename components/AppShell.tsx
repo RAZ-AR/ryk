@@ -2,16 +2,18 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { WeekSection } from "@/components/week/WeekSection";
 import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
+import type { WeeklyView } from "@/lib/engine/weekly";
 import { Dock, type DockLabels, type DockSection } from "./Dock";
 import { SvcLabel } from "./SvcLabel";
 import styles from "./AppShell.module.css";
 
 /*
  * Каркас Mini App: контент + плавающий dock (§7).
- * Неделя / Память / Баланс — заглушки (Фазы 6–10); Желания — живой раздел.
+ * Неделя и Желания — живые; Память / Баланс — заглушки (Фазы 9–10).
  */
-export function AppShell({ wishes }: { wishes: WishView[] }) {
+export function AppShell({ wishes, weekly }: { wishes: WishView[]; weekly: WeeklyView }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
   const [section, setSection] = useState<DockSection>("week");
@@ -26,7 +28,9 @@ export function AppShell({ wishes }: { wishes: WishView[] }) {
   return (
     <div className={styles.shell}>
       <div className={styles.content}>
-        {section === "wishes" ? (
+        {section === "week" ? (
+          <WeekSection view={weekly} />
+        ) : section === "wishes" ? (
           <Wishlist wishes={wishes} />
         ) : (
           <>

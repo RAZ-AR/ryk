@@ -16,6 +16,32 @@
     "failed": "No se pudo entrar. Abre la app desde Telegram.",
     "devEnter": "Entrar como usuario dev"
   },
+  "week": {
+    "kicker": "Elige tu historia",
+    "candidate": "Candidato",
+    "next": "Siguiente",
+    "choose": "Elegir",
+    "choosing": "Eligiendo…",
+    "stubLabel": "Historia de la semana · candidato",
+    "whyLabel": "Por qué",
+    "selectedKicker": "Tu historia de la semana",
+    "selectedStub": "Historia de la semana · elegida",
+    "selectedNote": "puedes reprogramar o cancelar sin penalización",
+    "empty": "Aún no hay ideas que encajen esta semana.",
+    "sponsored": "patrocinado",
+    "priceFree": "gratis",
+    "hours": "h",
+    "minutes": "min",
+    "km": "km",
+    "currencyRSD": "RSD",
+    "why": {
+      "LIKED_CATEGORY": "te gusta «{category}»",
+      "IN_BUDGET": "dentro de tu presupuesto",
+      "NEARBY": "cerca de ti",
+      "CURATED": "elección del curador",
+      "FRESH": "nuevo para ti"
+    }
+  },
   "wishes": {
     "title": "Wishlist",
     "add": "+ Añadir un deseo",
