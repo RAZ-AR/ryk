@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Caveat, Cormorant, Golos_Text, IBM_Plex_Mono, PT_Serif } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
-import Script from "next/script";
 import "./globals.css";
 
 /*
@@ -72,8 +71,18 @@ export default async function RootLayout({
     // это ожидаемо, гасим предупреждение о несовпадении именно для <html>.
     <html lang={locale} className={fontVariables} suppressHydrationWarning>
       <body>
-        {/* SDK Telegram Mini App: даёт window.Telegram.WebApp (initData и т.п.). */}
-        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        {/*
+         * SDK Telegram Mini App: даёт window.Telegram.WebApp (initData и т.п.).
+         * Не `next/script`: тот рендерит настоящий <script> в дерево React, и React 19
+         * ругается «Encountered a script tag while rendering React component», когда
+         * этот узел приходится создавать на клиенте, а не гидрировать.
+         * `<script async src>` React 19 считает hoistable-ресурсом: поднимает в <head>
+         * серверной разметки (браузер находит его preload-сканером ещё раньше, чем
+         * рантайм next/script успевал создать тег) и ведёт мимо реконсиляции.
+         * Async-загрузка не гарантирует готовность к моменту эффекта — ожидание SDK
+         * живёт в components/TelegramBootstrap.tsx.
+         */}
+        <script async src="https://telegram.org/js/telegram-web-app.js" />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
