@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
+import { InviteBadge } from "@/components/invite/InviteBadge";
+import { InviteClaimer } from "@/components/invite/InviteClaimer";
+import { InviteSheet, type InviteView } from "@/components/invite/InviteSheet";
 import { MemorySection } from "@/components/memory/MemorySection";
 import { ProfileEntry } from "@/components/profile/ProfileEntry";
 import {
@@ -18,7 +21,8 @@ import styles from "./AppShell.module.css";
 
 /*
  * Каркас Mini App: контент + плавающий dock (§7) + точка входа в личный
- * кабинет. Неделя / Желания / Память — живые; Баланс — заглушка (Фаза 10).
+ * кабинет + приглашения. Неделя / Желания / Память — живые;
+ * Баланс — заглушка (Фаза 10).
  */
 export function AppShell({
   wishes,
@@ -26,18 +30,26 @@ export function AppShell({
   memories,
   profile,
   preferences,
+  invites,
 }: {
   wishes: WishView[];
   weekly: WeeklyView;
   memories: MemoryView[];
   profile: ProfileView;
   preferences: PreferenceRow[];
+  invites: InviteView[];
 }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
   const tProfile = useTranslations("profile");
+  const tInvites = useTranslations("invites");
   const [section, setSection] = useState<DockSection>("week");
   const [profileOpen, setProfileOpen] = useState(false);
+  const [invitesOpen, setInvitesOpen] = useState(false);
+
+  // Пришли по ссылке — открываем приглашения сразу: человек за этим и пришёл,
+  // прятать их за значком было бы издевательством.
+  const openInvites = useCallback(() => setInvitesOpen(true), []);
 
   const labels: DockLabels = {
     week: nav("week"),
@@ -72,6 +84,14 @@ export function AppShell({
         ariaLabel={app("weekActive")}
       />
       <ProfileEntry label={tProfile("entry")} onClick={() => setProfileOpen(true)} />
+      <InviteBadge
+        count={invites.length}
+        label={tInvites("badge")}
+        onClick={() => setInvitesOpen(true)}
+      />
+
+      <InviteClaimer onClaimed={openInvites} />
+
       {profileOpen && (
         <ProfileSheet
           profile={profile}
@@ -79,6 +99,7 @@ export function AppShell({
           onClose={() => setProfileOpen(false)}
         />
       )}
+      {invitesOpen && <InviteSheet invites={invites} onClose={() => setInvitesOpen(false)} />}
     </div>
   );
 }

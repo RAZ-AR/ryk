@@ -6,9 +6,8 @@ import type { Locale } from "@/generated/prisma/enums";
  * Не next-intl: у вебхука нет cookie/request-контекста, которым живёт
  * обычный useTranslations, а next-intl не экспортирует автономный
  * translator верхнего уровня (createTranslator живёт в use-intl — не
- * прямая зависимость проекта). Здесь нужны две короткие шаблонные строки,
- * не полноценный ICU-движок — простая подстановка {title}/{date} с
- * лишним модулем не оправдана.
+ * прямая зависимость проекта). Здесь несколько шаблонных строк, не
+ * полноценный ICU-движок — лишний модуль ради подстановки не оправдан.
  *
  * Свидетелю (witness, Flow E из 08-social-and-accountability) — только
  * название истории и дата, никогда бюджет или место: «друг видит только
@@ -26,6 +25,12 @@ export type InviteStoryContext = {
   currency: string;
 };
 
+/** Кто зовёт — снимок из inline_query.from, в users имена не хранятся. */
+export type InviteInviter = {
+  name: string;
+  username: string | null;
+};
+
 export type InviteCard = {
   /** Уникален в пределах одного inline-ответа. */
   id: string;
@@ -39,17 +44,29 @@ const LOCALE_TAG: Record<Locale, string> = { RU: "ru-RU", EN: "en-US", ES: "es-E
 
 const TEMPLATES: Record<Locale, Record<InviteRole, string>> = {
   RU: {
-    companion: "Пойдёшь со мной? «{title}», {date}{place}{price}",
-    witness: "Обещаю себе: «{title}», {date}. Будешь свидетелем?",
+    companion:
+      "Привет! Это RYK бот. Вас пригласил {inviter} с собой на «{title}», {date}{place}{price}",
+    witness:
+      "Привет! Это RYK бот. {inviter} хочет, чтобы вы стали свидетелем обещания: «{title}», {date}",
   },
   EN: {
-    companion: 'Want to join me? "{title}", {date}{place}{price}',
-    witness: 'I\'m promising myself: "{title}", {date}. Will you witness it?',
+    companion:
+      'Hi! This is the RYK bot. {inviter} invites you to join them: "{title}", {date}{place}{price}',
+    witness: 'Hi! This is the RYK bot. {inviter} asks you to witness a promise: "{title}", {date}',
   },
   ES: {
-    companion: "¿Te vienes conmigo? «{title}», {date}{place}{price}",
-    witness: "Me lo prometo: «{title}», {date}. ¿Serás testigo?",
+    companion:
+      "¡Hola! Soy el bot RYK. {inviter} te invita a acompañarle: «{title}», {date}{place}{price}",
+    witness:
+      "¡Hola! Soy el bot RYK. {inviter} quiere que seas testigo de una promesa: «{title}», {date}",
   },
+};
+
+/** Приписка со ссылкой: и принять, и завести профиль — одним касанием. */
+const CTA: Record<Locale, string> = {
+  RU: "Принять или отказаться:",
+  EN: "Accept or decline:",
+  ES: "Aceptar o rechazar:",
 };
 
 const NO_DATE: Record<Locale, string> = {
@@ -74,10 +91,26 @@ function formatDate(iso: string | null, locale: Locale): string {
   }).format(date);
 }
 
+/** «Артём (@raz_ar)» — или просто «Артём», если username скрыт настройками. */
+function formatInviter(inviter: InviteInviter): string {
+  return inviter.username ? `${inviter.name} (@${inviter.username})` : inviter.name;
+}
+
+/**
+ * Ссылка на Mini App с параметром приглашения. Требует включённого
+ * Main Mini App у бота (BotFather → Configure Mini App): только тогда
+ * Telegram передаёт `startapp` в `initDataUnsafe.start_param`.
+ */
+export function buildInviteLink(botUsername: string, inviteId: string): string {
+  return `https://t.me/${botUsername}?startapp=${inviteId}`;
+}
+
 export function buildInviteCard(
   role: InviteRole,
   story: InviteStoryContext,
   locale: Locale,
+  inviter: InviteInviter,
+  inviteLink: string,
 ): InviteCard {
   const date = formatDate(story.plannedForISO, locale);
   // Место и цена — только companion. Свидетель (Flow E) видит лишь обещание и дату.
@@ -88,7 +121,8 @@ export function buildInviteCard(
       ? ` · ${story.price === 0 ? FREE_LABEL[locale] : `${story.price} ${story.currency}`}`
       : "";
 
-  const text = TEMPLATES[locale][role]
+  const body = TEMPLATES[locale][role]
+    .replace("{inviter}", formatInviter(inviter))
     .replace("{title}", story.title)
     .replace("{date}", date)
     .replace("{place}", place)
@@ -97,6 +131,6 @@ export function buildInviteCard(
   return {
     id: role,
     title: story.title,
-    messageText: text,
+    messageText: `${body}\n\n${CTA[locale]} ${inviteLink}`,
   };
 }

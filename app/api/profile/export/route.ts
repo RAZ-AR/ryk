@@ -18,6 +18,8 @@ export async function GET() {
     where: { id: session.userId },
     select: {
       telegramId: true,
+      firstName: true,
+      username: true,
       locale: true,
       city: true,
       radiusKm: true,
@@ -31,7 +33,7 @@ export async function GET() {
   });
   if (!user) return NextResponse.json({ ok: false, reason: "not_found" }, { status: 404 });
 
-  const [preferences, wishes, weeklyStories] = await Promise.all([
+  const [preferences, wishes, weeklyStories, invitesReceived, invitesSent] = await Promise.all([
     prisma.preference.findMany({
       where: { userId: session.userId },
       select: { category: true, entity: true, sentiment: true, confidence: true, source: true },
@@ -54,9 +56,23 @@ export async function GET() {
         memory: { select: { rating: true, emotion: true, note: true, companion: true } },
       },
     }),
+    prisma.invite.findMany({
+      where: { recipientId: session.userId },
+      select: { role: true, status: true, inviterName: true, createdAt: true, respondedAt: true },
+    }),
+    prisma.invite.findMany({
+      where: { inviterId: session.userId },
+      select: { role: true, status: true, createdAt: true, respondedAt: true },
+    }),
   ]);
 
-  const payload = { profile: user, preferences, wishes, weeklyStories };
+  const payload = {
+    profile: user,
+    preferences,
+    wishes,
+    weeklyStories,
+    invites: { received: invitesReceived, sent: invitesSent },
+  };
 
   return new NextResponse(JSON.stringify(payload, null, 2), {
     headers: {

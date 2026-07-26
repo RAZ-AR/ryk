@@ -68,13 +68,17 @@ export async function authenticateWithInitData(initData: string): Promise<AuthRe
 
   const tg = verified.data.user;
   const telegramId = String(tg.id);
+  // Имя приходит подписанным — обновляем на каждом входе: человек мог сменить
+  // его в Telegram, а им подписываются принятые приглашения.
+  const displayName = { firstName: tg.firstName ?? null, username: tg.username ?? null };
 
   const user = await prisma.user.upsert({
     where: { telegramId },
-    update: {},
+    update: displayName,
     create: {
       telegramId,
       locale: localeFromTelegram(tg.languageCode),
+      ...displayName,
     },
     select: {
       id: true,
@@ -104,10 +108,17 @@ export async function authenticateDev(): Promise<AuthResult> {
     return { ok: false, reason: "dev_auth_disabled" };
   }
 
+  // Имя проставляем и здесь: у реального пользователя оно приходит из initData,
+  // и без него локальная проверка приглашений врала бы (подпись «—» вместо имени).
   const user = await prisma.user.upsert({
     where: { telegramId: "dev-local" },
-    update: {},
-    create: { telegramId: "dev-local", locale: "RU", onboardingState: "DONE" },
+    update: { firstName: "Dev" },
+    create: {
+      telegramId: "dev-local",
+      firstName: "Dev",
+      locale: "RU",
+      onboardingState: "DONE",
+    },
     select: { id: true, telegramId: true, locale: true, onboardingState: true },
   });
 

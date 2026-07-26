@@ -168,6 +168,20 @@
     "REST": "Descanso",
     "CONTRIBUTION": "Contribución"
   },
+  "invites": {
+    "badge": "Invitaciones",
+    "title": "Invitaciones",
+    "close": "Cerrar",
+    "from": "Invitación de",
+    "roleCompanion": "Te invitan a acompañar",
+    "roleWitness": "Te piden ser testigo",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "responding": "Respondiendo…",
+    "noDate": "sin fecha",
+    "empty": "Aún no hay invitaciones.",
+    "error": "No se pudo responder. Puede que ya la hayan aceptado."
+  },
   "profile": {
     "entry": "Yo",
     "title": "Perfil",

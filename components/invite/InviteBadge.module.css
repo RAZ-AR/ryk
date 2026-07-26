@@ -1,0 +1,29 @@
+/* Значок приглашений — слева от точки входа в профиль, тот же приём
+   position: fixed (см. Dock.module.css и ProfileEntry.module.css). */
+.badge {
+  position: fixed;
+  top: calc(14px + var(--tg-safe-area-inset-top, 0px));
+  right: 74px;
+  z-index: 6;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 var(--ryk-space-3);
+  background: var(--ryk-pink);
+  color: var(--ryk-ink);
+  border-radius: var(--ryk-radius-dock-pill);
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: var(--ryk-shadow-dock);
+}
+
+.count {
+  font-weight: 700;
+}
