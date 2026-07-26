@@ -21,6 +21,25 @@ function getTelegram(): TelegramWebApp | undefined {
   return (globalThis as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp;
 }
 
+/*
+ * telegram-web-app.js подключён как `<script async>` (app/layout.tsx), поэтому
+ * эффект может отработать раньше, чем SDK объявит window.Telegram. Ждём его
+ * появления, но не дольше таймаута: если сети нет, уходим в обычную ветку
+ * «не Telegram» (dev-вход локально, ошибка входа в проде).
+ */
+const SDK_TIMEOUT_MS = 3000;
+const SDK_POLL_MS = 25;
+
+async function waitForTelegram(): Promise<TelegramWebApp | undefined> {
+  const deadline = Date.now() + SDK_TIMEOUT_MS;
+  let tg = getTelegram();
+  while (!tg && Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, SDK_POLL_MS));
+    tg = getTelegram();
+  }
+  return tg;
+}
+
 export function TelegramBootstrap() {
   const t = useTranslations("auth");
   const router = useRouter();
@@ -32,7 +51,7 @@ export function TelegramBootstrap() {
     started.current = true;
 
     const authenticate = async (): Promise<boolean> => {
-      const tg = getTelegram();
+      const tg = await waitForTelegram();
       tg?.ready?.();
       tg?.expand?.();
 
