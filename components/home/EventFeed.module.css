@@ -1,0 +1,46 @@
+.feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-7);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-3);
+}
+
+/* Билет кликабельный целиком — открывает карточку события. */
+.open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  background: none;
+}
+
+.actions {
+  display: flex;
+  gap: var(--ryk-space-3);
+}
+
+.actions > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.empty {
+  font-family: var(--ryk-font-ui);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ryk-text-muted);
+}
+
+@media (max-width: 400px) {
+  .actions {
+    flex-direction: column;
+  }
+}

@@ -25,6 +25,33 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Недельный цикл поверх главного. Своя прокрутка: WeekSection рассчитывал
+   на .content, а как оверлей он вне его. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 7;
+  background: var(--ryk-paper);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(var(--ryk-screen-top) + 44px + var(--tg-safe-area-inset-top, 0px))
+    var(--ryk-screen-x) var(--ryk-screen-bottom-dock);
+}
+
+.overlayClose {
+  position: fixed;
+  top: calc(14px + var(--tg-safe-area-inset-top, 0px));
+  right: 20px;
+  z-index: 8;
+  min-height: 44px;
+  padding: 0 var(--ryk-space-3);
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ryk-text-muted);
+}
+
 .header {
   display: flex;
   flex-direction: column;

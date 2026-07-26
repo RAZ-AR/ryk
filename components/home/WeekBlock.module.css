@@ -1,0 +1,66 @@
+/* Блок «твоя неделя» — единственный крупный акцент на главном.
+   Не билет: билет закреплён за впечатлением (§11.4), а это состояние. */
+.block {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--ryk-pink);
+  padding: var(--ryk-space-5);
+  margin-top: var(--ryk-space-2);
+}
+
+/* Нечего показывать (неделя перенесена) — тише, без розового призыва. */
+.quiet {
+  background: var(--ryk-surface-muted);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ryk-space-3);
+}
+
+/* Внутри <button> — только строчные элементы, поэтому блочность задаём тут. */
+.title {
+  display: block;
+  margin-top: var(--ryk-space-3);
+  font-family: var(--ryk-font-serif);
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--ryk-ink);
+}
+
+.line {
+  display: block;
+  margin-top: var(--ryk-space-2);
+  font-family: var(--ryk-font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ryk-text-on-pink);
+}
+
+.quiet .line {
+  color: var(--ryk-text-secondary);
+}
+
+.countdown {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ryk-space-3);
+  margin-top: var(--ryk-space-4);
+}
+
+.num {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1;
+  color: var(--ryk-ink);
+}
+
+.unit {
+  font-family: var(--ryk-font-ui);
+  font-size: 14px;
+  color: var(--ryk-text-on-pink);
+}

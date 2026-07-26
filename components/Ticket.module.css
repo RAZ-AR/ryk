@@ -79,6 +79,27 @@
   padding: 0 22px var(--ryk-space-4);
 }
 
+/* Компактный билет — для ленты на главном: та же анатомия и та же
+   метафора, просто ниже, чтобы в поток помещалось несколько подряд.
+   Меняем только размеры, ничего не выключаем. */
+.compact .photoInner {
+  min-height: 104px;
+}
+
+.compact .meta {
+  padding: var(--ryk-space-3) var(--ryk-space-4) 0;
+  font-size: 12px;
+}
+
+.compact .title {
+  font-size: 22px;
+  padding: 4px var(--ryk-space-4) var(--ryk-space-3);
+}
+
+.compact .stub {
+  padding: 12px var(--ryk-space-4) 13px;
+}
+
 /* --- Корешок: перфорация, вырезы, штрихкод --- */
 .stub {
   position: relative;

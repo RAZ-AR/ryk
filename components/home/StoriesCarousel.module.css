@@ -1,0 +1,76 @@
+/* Горизонтальный ряд предстоящего. Вылезает за поля экрана и обрезается
+   по краю — так видно, что ряд продолжается. */
+.row {
+  display: flex;
+  gap: var(--ryk-space-4);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  /* Вертикальный скролл страницы жестом не перехватываем. */
+  touch-action: pan-x pan-y;
+  margin: 0 calc(-1 * var(--ryk-screen-x));
+  padding: var(--ryk-space-2) var(--ryk-screen-x) var(--ryk-space-3);
+  scrollbar-width: none;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  flex: 0 0 auto;
+  /* 96px, а не под размер кружка: иначе «28.07 · Марина» обрезается
+     многоточием на первом же имени длиннее пяти букв. */
+  width: 96px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+/* Кружок — не фото, а инициал категории: фотографий у впечатлений пока нет,
+   а пустой серый круг выглядел бы сломанным. */
+.circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ryk-white);
+  border: 2px solid var(--ryk-pink);
+  font-family: var(--ryk-font-ticket);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ryk-ink);
+  text-transform: uppercase;
+}
+
+/* Куда позвали — другой контур, чтобы своё и чужое не путалось. */
+.invited {
+  border-style: dashed;
+  border-color: var(--ryk-ink);
+}
+
+.title {
+  font-family: var(--ryk-font-ui);
+  font-size: 11px;
+  line-height: 1.25;
+  color: var(--ryk-ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  font-family: var(--ryk-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--ryk-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
