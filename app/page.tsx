@@ -17,7 +17,7 @@ export default async function Home() {
   if (!user) return <TelegramBootstrap />;
   if (user.onboardingState !== "DONE") return <OnboardingFlow initialCity={user.city} />;
 
-  const [wishes, weekly, memories] = await Promise.all([
+  const [wishes, weekly, memories, profile, preferences] = await Promise.all([
     prisma.wish.findMany({
       where: { userId: user.id, status: { not: "HIDDEN" } },
       orderBy: { createdAt: "desc" },
@@ -25,7 +25,31 @@ export default async function Home() {
     }),
     getWeeklyView(user.id),
     getMemories(user.id),
+    prisma.user.findUniqueOrThrow({
+      where: { id: user.id },
+      select: {
+        city: true,
+        radiusKm: true,
+        budgetMax: true,
+        socialMode: true,
+        locale: true,
+        noveltyRatio: true,
+      },
+    }),
+    prisma.preference.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, category: true, entity: true, sentiment: true },
+    }),
   ]);
 
-  return <AppShell wishes={wishes} weekly={weekly} memories={memories} />;
+  return (
+    <AppShell
+      wishes={wishes}
+      weekly={weekly}
+      memories={memories}
+      profile={profile}
+      preferences={preferences}
+    />
+  );
 }

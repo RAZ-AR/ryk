@@ -40,6 +40,24 @@ async function setLocaleCookie(locale: Locale): Promise<void> {
   });
 }
 
+/**
+ * Пустой профиль для пользователя, который удалил аккаунт и вернулся с тем же
+ * Telegram-аккаунтом. upsert ниже находит старую (мягко удалённую) запись —
+ * без явного сброса полей `deletedAt` остался бы навсегда, и `getCurrentUser`
+ * (фильтрует `deletedAt: null`) вечно возвращал бы null: бесконечный экран
+ * входа без единого способа снова попасть в приложение.
+ */
+const FRESH_ACCOUNT_FIELDS = {
+  deletedAt: null,
+  onboardingState: "NOT_STARTED",
+  city: null,
+  radiusKm: 30,
+  budgetMax: null,
+  socialMode: null,
+  noveltyRatio: 30,
+  notificationPreferences: {},
+} as const;
+
 /** Аутентификация по реальному initData из Telegram. */
 export async function authenticateWithInitData(initData: string): Promise<AuthResult> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -58,8 +76,19 @@ export async function authenticateWithInitData(initData: string): Promise<AuthRe
       telegramId,
       locale: localeFromTelegram(tg.languageCode),
     },
-    select: { id: true, telegramId: true, locale: true, onboardingState: true },
+    select: {
+      id: true,
+      telegramId: true,
+      locale: true,
+      onboardingState: true,
+      deletedAt: true,
+    },
   });
+
+  if (user.deletedAt) {
+    await prisma.user.update({ where: { id: user.id }, data: FRESH_ACCOUNT_FIELDS });
+    user.onboardingState = "NOT_STARTED";
+  }
 
   await createSession({ userId: user.id, telegramId: user.telegramId });
   await setLocaleCookie(user.locale);
