@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { completeOnboarding } from "@/app/actions/onboarding";
@@ -82,7 +83,14 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
           <span>{tWelcome("kicker")}</span>
           <span>MMXXVI</span>
         </SvcLabel>
-        <div className={styles.logo}>RYK</div>
+        <Image
+          src="/ryk-logo-paper.svg"
+          alt="Ryk"
+          width={406}
+          height={271}
+          unoptimized
+          className={styles.logo}
+        />
         <SvcLabel tone="ink" className={styles.welcomePromise}>
           {tWelcome("promise")}
         </SvcLabel>
