@@ -95,6 +95,11 @@ export function weekStartUTC(now: Date = new Date()): Date {
   return d;
 }
 
+/** Начало сегодняшнего дня — граница «событие ещё впереди». */
+function startOfTodayUTC(now: Date = new Date()): Date {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+}
+
 function pickWhy(
   liked: boolean,
   category: LifeCategory,
@@ -235,7 +240,16 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
       where: { userId, sentiment: "LIKE" },
       select: { category: true },
     }),
-    prisma.experience.findMany({ take: 50 }),
+    prisma.experience.findMany({
+      where: {
+        // Куратор снял событие с показа (ADR-006) — предлагать его нельзя.
+        archivedAt: null,
+        // Событие с прошедшей датой — это не история на эту неделю.
+        // Впечатления без даты (прогулка, музей) живут всегда.
+        OR: [{ startTime: null }, { startTime: { gte: startOfTodayUTC() } }],
+      },
+      take: 50,
+    }),
   ]);
 
   const liked = new Set<LifeCategory>(prefs.map((p) => p.category));

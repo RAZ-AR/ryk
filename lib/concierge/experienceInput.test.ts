@@ -1,0 +1,74 @@
+import { describe, expect, it } from "vitest";
+import { normalizeUrl, parseExperienceInput } from "./experienceInput";
+
+/*
+ * Проверяем правила, а не поля: что куратор может ввести грязно,
+ * и что через форму нельзя протащить опасную ссылку.
+ */
+
+function form(fields: Record<string, string>): FormData {
+  const fd = new FormData();
+  for (const [k, v] of Object.entries(fields)) fd.set(k, v);
+  return fd;
+}
+
+const VALID = { title: "Каякинг на Аде", category: "NATURE" };
+
+describe("parseExperienceInput", () => {
+  it("принимает минимум: название и категория", () => {
+    const res = parseExperienceInput(form(VALID));
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.value.title).toBe("Каякинг на Аде");
+    expect(res.value.currency).toBe("RSD");
+    expect(res.value.sponsored).toBe(false);
+  });
+
+  it("отклоняет пустое название и чужую категорию", () => {
+    const res = parseExperienceInput(form({ title: "  ", category: "SHOPPING" }));
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.errors).toContain("title");
+    expect(res.errors).toContain("category");
+  });
+
+  it("чистит цену, введённую как есть", () => {
+    const res = parseExperienceInput(
+      form({ ...VALID, price: "2 200 дин", durationMin: "120 мин" }),
+    );
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.value.price).toBe(2200);
+    expect(res.value.durationMin).toBe(120);
+  });
+
+  it("дописывает схему ссылке на билеты", () => {
+    const res = parseExperienceInput(form({ ...VALID, bookingUrl: "kolarac.rs/tickets" }));
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.value.bookingUrl).toBe("https://kolarac.rs/tickets");
+  });
+
+  it("не пропускает javascript: в ссылку — по ней кликает пользователь", () => {
+    expect(normalizeUrl("javascript:alert(1)")).toBeNull();
+    const res = parseExperienceInput(form({ ...VALID, bookingUrl: "javascript:alert(1)" }));
+    expect(res.ok).toBe(false);
+    if (res.ok) return;
+    expect(res.errors).toContain("bookingUrl");
+  });
+
+  it("отклоняет неразбираемую дату, но пустую пропускает", () => {
+    expect(parseExperienceInput(form({ ...VALID, startTime: "завтра" })).ok).toBe(false);
+    const empty = parseExperienceInput(form({ ...VALID, startTime: "" }));
+    expect(empty.ok).toBe(true);
+    if (!empty.ok) return;
+    expect(empty.value.startTime).toBeNull();
+  });
+
+  it("сохраняет отметку «спонсорское» — она обязана дойти до UI", () => {
+    const res = parseExperienceInput(form({ ...VALID, sponsored: "on" }));
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.value.sponsored).toBe(true);
+  });
+});
