@@ -9,7 +9,21 @@
     "promise": "Una historia real cada semana",
     "lead": "La vida no debería esperar al tiempo libre.",
     "greeting": "Bienvenido de nuevo",
-    "weekActive": "Semana activa"
+    "weekActive": "Semana activa",
+    "home": "Volver a la pantalla principal"
+  },
+  "discover": {
+    "kicker": "Lo que te gusta",
+    "title": "Feed",
+    "hint": "Desliza a la derecha si te interesa, a la izquierda si no. Lo que te guste irá a deseos.",
+    "counter": "{current} de {total}",
+    "yes": "Me interesa",
+    "no": "No es lo mío",
+    "verdictYes": "Me interesa",
+    "verdictNo": "Paso",
+    "emptyTitle": "Por ahora lo has visto todo.",
+    "emptyBody": "Aparecerán nuevas experiencias cuando el curador las añada.",
+    "emptyNote": "sin prisa"
   },
   "auth": {
     "connecting": "Conectando…",

@@ -37,6 +37,8 @@ export type RykEvent =
   | { name: "calendar_added"; props: { method: "ics" | "google" } }
   | { name: "invite_initiated"; props: { role: "companion" | "witness" } }
   | { name: "invite_accepted"; props: { role: "companion" | "witness" } }
-  | { name: "invite_declined"; props: { role: "companion" | "witness" } };
+  | { name: "invite_declined"; props: { role: "companion" | "witness" } }
+  // ── Лента впечатлений ─────────────────────────────────────
+  | { name: "experience_reacted"; props: { category: LifeCategory; liked: boolean } };
 
 export type RykEventName = RykEvent["name"];

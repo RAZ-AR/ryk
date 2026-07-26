@@ -9,7 +9,21 @@
     "promise": "One real story every week",
     "lead": "Life shouldn't wait for free time.",
     "greeting": "Welcome back",
-    "weekActive": "Week active"
+    "weekActive": "Week active",
+    "home": "Back to the main screen"
+  },
+  "discover": {
+    "kicker": "What you like",
+    "title": "Feed",
+    "hint": "Swipe right if it appeals, left if it doesn't. Likes land in your wishes.",
+    "counter": "{current} of {total}",
+    "yes": "Interested",
+    "no": "Not for me",
+    "verdictYes": "Interested",
+    "verdictNo": "Pass",
+    "emptyTitle": "You've seen everything for now.",
+    "emptyBody": "New experiences show up as the curator adds them.",
+    "emptyNote": "no rush"
   },
   "auth": {
     "connecting": "Connecting…",

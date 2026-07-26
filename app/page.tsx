@@ -2,6 +2,7 @@ import { AppShell } from "@/components/AppShell";
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
 import { TelegramBootstrap } from "@/components/TelegramBootstrap";
 import { getCurrentUser } from "@/lib/auth/currentUser";
+import { getDiscoverDeck } from "@/lib/engine/discover";
 import { getMemories } from "@/lib/engine/memories";
 import { getWeeklyView } from "@/lib/engine/weekly";
 import { prisma } from "@/lib/prisma";
@@ -17,7 +18,7 @@ export default async function Home() {
   if (!user) return <TelegramBootstrap />;
   if (user.onboardingState !== "DONE") return <OnboardingFlow initialCity={user.city} />;
 
-  const [wishes, weekly, memories, profile, preferences, invites] = await Promise.all([
+  const [wishes, weekly, memories, profile, preferences, invites, deck] = await Promise.all([
     prisma.wish.findMany({
       where: { userId: user.id, status: { not: "HIDDEN" } },
       orderBy: { createdAt: "desc" },
@@ -58,6 +59,7 @@ export default async function Home() {
         },
       },
     }),
+    getDiscoverDeck(user.id),
   ]);
 
   const inviteViews = invites
@@ -82,6 +84,7 @@ export default async function Home() {
       profile={profile}
       preferences={preferences}
       invites={inviteViews}
+      deck={deck}
     />
   );
 }
