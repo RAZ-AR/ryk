@@ -30,6 +30,8 @@ export type RykEvent =
   | { name: "barrier_named"; props: { barrier: BarrierType } }
   | { name: "rescue_applied"; props: { barrier: BarrierType | null } }
   /** % недель, когда пользователь выбирает отдых — прямой guardrail из 11-analytics. */
-  | { name: "week_deferred"; props: { stage: "plan" | "checkin" } };
+  | { name: "week_deferred"; props: { stage: "plan" | "checkin" } }
+  // ── Личный кабинет (владение данными, CLAUDE.md постулат №6) ─
+  | { name: "account_deleted"; props: Record<string, never> };
 
 export type RykEventName = RykEvent["name"];

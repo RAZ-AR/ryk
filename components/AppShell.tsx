@@ -3,6 +3,12 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { MemorySection } from "@/components/memory/MemorySection";
+import { ProfileEntry } from "@/components/profile/ProfileEntry";
+import {
+  ProfileSheet,
+  type PreferenceRow,
+  type ProfileView,
+} from "@/components/profile/ProfileSheet";
 import { WeekSection } from "@/components/week/WeekSection";
 import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
 import type { MemoryView, WeeklyView } from "@/lib/engine/weekly";
@@ -11,21 +17,27 @@ import { SvcLabel } from "./SvcLabel";
 import styles from "./AppShell.module.css";
 
 /*
- * Каркас Mini App: контент + плавающий dock (§7).
- * Неделя / Желания / Память — живые; Баланс — заглушка (Фаза 10).
+ * Каркас Mini App: контент + плавающий dock (§7) + точка входа в личный
+ * кабинет. Неделя / Желания / Память — живые; Баланс — заглушка (Фаза 10).
  */
 export function AppShell({
   wishes,
   weekly,
   memories,
+  profile,
+  preferences,
 }: {
   wishes: WishView[];
   weekly: WeeklyView;
   memories: MemoryView[];
+  profile: ProfileView;
+  preferences: PreferenceRow[];
 }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
+  const tProfile = useTranslations("profile");
   const [section, setSection] = useState<DockSection>("week");
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const labels: DockLabels = {
     week: nav("week"),
@@ -59,6 +71,14 @@ export function AppShell({
         labels={labels}
         ariaLabel={app("weekActive")}
       />
+      <ProfileEntry label={tProfile("entry")} onClick={() => setProfileOpen(true)} />
+      {profileOpen && (
+        <ProfileSheet
+          profile={profile}
+          preferences={preferences}
+          onClose={() => setProfileOpen(false)}
+        />
+      )}
     </div>
   );
 }

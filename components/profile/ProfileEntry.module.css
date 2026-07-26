@@ -1,0 +1,23 @@
+/* Точка входа в личный кабинет. position: fixed — привязан к экрану, а не
+   к контенту (тот же приём, что и у Dock, см. его комментарий). Верхний угол,
+   а не 5-я пилюля дока — там уже тесно на узких вьюпортах (Dock.module.css). */
+.entry {
+  position: fixed;
+  top: calc(14px + var(--tg-safe-area-inset-top, 0px));
+  right: 20px;
+  z-index: 6;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ryk-ink);
+  color: var(--ryk-paper);
+  border-radius: 50%;
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: var(--ryk-shadow-dock);
+}
