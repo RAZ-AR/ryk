@@ -235,10 +235,15 @@ model Experience {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  /// Куратор снял событие с показа (закрылось, отменилось, оказалось плохим).
+  /// Мягко: строка остаётся, потому что на неё могут ссылаться прошлые истории.
+  archivedAt DateTime?
+
   weeklyStories WeeklyStory[]
 
   @@index([city, category])
   @@index([startTime])
+  @@index([archivedAt])
   @@map("experiences")
 }
 

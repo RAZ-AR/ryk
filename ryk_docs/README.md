@@ -49,6 +49,7 @@ Ryk не пытается сделать человека более проду�
 | [17-design-system.md](17-design-system.md) | Дизайн-система: токены, типографика, motion, banned patterns |
 | [18-decisions-adr.md](18-decisions-adr.md) | Решения по архитектуре (ADR) |
 | [19-build-plan.md](19-build-plan.md) | План разработки MVP (пофазно, для Claude Code) |
+| [20-interview-guide.md](20-interview-guide.md) | Разговор с пользователем после недели (гайд куратора) |
 
 > Правила работы агента и «конституция» проекта — в [`../CLAUDE.md`](../CLAUDE.md) (корень репозитория).
 
