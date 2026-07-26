@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { getTelegramWebApp, type TelegramWebApp } from "@/lib/telegram/webApp";
 import { SvcLabel } from "./SvcLabel";
 import styles from "./TelegramBootstrap.module.css";
 
@@ -11,16 +12,6 @@ import styles from "./TelegramBootstrap.module.css";
  * Вход в Mini App. Берёт initData из Telegram и обменивает на сессию
  * через /api/auth. Вне Telegram (локальная разработка) — dev-вход.
  */
-
-type TelegramWebApp = {
-  ready?: () => void;
-  expand?: () => void;
-  initData?: string;
-};
-
-function getTelegram(): TelegramWebApp | undefined {
-  return (globalThis as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp;
-}
 
 /*
  * telegram-web-app.js подключён как `<script async>` (app/layout.tsx), поэтому
@@ -33,10 +24,10 @@ const SDK_POLL_MS = 25;
 
 async function waitForTelegram(): Promise<TelegramWebApp | undefined> {
   const deadline = Date.now() + SDK_TIMEOUT_MS;
-  let tg = getTelegram();
+  let tg = getTelegramWebApp();
   while (!tg && Date.now() < deadline) {
     await new Promise((resolve) => setTimeout(resolve, SDK_POLL_MS));
-    tg = getTelegram();
+    tg = getTelegramWebApp();
   }
   return tg;
 }
