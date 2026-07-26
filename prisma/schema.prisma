@@ -174,6 +174,7 @@ model User {
 
   sentInvites     Invite[] @relation("InviteInviter")
   receivedInvites Invite[] @relation("InviteRecipient")
+  reactions       ExperienceReaction[]
 
   @@map("users")
 }
@@ -262,11 +263,33 @@ model Experience {
   archivedAt DateTime?
 
   weeklyStories WeeklyStory[]
+  reactions     ExperienceReaction[]
 
   @@index([city, category])
   @@index([startTime])
   @@index([archivedAt])
   @@map("experiences")
+}
+
+/// Реакция на впечатление в ленте («интересно» / «не интересно»).
+/// Отдельно от Preference: та — модель вкуса по категориям
+/// (@@unique[userId, category, entity]), а здесь нужна отметка по конкретному
+/// впечатлению, чтобы не показывать его в ленте дважды.
+model ExperienceReaction {
+  id           String @id @default(uuid())
+  userId       String
+  experienceId String
+
+  liked Boolean
+
+  createdAt DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, experienceId])
+  @@index([userId, liked])
+  @@map("experience_reactions")
 }
 
 /// История недели — ядро продукта. Одна на пользователя в неделю.

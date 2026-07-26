@@ -42,10 +42,49 @@
   color: var(--ryk-ink);
 }
 
-/* На узких вьюпортах (Android от 360px) четыре пилюли не влезают
-   и «Баланс» обрезается — ужимаем горизонтальные поля, не трогая высоту. */
+/* Центральная кнопка со знаком: вход в ленту впечатлений.
+   Бумажный круг на ink-фоне дока — знак читается, и розовым в доке
+   по-прежнему светится только что-то одно (§11.1). */
+.center {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  margin: 0 var(--ryk-space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ryk-paper);
+  transition: background-color var(--ryk-duration-micro) var(--ryk-ease);
+}
+
+/* Открыта лента — кнопка и есть активный элемент дока. */
+.centerActive {
+  background: var(--ryk-pink);
+}
+
+.centerMark {
+  width: 30px;
+  height: auto;
+  display: block;
+}
+
+/* На узких вьюпортах (Android от 360px) пилюли не влезают
+   и «Баланс» обрезается — ужимаем поля и знак, не трогая высоту дока
+   и не опускаясь ниже 44px по касанию у самой кнопки. */
 @media (max-width: 400px) {
   .item {
-    padding: 11px var(--ryk-space-3);
+    padding: 11px var(--ryk-space-2);
+    font-size: 9px;
+  }
+
+  .center {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+  }
+
+  .centerMark {
+    width: 26px;
   }
 }

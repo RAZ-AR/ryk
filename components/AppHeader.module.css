@@ -1,0 +1,27 @@
+/* Логотип поверх любого экрана — тот же приём position: fixed, что у dock,
+   ProfileEntry и InviteBadge. Тихий и мелкий: знак уже есть в центре дока,
+   и два одинаковых пятна не должны спорить. */
+.home {
+  position: fixed;
+  top: calc(14px + var(--tg-safe-area-inset-top, 0px));
+  left: 20px;
+  z-index: 6;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  opacity: 0.75;
+  transition: opacity var(--ryk-duration-micro) var(--ryk-ease);
+}
+
+.home:hover,
+.home:focus-visible {
+  opacity: 1;
+}
+
+.mark {
+  width: 46px;
+  height: auto;
+  display: block;
+}

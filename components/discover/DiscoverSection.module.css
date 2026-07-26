@@ -1,0 +1,80 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  color: var(--ryk-ink);
+}
+
+.hint {
+  margin-top: var(--ryk-space-2);
+  font-family: var(--ryk-font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ryk-text-muted);
+}
+
+.deck {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: var(--ryk-space-5);
+}
+
+.counter {
+  margin-top: var(--ryk-space-4);
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  gap: var(--ryk-space-3);
+  margin-top: var(--ryk-space-5);
+}
+
+.actions > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Каталог кончился — спокойное состояние, не упрёк (14-brand-and-copy). */
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--ryk-space-3);
+  text-align: center;
+}
+
+.emptyTitle {
+  font-family: var(--ryk-font-serif);
+  font-size: 22px;
+  line-height: 1.3;
+  color: var(--ryk-ink);
+}
+
+.emptyBody {
+  font-family: var(--ryk-font-ui);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ryk-text-muted);
+}
+
+@media (max-width: 400px) {
+  .actions {
+    flex-direction: column;
+  }
+}

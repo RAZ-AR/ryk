@@ -1,0 +1,58 @@
+.wrap {
+  position: relative;
+  /* pan-y — вертикальный скролл страницы жестом не ломается, перехватываем
+     только горизонталь. */
+  touch-action: pan-y;
+  user-select: none;
+  cursor: grab;
+}
+
+.wrap:active {
+  cursor: grabbing;
+}
+
+.settling {
+  transition: transform var(--ryk-duration-standard) var(--ryk-ease);
+}
+
+.leaving {
+  transition:
+    transform var(--ryk-duration-standard) var(--ryk-ease),
+    opacity var(--ryk-duration-standard) var(--ryk-ease);
+  opacity: 0;
+}
+
+/* Метка намерения — проявляется по мере протаскивания. */
+.verdict {
+  position: absolute;
+  top: var(--ryk-space-5);
+  z-index: 2;
+  padding: 6px var(--ryk-space-3);
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.yes {
+  left: var(--ryk-space-5);
+  background: var(--ryk-pink);
+  color: var(--ryk-ink);
+}
+
+.no {
+  right: var(--ryk-space-5);
+  background: var(--ryk-ink);
+  color: var(--ryk-paper);
+}
+
+/* Без анимаций: наклон и отлёт убираем, свайп остаётся рабочим,
+   кнопки — тем более (дизайн-система §13). */
+@media (prefers-reduced-motion: reduce) {
+  .settling,
+  .leaving {
+    transition: none;
+  }
+}

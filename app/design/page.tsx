@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { Dock, type DockSection } from "@/components/Dock";
+import { Dock, type DockTarget } from "@/components/Dock";
 import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
 import { RykNote } from "@/components/RykNote";
@@ -37,7 +37,7 @@ const BUDGETS = ["до 500 ₽", "до 2 000 ₽", "не важно"];
 export default function DesignSystemPage() {
   const [emotion, setEmotion] = useState(1);
   const [budget, setBudget] = useState(0);
-  const [section, setSection] = useState<DockSection>("week");
+  const [section, setSection] = useState<DockTarget>("week");
 
   return (
     <main className={styles.page}>

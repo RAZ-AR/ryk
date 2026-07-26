@@ -1,6 +1,7 @@
 import type { Emotion, LifeCategory, SocialMode } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
 import { buildNudge, type Nudge } from "@/lib/engine/nudges";
+import { liveExperienceWhere } from "@/lib/engine/liveExperiences";
 import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
 
 /*
@@ -93,11 +94,6 @@ export function weekStartUTC(now: Date = new Date()): Date {
   const day = d.getUTCDay(); // 0=вс..6=сб
   d.setUTCDate(d.getUTCDate() + (day === 0 ? -6 : 1 - day));
   return d;
-}
-
-/** Начало сегодняшнего дня — граница «событие ещё впереди». */
-function startOfTodayUTC(now: Date = new Date()): Date {
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
 function pickWhy(
@@ -231,7 +227,7 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     return { kind: "commit", weekStart: weekStartIso, story, days };
   }
 
-  const [user, prefs, experiences] = await Promise.all([
+  const [user, prefs, experiences, reactions] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: { budgetMax: true, city: true, radiusKm: true },
@@ -242,15 +238,20 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     }),
     prisma.experience.findMany({
       where: {
-        // Куратор снял событие с показа (ADR-006) — предлагать его нельзя.
-        archivedAt: null,
-        // Событие с прошедшей датой — это не история на эту неделю.
-        // Впечатления без даты (прогулка, музей) живут всегда.
-        OR: [{ startTime: null }, { startTime: { gte: startOfTodayUTC() } }],
+        ...liveExperienceWhere(),
+        // «Не интересно» в ленте — значит не предлагать и как историю недели,
+        // иначе свайп влево ничего не менял бы.
+        reactions: { none: { userId, liked: false } },
       },
       take: 50,
     }),
+    prisma.experienceReaction.findMany({
+      where: { userId, liked: true },
+      select: { experienceId: true },
+    }),
   ]);
+
+  const likedExperiences = new Set(reactions.map((r) => r.experienceId));
 
   const liked = new Set<LifeCategory>(prefs.map((p) => p.category));
   const budgetMax = user?.budgetMax ?? null;
@@ -268,9 +269,12 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
       const relevance = isLiked ? 2 : 0.6;
       const feasibility = inBudget ? 1 : 0.3;
       const proximity = nearby ? 1 : 0.6;
+      // Прямой лайк в ленте — самый честный сигнал интереса, сильнее чем
+      // совпадение по категории: человек сказал «да» именно этому событию.
+      const swipedRight = likedExperiences.has(e.id) ? 1.8 : 1;
       // Детерминированный джиттер по id — стабильный порядок в течение недели.
       const jitter = (parseInt(e.id.replace(/\D/g, "").slice(0, 4) || "0", 10) % 17) / 100;
-      const score = relevance * feasibility * proximity + jitter;
+      const score = relevance * feasibility * proximity * swipedRight + jitter;
 
       return { e, score, ...pickWhy(isLiked, e.category, inBudget, nearby) };
     })

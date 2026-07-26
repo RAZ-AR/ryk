@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
+import { DiscoverSection } from "@/components/discover/DiscoverSection";
 import { InviteBadge } from "@/components/invite/InviteBadge";
 import { InviteClaimer } from "@/components/invite/InviteClaimer";
 import { InviteSheet, type InviteView } from "@/components/invite/InviteSheet";
@@ -14,14 +15,16 @@ import {
 } from "@/components/profile/ProfileSheet";
 import { WeekSection } from "@/components/week/WeekSection";
 import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
+import type { DeckCard } from "@/lib/engine/discover";
 import type { MemoryView, WeeklyView } from "@/lib/engine/weekly";
-import { Dock, type DockLabels, type DockSection } from "./Dock";
+import { AppHeader } from "./AppHeader";
+import { Dock, type DockLabels, type DockTarget } from "./Dock";
 import { SvcLabel } from "./SvcLabel";
 import styles from "./AppShell.module.css";
 
 /*
- * Каркас Mini App: контент + плавающий dock (§7) + точка входа в личный
- * кабинет + приглашения. Неделя / Желания / Память — живые;
+ * Каркас Mini App: контент + плавающий dock (§7) + логотип-возврат,
+ * личный кабинет и приглашения. Неделя / Желания / Память / Лента — живые;
  * Баланс — заглушка (Фаза 10).
  */
 export function AppShell({
@@ -31,6 +34,7 @@ export function AppShell({
   profile,
   preferences,
   invites,
+  deck,
 }: {
   wishes: WishView[];
   weekly: WeeklyView;
@@ -38,12 +42,14 @@ export function AppShell({
   profile: ProfileView;
   preferences: PreferenceRow[];
   invites: InviteView[];
+  deck: DeckCard[];
 }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
   const tProfile = useTranslations("profile");
   const tInvites = useTranslations("invites");
-  const [section, setSection] = useState<DockSection>("week");
+  const tDiscover = useTranslations("discover");
+  const [section, setSection] = useState<DockTarget>("week");
   const [profileOpen, setProfileOpen] = useState(false);
   const [invitesOpen, setInvitesOpen] = useState(false);
 
@@ -63,6 +69,8 @@ export function AppShell({
       <div className={styles.content}>
         {section === "week" ? (
           <WeekSection view={weekly} />
+        ) : section === "discover" ? (
+          <DiscoverSection deck={deck} />
         ) : section === "wishes" ? (
           <Wishlist wishes={wishes} />
         ) : section === "memory" ? (
@@ -82,7 +90,9 @@ export function AppShell({
         onNavigate={setSection}
         labels={labels}
         ariaLabel={app("weekActive")}
+        discoverLabel={tDiscover("title")}
       />
+      <AppHeader label={app("home")} onHome={() => setSection("week")} />
       <ProfileEntry label={tProfile("entry")} onClick={() => setProfileOpen(true)} />
       <InviteBadge
         count={invites.length}
