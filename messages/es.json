@@ -33,6 +33,8 @@
     "budgetLabel": "Presupuesto",
     "companyLabel": "Compañía",
     "witnessLabel": "Testigo",
+    "calendarLabel": "Añadir al calendario",
+    "calendarGoogle": "Google Calendar",
     "companyPlaceholder": "¿Quién te acompaña?",
     "witnessPlaceholder": "¿A quién se lo cuentas?",
     "witnessHint": "El testigo solo ve la promesa y el resultado. Sin valoraciones ni castigos.",

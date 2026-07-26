@@ -33,6 +33,8 @@
     "budgetLabel": "Бюджет",
     "companyLabel": "Компания",
     "witnessLabel": "Свидетель",
+    "calendarLabel": "В календарь",
+    "calendarGoogle": "Google Calendar",
     "companyPlaceholder": "С кем пойдёшь?",
     "witnessPlaceholder": "Кому сказать о намерении?",
     "witnessHint": "Свидетель увидит только обещание и итог. Без рейтингов и наказаний.",

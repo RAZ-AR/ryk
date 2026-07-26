@@ -33,6 +33,8 @@
     "budgetLabel": "Budget",
     "companyLabel": "Company",
     "witnessLabel": "Witness",
+    "calendarLabel": "Add to calendar",
+    "calendarGoogle": "Google Calendar",
     "companyPlaceholder": "Who will join you?",
     "witnessPlaceholder": "Who should know about it?",
     "witnessHint": "A witness only sees the promise and the outcome. No ratings, no penalties.",

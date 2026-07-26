@@ -60,6 +60,22 @@
   margin-top: var(--ryk-space-4);
 }
 
+/* Логистика подтверждённой истории — текстовые ссылки, не два больших
+   CTA рядом с основными действиями (§11.5 «показываем мало»). */
+.calendarRow {
+  display: flex;
+  gap: var(--ryk-space-5);
+  margin-top: var(--ryk-space-4);
+}
+
+.calendarLink {
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ryk-pink-text);
+}
+
 /* --- Commitment --- */
 .commitTitle {
   font-size: 33px;

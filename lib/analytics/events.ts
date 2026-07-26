@@ -32,6 +32,8 @@ export type RykEvent =
   /** % недель, когда пользователь выбирает отдых — прямой guardrail из 11-analytics. */
   | { name: "week_deferred"; props: { stage: "plan" | "checkin" } }
   // ── Личный кабинет (владение данными, CLAUDE.md постулат №6) ─
-  | { name: "account_deleted"; props: Record<string, never> };
+  | { name: "account_deleted"; props: Record<string, never> }
+  // ── Логистика подтверждённой истории ──────────────────────
+  | { name: "calendar_added"; props: { method: "ics" | "google" } };
 
 export type RykEventName = RykEvent["name"];
