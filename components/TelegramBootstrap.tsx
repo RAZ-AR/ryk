@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { SvcLabel } from "./SvcLabel";
@@ -80,7 +81,14 @@ export function TelegramBootstrap() {
 
   return (
     <div className={styles.wrap}>
-      <div className={styles.logo}>RYK</div>
+      <Image
+        src="/ryk-logo-pink.svg"
+        alt="Ryk"
+        width={406}
+        height={271}
+        unoptimized
+        className={styles.logo}
+      />
       <SvcLabel tone={failed ? "deep" : "muted"}>{failed ? t("failed") : t("connecting")}</SvcLabel>
     </div>
   );
