@@ -31,7 +31,8 @@
   /* Родная стрелка ОС круглит угол и ломает плоский принт — рисуем свою. */
   appearance: none;
   padding-right: 34px;
-  background-image: linear-gradient(45deg, transparent 50%, var(--ryk-ink) 50%),
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--ryk-ink) 50%),
     linear-gradient(135deg, var(--ryk-ink) 50%, transparent 50%);
   background-position:
     calc(100% - 18px) calc(50% - 2px),
