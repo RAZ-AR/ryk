@@ -1,0 +1,37 @@
+name: Smoke test (production)
+
+# Vercel помечает GitHub Deployment зелёным только после того, как сборка
+# реально выложена — поэтому триггеримся на его сигнал, а не гадаем таймингом
+# параллельного деплоя. workflow_dispatch — чтобы прогнать вручную без ожидания.
+on:
+  deployment_status:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    if: github.event_name == 'workflow_dispatch' || (github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Проверить ключевые роуты
+        # Бьём по алиасу ryk-ten.vercel.app, а не по target_url из события:
+        # «сырые» per-deployment URL у Vercel закрыты SSO-стеной проекта
+        # (Deployment Protection), алиас — единственный публично открытый адрес.
+        run: |
+          set -e
+          BASE="https://ryk-ten.vercel.app"
+
+          check() {
+            path="$1"
+            expected="$2"
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$BASE$path")
+            if [ "$code" != "$expected" ]; then
+              echo "::error::$path — ожидался $expected, получен $code"
+              exit 1
+            fi
+            echo "$path → $code ✓"
+          }
+
+          check "/" 200
+          check "/api/auth" 405
+          check "/concierge" 200
+          check "/design" 200

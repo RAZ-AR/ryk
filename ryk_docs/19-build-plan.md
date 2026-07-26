@@ -177,10 +177,31 @@ Next.js (TS strict) full-stack · Prisma · Supabase (Postgres, EU) · Telegram 
 
 ## Фаза 12 — Go-live ([playbook Фазы 5–7](../CLAUDE.md))
 
-1. Окружения: preview (staging, `noindex` + защита) и production; раздельные секреты.
-2. Smoke-тест после деплоя (curl ключевых роутов = 200); шаг отката при падении.
-3. _(Опц.)_ свой домен + HTTPS; иначе — URL Vercel.
-4. Пилот: 50–200 пользователей в Белграде/Нови-Саде.
+1. ⚠️ Окружения: preview уже `noindex` (`app/robots.ts`, disallow всё — приложение
+   работает только внутри Telegram, индексировать нечего) и уже защищён —
+   Vercel Deployment Protection закрывает «сырые» per-deployment URL SSO-стеной
+   (проверено: редирект на `vercel.com/sso-api`), открыт только продовый алиас
+   `ryk-ten.vercel.app`. **Не сделано и требует твоего решения:** preview сейчас
+   не имеет `DATABASE_URL`/`DIRECT_URL`/`SESSION_SECRET`/`TELEGRAM_BOT_TOKEN` —
+   поэтому существует, но ничего с БД не откроет. Варианты: (а) отдельная
+   Supabase-база под preview — чисто, но лишний бесплатный проект и миграции
+   на две базы; (б) preview на той же прод-базе — просто, но PR-тесты могут
+   писать мусор в реальные данные; (в) оставить как есть — preview подтверждает
+   только сборку, а не рантайм (сейчас так). Не стал решать это сам: см. вопрос
+   ниже в этом же сообщении.
+2. ✅ Smoke-тест после деплоя: [`.github/workflows/smoke.yml`](../.github/workflows/smoke.yml) —
+   триггерится на `deployment_status` от Vercel (не таймингом, а реальным
+   сигналом «выложено»), curl по `/`, `/api/auth`, `/concierge`, `/design`
+   на проде. Красный — сигнал остановиться, не автооткат.
+   **Откат:** `vercel rollback <url-предыдущего-деплоя> --token $VERCEL_TOKEN --yes`
+   (или Vercel Dashboard → Deployments → ⋯ → Promote to Production на последнем
+   зелёном деплое).
+3. Свой домен — не заведён, работаем на `ryk-ten.vercel.app` (устраивает: ADR-003).
+4. Пилот 50–200 пользователей — вне зоны агента, это твой шаг.
+
+**✅ Gate:** prod открывается по HTTPS (да) · smoke зелёный (да, см. workflow) ·
+онбординг→выбор→completion на живом стенде — **пройдено не тестом, а по-настоящему**:
+ты сам выбрал «Джазовый вечер», подтвердил на 27.07 с Fedya и свидетелем Ar.
 
 **✅ Gate:** prod открывается по HTTPS; smoke зелёный; онбординг→выбор→completion проходит на живом стенде.
 
