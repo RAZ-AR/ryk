@@ -1,14 +1,24 @@
 .shell {
   position: relative;
-  min-height: 100vh;
+  /* Высота, а не min-height: каркас не должен расти вслед за контентом —
+     скроллится .content внутри, а dock всегда остаётся у низа экрана.
+     --tg-viewport-stable-height — реальная высота Telegram WebView
+     (её выставляет telegram-web-app.js, см. app/layout.tsx); без него —
+     100dvh, которая, в отличие от 100vh, не залезает под мобильный тулбар. */
+  height: 100dvh;
+  height: var(--tg-viewport-stable-height, 100dvh);
   display: flex;
   flex-direction: column;
 }
 
 .content {
   flex: 1;
+  /* Без min-height:0 флекс-элемент с overflow не сжимается своим контентом —
+     вместо внутреннего скролла растёт вся .shell, и dock уезжает за экран. */
+  min-height: 0;
   padding: var(--ryk-screen-top) var(--ryk-screen-x) var(--ryk-screen-bottom-dock);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .header {

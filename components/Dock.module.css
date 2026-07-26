@@ -1,8 +1,13 @@
-/* Плавающий островок навигации (§7). Не приклеен к низу — приподнят на 18px. */
+/* Плавающий островок навигации (§7). Не приклеен к низу — приподнят на 18px.
+   position: fixed — привязан к экрану, а не к ближайшему позиционированному
+   родителю: раньше это был .shell, и когда контент рос выше вьюпорта,
+   dock уезжал вместе с ним за пределы видимой области.
+   Отступ учитывает safe-area (домашний индикатор iOS / жест-зона Android),
+   которую Telegram Mini App пишет в --tg-safe-area-inset-bottom. */
 .dock {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  bottom: 18px;
+  bottom: calc(18px + var(--tg-safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   display: flex;
   align-items: center;
