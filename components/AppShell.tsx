@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import { DiscoverSection } from "@/components/discover/DiscoverSection";
+import { HomeSection } from "@/components/home/HomeSection";
 import { InviteBadge } from "@/components/invite/InviteBadge";
 import { InviteClaimer } from "@/components/invite/InviteClaimer";
 import { InviteSheet, type InviteView } from "@/components/invite/InviteSheet";
@@ -16,6 +17,7 @@ import {
 import { WeekSection } from "@/components/week/WeekSection";
 import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
 import type { DeckCard } from "@/lib/engine/discover";
+import type { UpcomingItem } from "@/lib/engine/upcoming";
 import type { MemoryView, WeeklyView } from "@/lib/engine/weekly";
 import { AppHeader } from "./AppHeader";
 import { Dock, type DockLabels, type DockTarget } from "./Dock";
@@ -35,6 +37,7 @@ export function AppShell({
   preferences,
   invites,
   deck,
+  upcoming,
 }: {
   wishes: WishView[];
   weekly: WeeklyView;
@@ -43,6 +46,7 @@ export function AppShell({
   preferences: PreferenceRow[];
   invites: InviteView[];
   deck: DeckCard[];
+  upcoming: UpcomingItem[];
 }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
@@ -52,6 +56,8 @@ export function AppShell({
   const [section, setSection] = useState<DockTarget>("week");
   const [profileOpen, setProfileOpen] = useState(false);
   const [invitesOpen, setInvitesOpen] = useState(false);
+  /** Полный недельный цикл — оверлей поверх главного, а не отдельная секция. */
+  const [weekOpen, setWeekOpen] = useState(false);
 
   // Пришли по ссылке — открываем приглашения сразу: человек за этим и пришёл,
   // прятать их за значком было бы издевательством.
@@ -68,7 +74,12 @@ export function AppShell({
     <div className={styles.shell}>
       <div className={styles.content}>
         {section === "week" ? (
-          <WeekSection view={weekly} />
+          <HomeSection
+            upcoming={upcoming}
+            weekly={weekly}
+            deck={deck}
+            onOpenWeek={() => setWeekOpen(true)}
+          />
         ) : section === "discover" ? (
           <DiscoverSection deck={deck} />
         ) : section === "wishes" ? (
@@ -110,6 +121,14 @@ export function AppShell({
         />
       )}
       {invitesOpen && <InviteSheet invites={invites} onClose={() => setInvitesOpen(false)} />}
+      {weekOpen && (
+        <div className={styles.overlay}>
+          <button type="button" className={styles.overlayClose} onClick={() => setWeekOpen(false)}>
+            {app("back")}
+          </button>
+          <WeekSection view={weekly} />
+        </div>
+      )}
     </div>
   );
 }

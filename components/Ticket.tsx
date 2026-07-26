@@ -10,6 +10,13 @@ import styles from "./Ticket.module.css";
  */
 export type StubTone = "pink" | "neutral" | "grey";
 
+/**
+ * `default` — билет на весь экран (онбординг, история недели, свайпы).
+ * `compact` — для ленты на главном: тот же билет, но ниже, чтобы в поток
+ * помещалось несколько карточек подряд.
+ */
+export type TicketSize = "default" | "compact";
+
 type TicketProps = {
   /** Слот под фото. Пока не заменено реальным — рендерится плейсхолдер. */
   photo?: ReactNode;
@@ -25,6 +32,7 @@ type TicketProps = {
   note?: string;
   stubTone?: StubTone;
   stubLabel: string;
+  size?: TicketSize;
   children: ReactNode;
 };
 
@@ -38,10 +46,13 @@ export function Ticket({
   note,
   stubTone = "pink",
   stubLabel,
+  size = "default",
   children,
 }: TicketProps) {
   return (
-    <article className={styles.ticket}>
+    <article
+      className={[styles.ticket, size === "compact" && styles.compact].filter(Boolean).join(" ")}
+    >
       <div className={styles.top}>
         <div className={styles.photo}>
           <div className={styles.photoInner}>{photo ?? photoPlaceholder}</div>

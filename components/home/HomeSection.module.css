@@ -1,0 +1,29 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.promise {
+  font-family: var(--ryk-font-serif);
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--ryk-ink);
+}
+
+.section {
+  margin-top: var(--ryk-space-7);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ryk-space-3);
+  margin-bottom: var(--ryk-space-4);
+}
