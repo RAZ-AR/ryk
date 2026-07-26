@@ -35,6 +35,8 @@
     "witnessLabel": "Testigo",
     "calendarLabel": "Añadir al calendario",
     "calendarGoogle": "Google Calendar",
+    "inviteCompanion": "Invitar a alguien",
+    "inviteWitness": "Invitar a un testigo",
     "companyPlaceholder": "¿Quién te acompaña?",
     "witnessPlaceholder": "¿A quién se lo cuentas?",
     "witnessHint": "El testigo solo ve la promesa y el resultado. Sin valoraciones ni castigos.",

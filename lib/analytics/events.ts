@@ -34,6 +34,7 @@ export type RykEvent =
   // ── Личный кабинет (владение данными, CLAUDE.md постулат №6) ─
   | { name: "account_deleted"; props: Record<string, never> }
   // ── Логистика подтверждённой истории ──────────────────────
-  | { name: "calendar_added"; props: { method: "ics" | "google" } };
+  | { name: "calendar_added"; props: { method: "ics" | "google" } }
+  | { name: "invite_initiated"; props: { role: "companion" | "witness" } };
 
 export type RykEventName = RykEvent["name"];

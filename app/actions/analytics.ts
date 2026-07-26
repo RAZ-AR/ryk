@@ -21,3 +21,13 @@ export async function trackCalendarAdded(method: "google"): Promise<void> {
   if (!session) return;
   await track(session.userId, { name: "calendar_added", props: { method } });
 }
+
+/**
+ * Открытие пикера Telegram — не «отправлено»: switchInlineQuery не даёт
+ * знать, довёл ли человек дело до выбора чата и отправки.
+ */
+export async function trackInviteInitiated(role: "companion" | "witness"): Promise<void> {
+  const session = await getSession();
+  if (!session) return;
+  await track(session.userId, { name: "invite_initiated", props: { role } });
+}

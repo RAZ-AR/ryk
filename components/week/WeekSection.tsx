@@ -3,12 +3,17 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { trackCalendarAdded, trackCandidatesViewed } from "@/app/actions/analytics";
+import {
+  trackCalendarAdded,
+  trackCandidatesViewed,
+  trackInviteInitiated,
+} from "@/app/actions/analytics";
 import { commitStory, uncommitStory } from "@/app/actions/commitment";
 import { selectStory } from "@/app/actions/weekly";
 import type { SocialMode } from "@/generated/prisma/enums";
 import { buildGoogleCalendarUrl } from "@/lib/calendar/googleCalendarLink";
 import type { Candidate, SelectedStory, WeeklyView, WhyCode } from "@/lib/engine/weekly";
+import { getTelegramWebApp } from "@/lib/telegram/webApp";
 import type { DayWeather } from "@/lib/weather/openMeteo";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -184,6 +189,14 @@ export function WeekSection({ view }: { view: WeeklyView }) {
         if (res.ok) router.refresh();
       });
 
+    // Открывает пикер чатов Telegram; запрос ("companion"/"witness") — это
+    // и есть switchInlineQuery-query, который вебхук бота разберёт и
+    // соберёт нужную карточку (lib/telegram/inviteCard.ts).
+    const inviteRole = (role: "companion" | "witness") => {
+      getTelegramWebApp()?.switchInlineQuery?.(role, ["users", "groups"]);
+      void trackInviteInitiated(role);
+    };
+
     return (
       <div className={styles.wrap}>
         <SvcLabel tone="pink">{t("planKicker")}</SvcLabel>
@@ -255,6 +268,29 @@ export function WeekSection({ view }: { view: WeeklyView }) {
             >
               {t("calendarGoogle")}
             </a>
+          </div>
+        )}
+
+        {/* Вне Telegram (локальная разработка) SDK недоступен — кнопки
+            скрыты, а не падают. В реальном Telegram к моменту, когда виден
+            этот экран, вход уже прошёл через initData, а значит SDK уже
+            загружен: асинхронная проверка готовности не нужна. */}
+        {getTelegramWebApp()?.switchInlineQuery && (
+          <div className={styles.calendarRow}>
+            <button
+              type="button"
+              className={styles.calendarLink}
+              onClick={() => inviteRole("companion")}
+            >
+              {t("inviteCompanion")}
+            </button>
+            <button
+              type="button"
+              className={styles.calendarLink}
+              onClick={() => inviteRole("witness")}
+            >
+              {t("inviteWitness")}
+            </button>
           </div>
         )}
 
