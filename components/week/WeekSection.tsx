@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { trackCandidatesViewed } from "@/app/actions/analytics";
+import { trackCalendarAdded, trackCandidatesViewed } from "@/app/actions/analytics";
 import { commitStory, uncommitStory } from "@/app/actions/commitment";
 import { selectStory } from "@/app/actions/weekly";
 import type { SocialMode } from "@/generated/prisma/enums";
+import { buildGoogleCalendarUrl } from "@/lib/calendar/googleCalendarLink";
 import type { Candidate, SelectedStory, WeeklyView, WhyCode } from "@/lib/engine/weekly";
 import type { DayWeather } from "@/lib/weather/openMeteo";
 import { Button } from "@/components/Button";
@@ -235,6 +236,27 @@ export function WeekSection({ view }: { view: WeeklyView }) {
             </div>
           ) : null}
         </div>
+
+        {commitment.plannedFor && (
+          <div className={styles.calendarRow}>
+            <a href="/api/calendar/ics" className={styles.calendarLink}>
+              {t("calendarLabel")}
+            </a>
+            <a
+              href={buildGoogleCalendarUrl({
+                title: story.title,
+                dateISO: commitment.plannedFor,
+                location: story.location,
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.calendarLink}
+              onClick={() => void trackCalendarAdded("google")}
+            >
+              {t("calendarGoogle")}
+            </a>
+          </div>
+        )}
 
         <div className={styles.note}>
           <HandNote>{t("selectedNote")}</HandNote>
