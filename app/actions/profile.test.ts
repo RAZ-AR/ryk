@@ -12,6 +12,7 @@ const deleteManyPreference = vi.fn();
 const deleteManyIntervention = vi.fn();
 const deleteManyWeeklyStory = vi.fn();
 const deleteManyWish = vi.fn();
+const deleteManyInvite = vi.fn();
 const updateUser = vi.fn();
 const $transaction = vi.fn(async (ops: unknown[]) => Promise.all(ops));
 
@@ -22,6 +23,7 @@ vi.mock("@/lib/prisma", () => ({
     intervention: { deleteMany: deleteManyIntervention },
     weeklyStory: { deleteMany: deleteManyWeeklyStory },
     wish: { deleteMany: deleteManyWish },
+    invite: { deleteMany: deleteManyInvite },
     $transaction,
   },
 }));
@@ -80,9 +82,11 @@ describe("deleteAccount", () => {
     expect(deleteManyPreference).toHaveBeenCalledWith({ where: { userId: "user-1" } });
     expect(deleteManyWeeklyStory).toHaveBeenCalledWith({ where: { userId: "user-1" } });
     expect(deleteManyWish).toHaveBeenCalledWith({ where: { userId: "user-1" } });
+    expect(deleteManyInvite).toHaveBeenCalledWith({ where: { recipientId: "user-1" } });
+    // Имя стирается вместе с остальным — иначе «удалить» значило бы «спрятать».
     expect(updateUser).toHaveBeenCalledWith({
       where: { id: "user-1" },
-      data: { deletedAt: expect.any(Date) },
+      data: { deletedAt: expect.any(Date), firstName: null, username: null },
     });
     // Мягкая метка — не единственное действие: без явного удаления строк
     // это была бы деактивация, а не удаление (постулат «удаляема»).

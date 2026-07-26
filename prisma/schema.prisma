@@ -119,6 +119,19 @@ enum InterventionOutcome {
   DISMISSED
 }
 
+/// Кого зовут: спутника на само впечатление (Flow D) или свидетеля
+/// обещания (Flow E). Роль определяет и текст, и объём деталей.
+enum InviteRole {
+  COMPANION
+  WITNESS
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
 // ─────────────────────────── Models ───────────────────────────
 
 model User {
@@ -126,6 +139,12 @@ model User {
 
   /// Идентификатор из Telegram Mini App (ADR-001), проверяется по initData.
   telegramId String @unique
+
+  /// Отображаемое имя из Telegram. Источник — подписанный initData, не клиент:
+  /// именем подписывается принятое приглашение, и подделывать его нельзя.
+  /// Стирается вместе с остальными данными при удалении аккаунта (PRD §8).
+  firstName String?
+  username  String?
 
   locale          Locale          @default(RU)
   city            String?
@@ -152,6 +171,9 @@ model User {
   wishes        Wish[]
   weeklyStories WeeklyStory[]
   interventions Intervention[]
+
+  sentInvites     Invite[] @relation("InviteInviter")
+  receivedInvites Invite[] @relation("InviteRecipient")
 
   @@map("users")
 }
@@ -281,10 +303,46 @@ model WeeklyStory {
   wish          Wish?          @relation(fields: [wishId], references: [id], onDelete: SetNull)
   memory        Memory?
   interventions Intervention[]
+  invites       Invite[]
 
   @@unique([userId, weekStart])
   @@index([userId, status])
   @@map("weekly_stories")
+}
+
+/// Приглашение на историю недели: спутник (Flow D) или свидетель (Flow E).
+/// Отправляется ссылкой через пикер чатов Telegram — Mini App не может
+/// читать контакты, получателя выбирает сам человек (08-social).
+model Invite {
+  id            String @id @default(uuid())
+  weeklyStoryId String
+  inviterId     String
+
+  role   InviteRole
+  status InviteStatus @default(PENDING)
+
+  /// Снимок имени приглашающего на момент создания: получателю нужно видеть,
+  /// КТО зовёт, а в users имя не хранится (там только telegramId).
+  inviterName     String
+  inviterUsername String?
+
+  /// Заполняется, когда получатель впервые открыл ссылку. До этого null —
+  /// приглашение ещё «ничьё», и значок никому не горит.
+  recipientId String?
+  respondedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  weeklyStory WeeklyStory @relation(fields: [weeklyStoryId], references: [id], onDelete: Cascade)
+  inviter     User        @relation("InviteInviter", fields: [inviterId], references: [id], onDelete: Cascade)
+  recipient   User?       @relation("InviteRecipient", fields: [recipientId], references: [id], onDelete: SetNull)
+
+  /// Одно приглашение на историю и роль: и спутник, и свидетель — по одному
+  /// человеку. Ссылку можно разослать хоть десятерым, примет первый.
+  @@unique([weeklyStoryId, role])
+  @@index([recipientId, status])
+  @@map("invites")
 }
 
 /// Завершённая история. Единица ценности продукта — воспоминание, не отчёт.

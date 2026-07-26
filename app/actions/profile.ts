@@ -99,10 +99,16 @@ export async function deleteAccount(): Promise<ProfileResult> {
     await prisma.$transaction([
       prisma.intervention.deleteMany({ where: { userId: session.userId } }),
       prisma.preference.deleteMany({ where: { userId: session.userId } }),
-      // Тянет за собой Memory и оставшиеся Intervention каскадом.
+      // Полученные приглашения: отправленные уйдут каскадом вместе с историями.
+      prisma.invite.deleteMany({ where: { recipientId: session.userId } }),
+      // Тянет за собой Memory, Invite и оставшиеся Intervention каскадом.
       prisma.weeklyStory.deleteMany({ where: { userId: session.userId } }),
       prisma.wish.deleteMany({ where: { userId: session.userId } }),
-      prisma.user.update({ where: { id: session.userId }, data: { deletedAt: new Date() } }),
+      // Имя стираем вместе с остальным: «удалить» должно значить удалить.
+      prisma.user.update({
+        where: { id: session.userId },
+        data: { deletedAt: new Date(), firstName: null, username: null },
+      }),
     ]);
   } catch {
     return { ok: false, reason: "db_error" };

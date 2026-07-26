@@ -17,7 +17,7 @@ export default async function Home() {
   if (!user) return <TelegramBootstrap />;
   if (user.onboardingState !== "DONE") return <OnboardingFlow initialCity={user.city} />;
 
-  const [wishes, weekly, memories, profile, preferences] = await Promise.all([
+  const [wishes, weekly, memories, profile, preferences, invites] = await Promise.all([
     prisma.wish.findMany({
       where: { userId: user.id, status: { not: "HIDDEN" } },
       orderBy: { createdAt: "desc" },
@@ -41,7 +41,38 @@ export default async function Home() {
       orderBy: { createdAt: "desc" },
       select: { id: true, category: true, entity: true, sentiment: true },
     }),
+    // Только те, что уже закреплены за мной и ждут ответа — по ним горит значок.
+    prisma.invite.findMany({
+      where: { recipientId: user.id, status: "PENDING" },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        role: true,
+        inviterName: true,
+        inviterUsername: true,
+        weeklyStory: {
+          select: {
+            plannedFor: true,
+            experience: { select: { title: true, location: true } },
+          },
+        },
+      },
+    }),
   ]);
+
+  const inviteViews = invites
+    .filter((i) => i.weeklyStory.experience !== null)
+    .map((i) => ({
+      id: i.id,
+      role: i.role,
+      inviterName: i.inviterName,
+      inviterUsername: i.inviterUsername,
+      storyTitle: i.weeklyStory.experience!.title,
+      plannedFor: i.weeklyStory.plannedFor
+        ? i.weeklyStory.plannedFor.toISOString().slice(0, 10)
+        : null,
+      location: i.weeklyStory.experience!.location,
+    }));
 
   return (
     <AppShell
@@ -50,6 +81,7 @@ export default async function Home() {
       memories={memories}
       profile={profile}
       preferences={preferences}
+      invites={inviteViews}
     />
   );
 }

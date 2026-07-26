@@ -9,12 +9,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const findFirstUser = vi.fn();
 const findUniqueStory = vi.fn();
+const upsertInvite = vi.fn();
 const callTelegramApi = vi.fn().mockResolvedValue({ ok: true, result: {} });
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findFirst: (...a: unknown[]) => findFirstUser(...a) },
     weeklyStory: { findUnique: (...a: unknown[]) => findUniqueStory(...a) },
+    invite: { upsert: (...a: unknown[]) => upsertInvite(...a) },
   },
 }));
 vi.mock("@/lib/telegram/botApi", () => ({
@@ -36,10 +38,13 @@ function request(body: unknown, secretHeader = SECRET): Request {
 beforeEach(() => {
   vi.clearAllMocks();
   process.env.TELEGRAM_WEBHOOK_SECRET = SECRET;
+  process.env.TELEGRAM_BOT_USERNAME = "ryk_life_bot";
+  upsertInvite.mockResolvedValue({ id: "invite-1" });
 });
 
 afterEach(() => {
   delete process.env.TELEGRAM_WEBHOOK_SECRET;
+  delete process.env.TELEGRAM_BOT_USERNAME;
 });
 
 describe("POST /api/telegram/webhook", () => {
@@ -75,6 +80,7 @@ describe("POST /api/telegram/webhook", () => {
   it("есть подтверждённая история — карточка собрана, is_personal:true", async () => {
     findFirstUser.mockResolvedValue({ id: "user-1", locale: "RU" });
     findUniqueStory.mockResolvedValue({
+      id: "story-1",
       status: "COMMITTED",
       plannedFor: new Date("2026-07-27T12:00:00.000Z"),
       experience: {
@@ -87,7 +93,13 @@ describe("POST /api/telegram/webhook", () => {
     const { POST } = await import("./route");
 
     const res = await POST(
-      request({ inline_query: { id: "q1", from: { id: 128136200 }, query: "companion" } }),
+      request({
+        inline_query: {
+          id: "q1",
+          from: { id: 128136200, first_name: "Артём", username: "raz_ar" },
+          query: "companion",
+        },
+      }),
     );
 
     expect(res.status).toBe(200);
@@ -96,7 +108,45 @@ describe("POST /api/telegram/webhook", () => {
     expect(payload.cache_time).toBe(0);
     const results = payload.results as Array<{ input_message_content: { message_text: string } }>;
     expect(results).toHaveLength(1);
-    expect(results[0].input_message_content.message_text).toContain("Джазовый вечер");
+    const text = results[0].input_message_content.message_text;
+    expect(text).toContain("Джазовый вечер");
+    expect(text).toContain("Артём (@raz_ar)");
+    expect(text).toContain("https://t.me/ryk_life_bot?startapp=invite-1");
+  });
+
+  it("приглашение создаётся через upsert — inline_query летит на каждое нажатие", async () => {
+    findFirstUser.mockResolvedValue({ id: "user-1", locale: "RU" });
+    findUniqueStory.mockResolvedValue({
+      id: "story-1",
+      status: "COMMITTED",
+      plannedFor: new Date("2026-07-27T12:00:00.000Z"),
+      experience: { title: "Джаз", location: null, price: null, currency: "RSD" },
+    });
+    const { POST } = await import("./route");
+
+    await POST(
+      request({
+        inline_query: { id: "q1", from: { id: 1, first_name: "А" }, query: "witness" },
+      }),
+    );
+
+    expect(upsertInvite).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { weeklyStoryId_role: { weeklyStoryId: "story-1", role: "WITNESS" } },
+      }),
+    );
+  });
+
+  it("без имени бота в env карточку не собирает — ссылка была бы битой", async () => {
+    delete process.env.TELEGRAM_BOT_USERNAME;
+    findFirstUser.mockResolvedValue({ id: "user-1", locale: "RU" });
+    const { POST } = await import("./route");
+
+    await POST(request({ inline_query: { id: "q1", from: { id: 1 }, query: "companion" } }));
+
+    const [, payload] = callTelegramApi.mock.calls[0] as [string, Record<string, unknown>];
+    expect(payload.results).toEqual([]);
+    expect(upsertInvite).not.toHaveBeenCalled();
   });
 
   it("история не COMMITTED/AT_RISK — пустые results (нет плана, нечего слать)", async () => {

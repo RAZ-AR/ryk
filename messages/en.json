@@ -168,6 +168,20 @@
     "REST": "Rest",
     "CONTRIBUTION": "Contribution"
   },
+  "invites": {
+    "badge": "Invites",
+    "title": "Invitations",
+    "close": "Close",
+    "from": "Invitation from",
+    "roleCompanion": "Invited to join",
+    "roleWitness": "Asked to witness",
+    "accept": "Accept",
+    "decline": "Decline",
+    "responding": "Responding…",
+    "noDate": "no date",
+    "empty": "No invitations yet.",
+    "error": "Couldn't respond. The invitation may already be taken."
+  },
   "profile": {
     "entry": "Me",
     "title": "Profile",

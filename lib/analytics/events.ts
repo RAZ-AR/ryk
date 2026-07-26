@@ -35,6 +35,8 @@ export type RykEvent =
   | { name: "account_deleted"; props: Record<string, never> }
   // ── Логистика подтверждённой истории ──────────────────────
   | { name: "calendar_added"; props: { method: "ics" | "google" } }
-  | { name: "invite_initiated"; props: { role: "companion" | "witness" } };
+  | { name: "invite_initiated"; props: { role: "companion" | "witness" } }
+  | { name: "invite_accepted"; props: { role: "companion" | "witness" } }
+  | { name: "invite_declined"; props: { role: "companion" | "witness" } };
 
 export type RykEventName = RykEvent["name"];

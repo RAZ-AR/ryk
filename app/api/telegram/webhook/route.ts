@@ -1,19 +1,18 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
+import type { InviteRole as PrismaInviteRole } from "@/generated/prisma/enums";
 import { callTelegramApi } from "@/lib/telegram/botApi";
-import { buildInviteCard, type InviteRole } from "@/lib/telegram/inviteCard";
+import { buildInviteCard, buildInviteLink, type InviteRole } from "@/lib/telegram/inviteCard";
 import { weekStartUTC } from "@/lib/engine/weekly";
 import { prisma } from "@/lib/prisma";
 
 /*
- * POST /api/telegram/webhook — первый живой вебхук бота в проекте (до сих
- * пор Bot API использовался только для проверки initData, без сети).
+ * POST /api/telegram/webhook — единственный вебхук бота (до приглашений
+ * Bot API использовался только для проверки initData, без сети).
  *
- * Обрабатывает inline_query от switchInlineQuery (companion/witness —
- * Фаза «приглашения»). Только отправка: узнать, дошло ли приглашение,
- * и уведомить свидетеля об итоге — отдельная, более тяжёлая фича
- * (нужна инлайн-кнопка с callback_query + witnessTelegramId),
- * сознательно не в этом пассе.
+ * Обрабатывает inline_query от switchInlineQuery: создаёт (или переиспользует)
+ * приглашение и отдаёт карточку со ссылкой на Mini App. Приняв её, человек
+ * попадает в приложение с `startapp=<id приглашения>`.
  *
  * Telegram не подписывает вебхуки HMAC'ом как initData — секрет передаётся
  * заголовком, который сам выставляешь через setWebhook(secret_token=...).
@@ -32,13 +31,18 @@ function verifySecret(request: Request): boolean {
 
 type TelegramInlineQuery = {
   id: string;
-  from: { id: number; language_code?: string };
+  from: { id: number; first_name?: string; last_name?: string; username?: string };
   query: string;
 };
 
 function parseRole(query: string): InviteRole {
   return query.trim().toLowerCase() === "witness" ? "witness" : "companion";
 }
+
+const PRISMA_ROLE: Record<InviteRole, PrismaInviteRole> = {
+  companion: "COMPANION",
+  witness: "WITNESS",
+};
 
 export async function POST(request: Request) {
   if (!verifySecret(request)) {
@@ -79,6 +83,9 @@ type InlineQueryResultArticle = {
 
 /** Пустой массив — безопасный дефолт: нет пользователя, нет истории, статус не тот. */
 async function buildResults(query: TelegramInlineQuery): Promise<InlineQueryResultArticle[]> {
+  const botUsername = process.env.TELEGRAM_BOT_USERNAME;
+  if (!botUsername) return [];
+
   const telegramId = String(query.from.id);
   const user = await prisma.user.findFirst({
     where: { telegramId, deletedAt: null },
@@ -92,8 +99,36 @@ async function buildResults(query: TelegramInlineQuery): Promise<InlineQueryResu
   });
   if (!story?.experience || (story.status !== "COMMITTED" && story.status !== "AT_RISK")) return [];
 
+  const role = parseRole(query.query);
+  const inviterName = [query.from.first_name, query.from.last_name]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  const inviter = {
+    name: inviterName || "Ryk",
+    username: query.from.username ?? null,
+  };
+
+  // upsert, а не create: inline_query прилетает на каждое нажатие клавиши,
+  // а приглашение на историю и роль — одно (@@unique). Имя обновляем: человек
+  // мог сменить его в Telegram между попытками.
+  const invite = await prisma.invite.upsert({
+    where: {
+      weeklyStoryId_role: { weeklyStoryId: story.id, role: PRISMA_ROLE[role] },
+    },
+    update: { inviterName: inviter.name, inviterUsername: inviter.username },
+    create: {
+      weeklyStoryId: story.id,
+      inviterId: user.id,
+      role: PRISMA_ROLE[role],
+      inviterName: inviter.name,
+      inviterUsername: inviter.username,
+    },
+    select: { id: true },
+  });
+
   const card = buildInviteCard(
-    parseRole(query.query),
+    role,
     {
       title: story.experience.title,
       plannedForISO: story.plannedFor ? story.plannedFor.toISOString().slice(0, 10) : null,
@@ -102,6 +137,8 @@ async function buildResults(query: TelegramInlineQuery): Promise<InlineQueryResu
       currency: story.experience.currency,
     },
     user.locale,
+    inviter,
+    buildInviteLink(botUsername, invite.id),
   );
 
   return [

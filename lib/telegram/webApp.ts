@@ -11,6 +11,15 @@ export type TelegramWebApp = {
   expand?: () => void;
   initData?: string;
   /**
+   * Разобранный initData. Подпись здесь НЕ проверена — доверять содержимому
+   * нельзя, но `start_param` безопасен: это лишь идентификатор, который мы
+   * всё равно перепроверяем в БД по сессии.
+   */
+  initDataUnsafe?: {
+    /** Значение `startapp` из ссылки-приглашения (t.me/bot?startapp=…). */
+    start_param?: string;
+  };
+  /**
    * Открывает пикер чатов Telegram с предзаполненным инлайн-запросом.
    * Единственный доступный Mini App способ «пригласить» кого-то: платформа
    * принципиально не даёт читать контакты/друзей пользователя — человек
@@ -21,4 +30,9 @@ export type TelegramWebApp = {
 
 export function getTelegramWebApp(): TelegramWebApp | undefined {
   return (globalThis as { Telegram?: { WebApp?: TelegramWebApp } }).Telegram?.WebApp;
+}
+
+/** Параметр из ссылки-приглашения, если приложение открыли по ней. */
+export function getStartParam(): string | null {
+  return getTelegramWebApp()?.initDataUnsafe?.start_param ?? null;
 }
