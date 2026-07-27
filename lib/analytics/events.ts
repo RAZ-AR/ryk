@@ -15,7 +15,19 @@ import type { BarrierType, Emotion, LifeCategory } from "@/generated/prisma/enum
 
 export type RykEvent =
   // ── Core funnel ──────────────────────────────────────────────
-  | { name: "onboarding_completed"; props: { categories: number; hasBudget: boolean } }
+  | {
+      name: "onboarding_completed";
+      props: {
+        categories: number;
+        hasBudget: boolean;
+        /* Необязательные шаги: по ним видно, не слишком ли длинным вышел онбординг. */
+        toldMoment: boolean;
+        toldPostponed: boolean;
+        namedBarrier: boolean;
+        windows: number;
+        swipes: number;
+      };
+    }
   | { name: "candidates_viewed"; props: { count: number } }
   | { name: "story_selected"; props: { category: LifeCategory; whyCode: string } }
   | {

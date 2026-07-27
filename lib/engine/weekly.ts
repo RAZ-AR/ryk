@@ -1,4 +1,10 @@
-import type { Emotion, LifeCategory, SocialMode } from "@/generated/prisma/enums";
+import type {
+  Emotion,
+  ExperienceKind,
+  LifeBarrier,
+  LifeCategory,
+  SocialMode,
+} from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
 import { buildNudge, type Nudge } from "@/lib/engine/nudges";
 import { liveExperienceWhere } from "@/lib/engine/liveExperiences";
@@ -15,6 +21,38 @@ import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
  * за вызовами и ритуалами: они не зависят от билетов, погоды и денег.
  */
 const MAX_EVENT_CANDIDATES = 1;
+
+/** Короткое впечатление — то, что помещается в час. */
+const SHORT_MINUTES = 60;
+
+/**
+ * Множитель по названному в онбординге препятствию: предлагаем обход,
+ * а не уговоры (07-ai-companion). Спросили — значит ответ должен что-то
+ * менять, иначе вопрос был лишним.
+ *
+ * NO_COMPANY и FEAR здесь не обходятся: честного признака «это делают
+ * в одиночку» и «это маленький шаг» в каталоге пока нет, а выдумывать
+ * его из категории значило бы врать в объяснении «почему это подходит».
+ */
+export function barrierBoost(barrier: LifeBarrier | null, e: ExperienceForScore): number {
+  switch (barrier) {
+    case "NO_TIME":
+      return e.durationMin != null && e.durationMin <= SHORT_MINUTES ? 1.6 : 1;
+    case "TOO_EXPENSIVE":
+      return e.price === 0 ? 1.6 : 1;
+    case "NO_ENERGY":
+      return e.kind === "RITUAL" ? 1.6 : 1;
+    default:
+      return 1;
+  }
+}
+
+/** Поля впечатления, от которых зависит обход препятствия. */
+export type ExperienceForScore = {
+  durationMin: number | null;
+  price: number | null;
+  kind: ExperienceKind;
+};
 
 export type WhyCode = "LIKED_CATEGORY" | "IN_BUDGET" | "NEARBY" | "CURATED" | "FRESH";
 
@@ -242,7 +280,7 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
   const [user, prefs, experiences, reactions] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
-      select: { budgetMax: true, city: true, radiusKm: true },
+      select: { budgetMax: true, city: true, radiusKm: true, mainBarrier: true },
     }),
     prisma.preference.findMany({
       where: { userId, sentiment: "LIKE" },
@@ -271,6 +309,7 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
   const budgetMax = user?.budgetMax ?? null;
   const radiusKm = user?.radiusKm ?? null;
   const userCity = user?.city ?? null;
+  const mainBarrier = user?.mainBarrier ?? null;
 
   const scored = experiences
     .map((e) => {
@@ -286,9 +325,11 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
       // Прямой лайк в ленте — самый честный сигнал интереса, сильнее чем
       // совпадение по категории: человек сказал «да» именно этому событию.
       const swipedRight = likedExperiences.has(e.id) ? 1.8 : 1;
+      // Человек сам назвал, что ему мешает — поднимаем то, что это обходит.
+      const barrier = barrierBoost(mainBarrier, e);
       // Детерминированный джиттер по id — стабильный порядок в течение недели.
       const jitter = (parseInt(e.id.replace(/\D/g, "").slice(0, 4) || "0", 10) % 17) / 100;
-      const score = relevance * feasibility * proximity * swipedRight + jitter;
+      const score = relevance * feasibility * proximity * swipedRight * barrier + jitter;
 
       return { e, score, ...pickWhy(isLiked, e.category, inBudget, nearby) };
     })

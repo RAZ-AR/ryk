@@ -272,8 +272,8 @@
       "skip": "I already have a profile"
     },
     "categories": {
-      "step": "Onboarding 1/4",
-      "time": "≈ 4 min",
+      "step": "Onboarding 2/7",
+      "time": "≈ 6 min",
       "title": "What makes you feel alive?",
       "hint": "Pick everything that resonates — just tap.",
       "counter": "{count} picked — that's plenty!",
@@ -282,7 +282,7 @@
       "next": "Next →"
     },
     "swipe": {
-      "step": "Onboarding 2/4",
+      "step": "Onboarding 3/7",
       "counter": "Idea {current}/{total}",
       "title": "Would you go?",
       "no": "Not for me",
@@ -319,10 +319,40 @@
         "title": "Sunrise on a rooftop",
         "note": "An early start — and the city feels brand new.",
         "meta": "free · 1.5h"
+      },
+      "call": {
+        "title": "Call someone you haven't spoken to in a year",
+        "note": "No reason, no explaining the silence.",
+        "meta": "free · 20 min"
+      },
+      "film": {
+        "title": "The film you kept putting off",
+        "note": "That one, from the list. All of it, phone away.",
+        "meta": "free · 2 h"
+      },
+      "alone": {
+        "title": "Have dinner alone at a restaurant",
+        "note": "No phone on the table. The first ten minutes are the strangest.",
+        "meta": "1500 RSD · 1.5 h"
+      },
+      "letter": {
+        "title": "A letter to yourself a year from now",
+        "note": "By hand, sealed, hidden where you won't find it soon.",
+        "meta": "free · 40 min"
+      },
+      "cold": {
+        "title": "Step into cold water",
+        "note": "River, sea, shower. Three minutes, breathe slowly.",
+        "meta": "free · 15 min"
+      },
+      "help": {
+        "title": "A day at an animal shelter",
+        "note": "Walking and cleaning. One-time visits are fine.",
+        "meta": "free · 4 h"
       }
     },
     "params": {
-      "step": "Onboarding 3/4",
+      "step": "Onboarding 7/7",
       "title": "Your week's boundaries",
       "budgetLabel": "Budget for a story",
       "budgetLow": "up to 1500 RSD",
@@ -341,6 +371,39 @@
       "note": "you can change all of this later",
       "finish": "Show my first stories →",
       "saving": "Saving…"
+    },
+    "moment": {
+      "step": "Onboarding 4/7",
+      "title": "When was the last time it felt genuinely good?",
+      "hint": "One occasion. A couple of lines is enough to tell what suits you.",
+      "placeholder": "Last summer, on the roof with my brother until sunrise…",
+      "next": "Next →",
+      "skip": "Skip"
+    },
+    "postponed": {
+      "step": "Onboarding 5/7",
+      "title": "What have you wanted for ages but never done?",
+      "hint": "The thing that rolls over year after year. We'll save it as a wish.",
+      "placeholder": "Learn to swim. Go to Georgia. Ask her out.",
+      "next": "Next →",
+      "skip": "Skip"
+    },
+    "rhythm": {
+      "step": "Onboarding 6/7",
+      "title": "What gets in the way most often?",
+      "hint": "Knowing the reason, we suggest a way around it instead of nagging.",
+      "barrierNO_TIME": "Not enough time",
+      "barrierTOO_EXPENSIVE": "Too expensive",
+      "barrierNO_COMPANY": "Don't want to go alone",
+      "barrierFEAR": "It's scary",
+      "barrierNO_ENERGY": "No energy",
+      "windowsLabel": "When you're actually free",
+      "windowWEEKDAY_MORNING": "Weekday morning",
+      "windowWEEKDAY_EVENING": "Weekday evening",
+      "windowWEEKEND_DAY": "Weekend day",
+      "windowWEEKEND_EVENING": "Weekend evening",
+      "next": "Next →",
+      "skip": "Skip"
     }
   },
   "memory": {

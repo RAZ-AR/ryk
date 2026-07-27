@@ -180,3 +180,18 @@
   flex-wrap: wrap;
   gap: var(--ryk-space-2);
 }
+
+/*
+ * Девятая категория («Вклад») делает сетку нечётной: последняя ячейка
+ * занимает обе колонки, иначе справа осталась бы дыра без рамок.
+ */
+.cell:last-child:nth-child(odd) {
+  grid-column: span 2;
+}
+
+/* Свободный рассказ: поле должно приглашать писать, а не отделываться словом. */
+.textarea {
+  margin-top: var(--ryk-space-5);
+  min-height: 132px;
+  resize: vertical;
+}
