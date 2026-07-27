@@ -272,8 +272,8 @@
       "skip": "Ya tengo un perfil"
     },
     "categories": {
-      "step": "Onboarding 1/4",
-      "time": "≈ 4 min",
+      "step": "Onboarding 2/7",
+      "time": "≈ 6 min",
       "title": "¿Qué te hace sentir vivo?",
       "hint": "Elige todo lo que resuene — solo toca.",
       "counter": "{count} elegidas — ¡ya es suficiente!",
@@ -282,7 +282,7 @@
       "next": "Siguiente →"
     },
     "swipe": {
-      "step": "Onboarding 2/4",
+      "step": "Onboarding 3/7",
       "counter": "Idea {current}/{total}",
       "title": "¿Irías?",
       "no": "No es lo mío",
@@ -319,10 +319,40 @@
         "title": "Amanecer en una azotea",
         "note": "Madrugar — y la ciudad se siente nueva.",
         "meta": "gratis · 1,5 h"
+      },
+      "call": {
+        "title": "Llamar a alguien con quien no hablas hace un año",
+        "note": "Sin motivo y sin explicar el silencio.",
+        "meta": "gratis · 20 min"
+      },
+      "film": {
+        "title": "La película que llevas años posponiendo",
+        "note": "Esa, la de la lista. Entera, sin teléfono.",
+        "meta": "gratis · 2 h"
+      },
+      "alone": {
+        "title": "Cenar solo en un restaurante",
+        "note": "Sin teléfono en la mesa. Los primeros diez minutos son los raros.",
+        "meta": "1500 RSD · 1,5 h"
+      },
+      "letter": {
+        "title": "Una carta para ti dentro de un año",
+        "note": "A mano, sellada, guardada donde no la encuentres pronto.",
+        "meta": "gratis · 40 min"
+      },
+      "cold": {
+        "title": "Meterte en agua fría",
+        "note": "Río, mar, ducha. Tres minutos, respirando despacio.",
+        "meta": "gratis · 15 min"
+      },
+      "help": {
+        "title": "Un día en un refugio de animales",
+        "note": "Pasear y limpiar. También se puede ir una sola vez.",
+        "meta": "gratis · 4 h"
       }
     },
     "params": {
-      "step": "Onboarding 3/4",
+      "step": "Onboarding 7/7",
       "title": "Los límites de tu semana",
       "budgetLabel": "Presupuesto por historia",
       "budgetLow": "hasta 1500 RSD",
@@ -341,6 +371,39 @@
       "note": "puedes cambiar todo esto después",
       "finish": "Mostrar mis primeras historias →",
       "saving": "Guardando…"
+    },
+    "moment": {
+      "step": "Onboarding 4/7",
+      "title": "¿Cuándo fue la última vez que estuviste de verdad bien?",
+      "hint": "Un momento. Un par de líneas bastan para saber qué te va.",
+      "placeholder": "El verano pasado, en la azotea con mi hermano hasta el amanecer…",
+      "next": "Siguiente →",
+      "skip": "Omitir"
+    },
+    "postponed": {
+      "step": "Onboarding 5/7",
+      "title": "¿Qué quieres hace tiempo y nunca haces?",
+      "hint": "Eso que se pospone año tras año. Lo guardamos como deseo.",
+      "placeholder": "Aprender a nadar. Ir a Georgia. Invitarla a salir.",
+      "next": "Siguiente →",
+      "skip": "Omitir"
+    },
+    "rhythm": {
+      "step": "Onboarding 6/7",
+      "title": "¿Qué te lo impide más a menudo?",
+      "hint": "Si sabemos el motivo, proponemos un rodeo en vez de insistir.",
+      "barrierNO_TIME": "Falta de tiempo",
+      "barrierTOO_EXPENSIVE": "Caro",
+      "barrierNO_COMPANY": "No quiero ir solo",
+      "barrierFEAR": "Da miedo",
+      "barrierNO_ENERGY": "Sin energía",
+      "windowsLabel": "Cuándo estás libre de verdad",
+      "windowWEEKDAY_MORNING": "Mañana entre semana",
+      "windowWEEKDAY_EVENING": "Tarde entre semana",
+      "windowWEEKEND_DAY": "Día de fin de semana",
+      "windowWEEKEND_EVENING": "Noche de fin de semana",
+      "next": "Siguiente →",
+      "skip": "Omitir"
     }
   },
   "memory": {
