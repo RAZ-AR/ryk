@@ -155,10 +155,24 @@ const MOTIFS: Record<LifeCategory, (next: () => number) => React.ReactNode> = {
     return (
       <>
         {Array.from({ length: cols - 1 }, (_, i) => (
-          <line key={`v${i}`} x1={cw * (i + 1)} y1={0} x2={cw * (i + 1)} y2={H} strokeWidth={0.75} />
+          <line
+            key={`v${i}`}
+            x1={cw * (i + 1)}
+            y1={0}
+            x2={cw * (i + 1)}
+            y2={H}
+            strokeWidth={0.75}
+          />
         ))}
         {Array.from({ length: rows - 1 }, (_, i) => (
-          <line key={`h${i}`} x1={0} y1={ch * (i + 1)} x2={W} y2={ch * (i + 1)} strokeWidth={0.75} />
+          <line
+            key={`h${i}`}
+            x1={0}
+            y1={ch * (i + 1)}
+            x2={W}
+            y2={ch * (i + 1)}
+            strokeWidth={0.75}
+          />
         ))}
         <rect
           className={styles.accentFill}

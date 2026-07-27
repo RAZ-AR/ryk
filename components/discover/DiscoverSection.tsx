@@ -81,7 +81,11 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
             >
               <Ticket
                 photo={
-                  <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
+                  <ExperienceVisual
+                    id={card.id}
+                    category={card.category}
+                    imageUrl={card.imageUrl}
+                  />
                 }
                 metaLeft={durationLabel(card.durationMin)}
                 metaRight={priceLabel(card.price, card.currency)}

@@ -303,7 +303,8 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
   const usedCategories = new Set<LifeCategory>();
   let events = 0;
 
-  const canTake = (s: (typeof scored)[number]) => s.e.kind !== "EVENT" || events < MAX_EVENT_CANDIDATES;
+  const canTake = (s: (typeof scored)[number]) =>
+    s.e.kind !== "EVENT" || events < MAX_EVENT_CANDIDATES;
   const take = (s: (typeof scored)[number]) => {
     picked.push(s);
     usedCategories.add(s.e.category);
