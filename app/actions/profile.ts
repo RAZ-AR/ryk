@@ -24,6 +24,8 @@ export type ProfileInput = {
   socialMode: SocialMode | null;
   locale: Locale;
   noveltyRatio: number;
+  /** Разрешено ли боту писать первым (см. lib/engine/nudgeDelivery). */
+  nudges: boolean;
 };
 
 export async function updateProfile(input: ProfileInput): Promise<ProfileResult> {
@@ -54,6 +56,9 @@ export async function updateProfile(input: ProfileInput): Promise<ProfileResult>
         socialMode: input.socialMode,
         locale: input.locale,
         noveltyRatio: Math.round(input.noveltyRatio),
+        // Пишем всё поле целиком: других ключей в нём пока нет, и слияние
+        // усложнило бы код ради несуществующей настройки.
+        notificationPreferences: { nudges: input.nudges !== false },
       },
     });
   } catch {

@@ -244,6 +244,8 @@
     "socialAny": "Cualquiera",
     "localeLabel": "Idioma",
     "noveltyLabel": "Porcentaje de novedad",
+    "nudgesLabel": "Ryk puede escribirte en Telegram",
+    "nudgesHint": "No más de dos mensajes por semana, y solo cuando haya algo que proponer.",
     "save": "Guardar",
     "saving": "Guardando…",
     "saved": "Guardado",

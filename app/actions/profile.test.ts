@@ -115,6 +115,7 @@ describe("updateProfile", () => {
       socialMode: null,
       locale: "RU",
       noveltyRatio: 30,
+      nudges: true,
     });
     expect(badRadius).toEqual({ ok: false, reason: "bad_radius" });
 
@@ -125,6 +126,7 @@ describe("updateProfile", () => {
       socialMode: null,
       locale: "RU",
       noveltyRatio: 150,
+      nudges: true,
     });
     expect(badNovelty).toEqual({ ok: false, reason: "bad_novelty_ratio" });
 
@@ -140,6 +142,7 @@ describe("updateProfile", () => {
       socialMode: "CLOSE_ONES",
       locale: "RU",
       noveltyRatio: 40,
+      nudges: true,
     });
 
     expect(res).toEqual({ ok: true });
@@ -152,7 +155,23 @@ describe("updateProfile", () => {
         socialMode: "CLOSE_ONES",
         locale: "RU",
         noveltyRatio: 40,
+        notificationPreferences: { nudges: true },
       },
     });
+  });
+
+  it("выключенные уведомления доезжают до базы", async () => {
+    const { updateProfile } = await import("./profile");
+    await updateProfile({
+      city: null,
+      radiusKm: 25,
+      budgetMax: null,
+      socialMode: null,
+      locale: "RU",
+      noveltyRatio: 40,
+      nudges: false,
+    });
+
+    expect(updateUser.mock.calls[0][0].data.notificationPreferences).toEqual({ nudges: false });
   });
 });

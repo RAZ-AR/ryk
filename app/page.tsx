@@ -4,6 +4,7 @@ import { TelegramBootstrap } from "@/components/TelegramBootstrap";
 import { getCurrentUser } from "@/lib/auth/currentUser";
 import { getDiscoverDeck } from "@/lib/engine/discover";
 import { getMemories } from "@/lib/engine/memories";
+import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
 import { getUpcoming } from "@/lib/engine/upcoming";
 import { getWeeklyView } from "@/lib/engine/weekly";
 import { prisma } from "@/lib/prisma";
@@ -37,6 +38,7 @@ export default async function Home() {
           socialMode: true,
           locale: true,
           noveltyRatio: true,
+          notificationPreferences: true,
         },
       }),
       prisma.preference.findMany({
@@ -84,7 +86,9 @@ export default async function Home() {
       wishes={wishes}
       weekly={weekly}
       memories={memories}
-      profile={profile}
+      // Json из БД разворачиваем здесь: экрану профиля нужен простой флаг,
+      // а не форма хранения настроек.
+      profile={{ ...profile, nudges: notificationsEnabled(profile.notificationPreferences) }}
       preferences={preferences}
       invites={inviteViews}
       deck={deck}
