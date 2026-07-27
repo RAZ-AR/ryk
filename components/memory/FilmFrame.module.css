@@ -1,0 +1,93 @@
+/*
+ * Кадр плёнки: перфорация по краям, окно с изображением, подпись под ним.
+ * Палитра — только токены, как и везде (17-design-system).
+ */
+
+.frame {
+  display: grid;
+  grid-template-columns: 14px 1fr 14px;
+  background: var(--ryk-white);
+  border: 1px solid var(--ryk-border-card);
+}
+
+/* Перфорация — повторяющийся градиент, а не десяток пустых элементов. */
+.holes {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 9px,
+    var(--ryk-surface-stub) 9px 19px,
+    transparent 19px 28px
+  );
+  background-color: var(--ryk-surface-card);
+  border-left: 1px solid var(--ryk-border-row);
+  border-right: 1px solid var(--ryk-border-row);
+}
+
+.body {
+  min-width: 0;
+  padding: var(--ryk-space-3);
+}
+
+.window {
+  position: relative;
+  height: 168px;
+  overflow: hidden;
+  background: var(--ryk-surface-muted);
+}
+
+/*
+ * Перенесённая неделя: непроявленный кадр — тоньше и без картинки, потому
+ * что показывать нечего. Ни крестов, ни знаков: это не отметка о провале.
+ */
+.quiet .window {
+  height: 56px;
+}
+
+.blank {
+  position: absolute;
+  inset: 0;
+  background: var(--ryk-surface-muted);
+}
+
+.caption {
+  padding-top: var(--ryk-space-3);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--ryk-space-3);
+}
+
+.title {
+  margin-top: var(--ryk-space-2);
+  font-family: var(--ryk-font-ticket);
+  font-size: 24px;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ryk-ink);
+}
+
+.note {
+  margin-top: var(--ryk-space-2);
+}
+
+/* Перенесённое приглушено, но не перечёркнуто: это не провал. */
+.quiet {
+  background: var(--ryk-surface-card);
+}
+
+.quiet .title {
+  color: var(--ryk-text-muted);
+}
+
+@media (min-width: 640px) {
+  .window {
+    height: 220px;
+  }
+
+  .quiet .window {
+    height: 64px;
+  }
+}

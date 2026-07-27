@@ -26,6 +26,9 @@ export async function getMemories(userId: string, limit = 24): Promise<MemoryVie
         companion: s.memory.companion,
         category: s.experience?.category ?? null,
         deferred: s.memory.deferred,
+        // Первое фото — обложка кадра. Остальные пока не показываем:
+        // «Плёнка» — про одно воспоминание в кадре, а не про галерею.
+        photo: s.memory.media[0] ?? null,
       },
     ];
   });
