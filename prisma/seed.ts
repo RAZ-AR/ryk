@@ -1,15 +1,17 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config as loadEnv } from "dotenv";
 import { PrismaClient } from "../generated/prisma/client";
+import { CATALOG } from "./catalog";
 
 loadEnv({ path: [".env.local", ".env"], quiet: true });
 
 /*
  * Сиды для локальной разработки и пилота.
- * События Белграда и Нови-Сада заводятся вручную куратором (ADR-006):
- * глобальные event-API по Сербии неполны, поэтому каталог — курируемый.
+ * Каталог курируемый (ADR-006) и лежит в ./catalog.ts — там же объяснена
+ * пропорция типов: событий меньшинство, большая часть — вызовы и ритуалы.
  *
- * Скрипт идемпотентный: повторный запуск не плодит дубли.
+ * Скрипт идемпотентный: повторный запуск не плодит дубли, а обновляет
+ * существующие строки по metadata.slug.
  */
 
 const prisma = new PrismaClient({
@@ -19,100 +21,9 @@ const prisma = new PrismaClient({
   }),
 });
 
-const CURATED_EXPERIENCES = [
-  {
-    slug: "bg-ada-sunrise-kayak",
-    title: "Каякинг на Аде на рассвете",
-    description: "Группа до 6 человек, опыт не нужен. Снаряжение включено.",
-    category: "NATURE",
-    city: "Белград",
-    location: "Ада Циганлија",
-    durationMin: 120,
-    price: 2200,
-    distanceKm: 7,
-  },
-  {
-    slug: "bg-kalemegdan-night-walk",
-    title: "Ночная прогулка по Калемегдану",
-    description: "Крепость, слияние Савы и Дуная, город с высоты. Бесплатно.",
-    category: "DISCOVERY",
-    city: "Белград",
-    location: "Калемегдан",
-    durationMin: 90,
-    price: 0,
-    distanceKm: 3,
-  },
-  {
-    slug: "bg-pottery-workshop",
-    title: "Гончарная мастерская для новичков",
-    description: "Мастер оставит работу на обжиг. Можно прийти вдвоём.",
-    category: "JOY",
-    city: "Белград",
-    location: "Дорћол",
-    durationMin: 150,
-    price: 3500,
-    distanceKm: 4,
-  },
-  {
-    slug: "bg-kolarac-organ",
-    title: "Органный вечер в Коларце",
-    description: "Классическая программа при свечах. Билеты обычно есть.",
-    category: "CULTURE",
-    city: "Белград",
-    location: "Задужбина Илије М. Коларца",
-    durationMin: 120,
-    price: 1800,
-    distanceKm: 5,
-  },
-  {
-    slug: "bg-climbing-intro",
-    title: "Скалодром: первое занятие",
-    description: "Инструктор и снаряжение включены. Можно одному.",
-    category: "CHALLENGE",
-    city: "Белград",
-    location: "Вождовац",
-    durationMin: 90,
-    price: 1500,
-    distanceKm: 8,
-  },
-  {
-    slug: "ns-petrovaradin-sunrise",
-    title: "Рассвет на Петроварадинской крепости",
-    description: "Дунай в тумане и пустой город внизу. Нужен ранний подъём.",
-    category: "NATURE",
-    city: "Нови-Сад",
-    location: "Петроварадинска тврђава",
-    durationMin: 120,
-    price: 0,
-    distanceKm: 4,
-  },
-  {
-    slug: "ns-danube-cycling",
-    title: "Велодень вдоль Дуная",
-    description: "Ровный маршрут по набережной, прокат рядом.",
-    category: "MOVEMENT",
-    city: "Нови-Сад",
-    location: "Штранд",
-    durationMin: 180,
-    price: 900,
-    distanceKm: 5,
-  },
-  {
-    slug: "ns-shared-dinner",
-    title: "Ужин за общим столом",
-    description: "Формат знакомства: восемь человек, домашняя кухня Воеводины.",
-    category: "CONNECTION",
-    city: "Нови-Сад",
-    location: "Центр",
-    durationMin: 150,
-    price: 2600,
-    distanceKm: 2,
-  },
-] as const;
-
 async function main() {
   // Курируемый каталог впечатлений.
-  for (const item of CURATED_EXPERIENCES) {
+  for (const item of CATALOG) {
     const { slug, ...rest } = item;
     const existing = await prisma.experience.findFirst({
       where: { metadata: { path: ["slug"], equals: slug } },
@@ -148,8 +59,20 @@ async function main() {
     });
   }
 
-  const total = await prisma.experience.count();
+  // Печатаем пропорцию: если событий стало больше трети, каталог поехал
+  // не туда, и это должно быть видно сразу при запуске сида.
+  const byKind = await prisma.experience.groupBy({
+    by: ["kind"],
+    where: { archivedAt: null },
+    _count: true,
+  });
+  const total = byKind.reduce((sum, row) => sum + row._count, 0);
+  const share = (n: number) => `${Math.round((n / total) * 100)}%`;
+
   console.log(`Сиды применены. Впечатлений в каталоге: ${total}`);
+  for (const row of byKind.sort((a, b) => b._count - a._count)) {
+    console.log(`  ${row.kind.padEnd(10)} ${String(row._count).padStart(3)}  ${share(row._count)}`);
+  }
 }
 
 main()

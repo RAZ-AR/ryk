@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { DeckCard } from "@/lib/engine/discover";
 import { Button } from "@/components/Button";
+import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { Ticket } from "@/components/Ticket";
 import styles from "./EventFeed.module.css";
 
@@ -25,6 +26,7 @@ export function EventFeed({
   const t = useTranslations("home");
   const tDiscover = useTranslations("discover");
   const tCat = useTranslations("categories");
+  const tKind = useTranslations("kinds");
   const tWeek = useTranslations("week");
 
   if (deck.length === 0) {
@@ -52,10 +54,14 @@ export function EventFeed({
           <button type="button" className={styles.open} onClick={() => onOpen(card)}>
             <Ticket
               size="compact"
-              photoPlaceholder="Ryk"
+              photo={
+                <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
+              }
               metaLeft={durationLabel(card.durationMin)}
               metaRight={priceLabel(card.price, card.currency)}
-              metaRightSub={tCat(card.category)}
+              // Тип, а не категория: категория и так стоит на корешке,
+              // а «вызов себе» против «события» — это разные обещания.
+              metaRightSub={tKind(card.kind)}
               title={card.title}
               stubTone="neutral"
               stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}

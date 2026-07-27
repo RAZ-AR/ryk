@@ -78,6 +78,20 @@ enum ExperienceSource {
   EVENT_API
 }
 
+/// Чем впечатление является по природе. Продукт — про жизнь, а не про афишу:
+/// событий в городе должно быть меньшинство, остальное — вызовы себе и тихие
+/// ритуалы, которые не зависят от города, денег и погоды.
+enum ExperienceKind {
+  /// Привязано к месту и дате, истекает: концерт, выставка, мастер-класс.
+  EVENT
+  /// Вызов себе: позвать на свидание, прыгнуть с парашютом, заговорить первым.
+  /// Живёт вечно, часто бесплатно, часто страшно.
+  CHALLENGE
+  /// Тихое и домашнее: фильм, который откладывал; письмо себе через год.
+  /// Ноль логистики, ноль денег — доступно в любую неделю.
+  RITUAL
+}
+
 /// Жизненный цикл истории недели.
 /// DEFERRED — «перенесено без вины», не провал (14-brand-and-copy).
 enum WeeklyStoryStatus {
@@ -232,6 +246,7 @@ model Wish {
 model Experience {
   id     String           @id @default(uuid())
   source ExperienceSource
+  kind   ExperienceKind   @default(EVENT)
 
   title       String
   description String?
@@ -249,6 +264,10 @@ model Experience {
   currency String @default("RSD")
 
   bookingUrl String?
+
+  /// Афиша события. Заполняет куратор и только для EVENT: у вызовов и ритуалов
+  /// фотографии быть не может, для них рисуется узор по названию.
+  imageUrl String?
 
   /// Спонсорское помечается явно и всегда видимо в UI (PRD §7).
   sponsored Boolean @default(false)
@@ -268,6 +287,7 @@ model Experience {
   @@index([city, category])
   @@index([startTime])
   @@index([archivedAt])
+  @@index([kind])
   @@map("experiences")
 }
 

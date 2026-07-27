@@ -184,3 +184,11 @@
     flex: 1 1 auto;
   }
 }
+
+/* Пояснение под полем: почему это поле важно, а не что в него вводить. */
+.hint {
+  margin-top: var(--ryk-space-1);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ryk-text-muted);
+}

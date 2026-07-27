@@ -7,6 +7,7 @@ import { reactToExperience } from "@/app/actions/discover";
 import { selectStory } from "@/app/actions/weekly";
 import type { DeckCard } from "@/lib/engine/discover";
 import { Button } from "@/components/Button";
+import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { SvcLabel } from "@/components/SvcLabel";
 import styles from "./EventSheet.module.css";
@@ -28,6 +29,7 @@ export function EventSheet({
   const t = useTranslations("home");
   const tDiscover = useTranslations("discover");
   const tCat = useTranslations("categories");
+  const tKind = useTranslations("kinds");
   const tWeek = useTranslations("week");
   const router = useRouter();
 
@@ -79,10 +81,18 @@ export function EventSheet({
         </button>
       </header>
 
+      <div className={styles.visual}>
+        <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
+      </div>
+
       <h1 className={styles.title}>{card.title}</h1>
       {card.description && <p className={styles.description}>{card.description}</p>}
 
       <div className={styles.rows}>
+        <div className={styles.row}>
+          <SvcLabel tone="muted">{t("kindLabel")}</SvcLabel>
+          <span className={styles.value}>{tKind(card.kind)}</span>
+        </div>
         {card.location && (
           <div className={styles.row}>
             <SvcLabel tone="muted">{t("placeLabel")}</SvcLabel>

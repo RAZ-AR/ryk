@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createExperience } from "@/app/actions/concierge";
-import { CATEGORIES } from "@/lib/concierge/experienceInput";
+import { CATEGORIES, KINDS } from "@/lib/concierge/experienceInput";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
@@ -23,12 +23,20 @@ const CATEGORY_LABELS: Record<string, string> = {
   CONTRIBUTION: "Вклад",
 };
 
+const KIND_LABELS: Record<string, string> = {
+  EVENT: "Событие — место и дата",
+  CHALLENGE: "Вызов себе — без места и даты",
+  RITUAL: "Ритуал — тихое и домашнее",
+};
+
 /** Ошибки приходят кодами полей — здесь превращаем в человеческий текст. */
 const ERROR_LABELS: Record<string, string> = {
   title: "название (минимум 3 символа)",
   category: "категория",
+  kind: "тип",
   startTime: "дата и время",
   bookingUrl: "ссылка на билеты",
+  imageUrl: "ссылка на афишу",
   forbidden: "нет доступа — войдите заново",
   db_error: "не удалось сохранить",
 };
@@ -59,11 +67,25 @@ export function ExperienceForm({ defaultCity }: { defaultCity: string }) {
 
   return (
     <form ref={formRef} className={styles.form} onSubmit={submit}>
-      <SvcLabel tone="ink">НОВОЕ СОБЫТИЕ</SvcLabel>
+      <SvcLabel tone="ink">НОВОЕ ВПЕЧАТЛЕНИЕ</SvcLabel>
 
       <label className={styles.field}>
         <span className={styles.label}>Название *</span>
         <Input name="title" required maxLength={140} placeholder="Органный вечер в Коларце" />
+      </label>
+
+      <label className={styles.field}>
+        <span className={styles.label}>Тип *</span>
+        <Select name="kind" defaultValue="EVENT">
+          {KINDS.map((k) => (
+            <option key={k} value={k}>
+              {KIND_LABELS[k] ?? k}
+            </option>
+          ))}
+        </Select>
+        <span className={styles.hint}>
+          Событий в каталоге должно быть меньшинство — они зависят от билетов, погоды и города.
+        </span>
       </label>
 
       <label className={styles.field}>
@@ -124,6 +146,14 @@ export function ExperienceForm({ defaultCity }: { defaultCity: string }) {
         <Input name="bookingUrl" maxLength={500} placeholder="kolarac.rs/tickets" />
       </label>
 
+      <label className={styles.field}>
+        <span className={styles.label}>Афиша, ссылка</span>
+        <Input name="imageUrl" maxLength={500} placeholder="kolarac.rs/poster.jpg" />
+        <span className={styles.hint}>
+          Только для событий. У вызовов и ритуалов вместо фото рисуется узор.
+        </span>
+      </label>
+
       <label className={styles.checkbox}>
         <input type="checkbox" name="sponsored" />
         <span>Спонсорское — пользователь увидит эту отметку</span>
@@ -134,10 +164,10 @@ export function ExperienceForm({ defaultCity }: { defaultCity: string }) {
           Проверьте: {errors.map((e) => ERROR_LABELS[e] ?? e).join(", ")}
         </p>
       )}
-      {saved && <p className={styles.ok}>Событие добавлено — оно уже в кандидатах.</p>}
+      {saved && <p className={styles.ok}>Впечатление добавлено — оно уже в ленте.</p>}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Сохраняем…" : "Добавить событие"}
+        {pending ? "Сохраняем…" : "Добавить впечатление"}
       </Button>
     </form>
   );

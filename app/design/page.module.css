@@ -158,3 +158,31 @@
   color: var(--ryk-ink);
   padding: 0 6px;
 }
+
+/* Витрина узоров: сетка, чтобы девять мотивов читались рядом. */
+.patterns {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--ryk-space-4);
+  margin-top: var(--ryk-space-5);
+}
+
+.patternCell {
+  margin: 0;
+}
+
+.patternBox {
+  position: relative;
+  height: 104px;
+  overflow: hidden;
+  border-radius: var(--ryk-radius-photo);
+  border: 1px dashed var(--ryk-border-dashed);
+}
+
+.patternCaption {
+  margin-top: var(--ryk-space-2);
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ryk-text-muted);
+}

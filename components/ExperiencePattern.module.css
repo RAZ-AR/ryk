@@ -1,0 +1,42 @@
+/*
+ * Узор занимает всё место фото и обрезается по краям (slice в SVG).
+ * Палитра только из токенов: бумага, ink, розовый акцент.
+ */
+
+/*
+ * Абсолютное позиционирование, а не height:100% в потоке: у SVG есть своя
+ * пропорция из viewBox, и в потоке он растягивал слот фото по ней, ломая
+ * компактный билет. Здесь размер задаёт слот, а узор его заполняет и обрезается.
+ */
+.pattern {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--ryk-surface-muted);
+}
+
+/* Линии печати — ink, приглушённый, чтобы не спорить с заголовком билета. */
+.strokes {
+  stroke: var(--ryk-ink);
+  opacity: 0.42;
+  fill: none;
+}
+
+/* Единственное цветное пятно на весь узор. */
+.accentFill {
+  fill: var(--ryk-pink);
+  opacity: 0.9;
+}
+
+/* Афиша события, когда куратор её завёл: занимает тот же слот, что и узор. */
+.photo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--ryk-surface-muted);
+}

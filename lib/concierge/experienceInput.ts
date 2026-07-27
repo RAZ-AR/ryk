@@ -1,4 +1,4 @@
-import type { LifeCategory } from "@/generated/prisma/enums";
+import type { ExperienceKind, LifeCategory } from "@/generated/prisma/enums";
 
 /*
  * Разбор формы куратора в поля Experience.
@@ -21,10 +21,19 @@ export const CATEGORIES: LifeCategory[] = [
   "CONTRIBUTION",
 ];
 
+/**
+ * Типы впечатления. Нужны куратору отдельным полем: без него каждое новое
+ * впечатление становится событием, и каталог со временем снова съезжает
+ * в афишу города — ровно то, от чего мы уходим.
+ */
+export const KINDS: ExperienceKind[] = ["EVENT", "CHALLENGE", "RITUAL"];
+
 export type ExperienceInput = {
   title: string;
   description: string | null;
   category: LifeCategory;
+  kind: ExperienceKind;
+  imageUrl: string | null;
   city: string | null;
   location: string | null;
   startTime: Date | null;
@@ -90,9 +99,18 @@ export function parseExperienceInput(form: FormData): ParseResult {
     else startTime = parsed;
   }
 
+  // Тип по умолчанию — событие: старые формы и импорты без поля продолжают
+  // работать так же, как до появления вызовов и ритуалов.
+  const rawKind = (str(form.get("kind"), 16) || "EVENT") as ExperienceKind;
+  if (!KINDS.includes(rawKind)) errors.push("kind");
+
   const rawUrl = str(form.get("bookingUrl"), 500);
   const bookingUrl = rawUrl ? normalizeUrl(rawUrl) : null;
   if (rawUrl && !bookingUrl) errors.push("bookingUrl");
+
+  const rawImage = str(form.get("imageUrl"), 500);
+  const imageUrl = rawImage ? normalizeUrl(rawImage) : null;
+  if (rawImage && !imageUrl) errors.push("imageUrl");
 
   if (errors.length > 0) return { ok: false, errors };
 
@@ -104,6 +122,8 @@ export function parseExperienceInput(form: FormData): ParseResult {
       title,
       description: str(form.get("description"), 500) || null,
       category: rawCategory,
+      kind: rawKind,
+      imageUrl,
       city: str(form.get("city"), 80) || null,
       location: str(form.get("location"), 140) || null,
       startTime,

@@ -34,6 +34,7 @@
     "deferredTitle": "This week is a quiet one.",
     "deferredLine": "Nothing is lost, the story comes back.",
     "placeLabel": "Place",
+    "kindLabel": "Kind",
     "durationLabel": "Duration",
     "pickAsWeek": "Make it my week's story",
     "actionFailed": "didn't work — try again"
@@ -207,6 +208,11 @@
     "CHALLENGE": "Challenge",
     "REST": "Rest",
     "CONTRIBUTION": "Contribution"
+  },
+  "kinds": {
+    "EVENT": "Event",
+    "CHALLENGE": "Dare",
+    "RITUAL": "Ritual"
   },
   "invites": {
     "badge": "Invites",

@@ -34,6 +34,7 @@
     "deferredTitle": "Esta semana es tranquila.",
     "deferredLine": "No se pierde nada, la historia vuelve.",
     "placeLabel": "Lugar",
+    "kindLabel": "Tipo",
     "durationLabel": "Duración",
     "pickAsWeek": "Hacerla mi historia de la semana",
     "actionFailed": "no funcionó — inténtalo de nuevo"
@@ -207,6 +208,11 @@
     "CHALLENGE": "Reto",
     "REST": "Descanso",
     "CONTRIBUTION": "Contribución"
+  },
+  "kinds": {
+    "EVENT": "Evento",
+    "CHALLENGE": "Reto",
+    "RITUAL": "Ritual"
   },
   "invites": {
     "badge": "Invitaciones",

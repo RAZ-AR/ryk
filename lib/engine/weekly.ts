@@ -10,6 +10,12 @@ import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
  * разнообразием категорий. Каждая рекомендация несёт код «почему» (§Explainability).
  */
 
+/**
+ * Сколько событий максимум может попасть в выбор недели. Остальные места —
+ * за вызовами и ритуалами: они не зависят от билетов, погоды и денег.
+ */
+const MAX_EVENT_CANDIDATES = 1;
+
 export type WhyCode = "LIKED_CATEGORY" | "IN_BUDGET" | "NEARBY" | "CURATED" | "FRESH";
 
 export type Candidate = {
@@ -21,17 +27,21 @@ export type Candidate = {
   durationMin: number | null;
   distanceKm: number | null;
   location: string | null;
+  imageUrl: string | null;
   sponsored: boolean;
   whyCode: WhyCode;
   whyCategory: LifeCategory | null;
 };
 
 export type SelectedStory = {
+  /** id впечатления: нужен как стабильный ключ для узора на билете. */
+  experienceId: string;
   title: string;
   category: LifeCategory;
   price: number | null;
   currency: string;
   location: string | null;
+  imageUrl: string | null;
   whyCode: WhyCode;
   whyCategory: LifeCategory | null;
 };
@@ -146,11 +156,13 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     const e = existing.experience;
     const whyCode = (existing.whyExplanation as WhyCode) || "CURATED";
     const story: SelectedStory = {
+      experienceId: e.id,
       title: e.title,
       category: e.category,
       price: e.price,
       currency: e.currency,
       location: e.location,
+      imageUrl: e.imageUrl,
       whyCode,
       // Для LIKED_CATEGORY «понравившаяся» категория = категория впечатления.
       whyCategory: whyCode === "LIKED_CATEGORY" ? e.category : null,
@@ -243,7 +255,9 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
         // иначе свайп влево ничего не менял бы.
         reactions: { none: { userId, liked: false } },
       },
-      take: 50,
+      // Берём каталог целиком: он курируемый и небольшой (ADR-006), а срез
+      // без orderBy отрезал бы произвольную часть — например, все ритуалы.
+      take: 500,
     }),
     prisma.experienceReaction.findMany({
       where: { userId, liked: true },
@@ -281,17 +295,38 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     .sort((a, b) => b.score - a.score);
 
   // Портфель: разнообразие категорий, затем добор.
+  //
+  // Отдельно ограничиваем события: три события в выборе недели означали бы,
+  // что вся неделя упирается в билеты, погоду и деньги. Пусть максимум одно —
+  // остальное вызовы и ритуалы, доступные в любую неделю.
   const picked: typeof scored = [];
   const usedCategories = new Set<LifeCategory>();
-  for (const s of scored) {
-    if (picked.length >= 3) break;
-    if (usedCategories.has(s.e.category)) continue;
+  let events = 0;
+
+  const canTake = (s: (typeof scored)[number]) => s.e.kind !== "EVENT" || events < MAX_EVENT_CANDIDATES;
+  const take = (s: (typeof scored)[number]) => {
     picked.push(s);
     usedCategories.add(s.e.category);
-  }
+    if (s.e.kind === "EVENT") events += 1;
+  };
+
   for (const s of scored) {
     if (picked.length >= 3) break;
-    if (!picked.includes(s)) picked.push(s);
+    if (usedCategories.has(s.e.category) || !canTake(s)) continue;
+    take(s);
+  }
+  // Добор без учёта категории, но лимит на события держим.
+  for (const s of scored) {
+    if (picked.length >= 3) break;
+    if (picked.includes(s) || !canTake(s)) continue;
+    take(s);
+  }
+  // Крайний случай: в каталоге не осталось ничего, кроме событий. Лучше
+  // показать три события, чем пустой экран выбора.
+  for (const s of scored) {
+    if (picked.length >= 3) break;
+    if (picked.includes(s)) continue;
+    take(s);
   }
 
   const candidates: Candidate[] = picked.map((s) => ({
@@ -303,6 +338,7 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     durationMin: s.e.durationMin,
     distanceKm: s.e.distanceKm,
     location: s.e.location,
+    imageUrl: s.e.imageUrl,
     sponsored: s.e.sponsored,
     whyCode: s.whyCode,
     whyCategory: s.whyCategory,

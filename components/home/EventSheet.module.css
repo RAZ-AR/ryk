@@ -24,6 +24,15 @@
   color: var(--ryk-text-muted);
 }
 
+/* Афиша или узор — тот же слот, что на билете, только шире. */
+.visual {
+  position: relative;
+  margin-top: var(--ryk-space-4);
+  height: 132px;
+  overflow: hidden;
+  border-radius: var(--ryk-radius-photo);
+}
+
 .title {
   margin-top: var(--ryk-space-4);
   font-family: var(--ryk-font-ticket);
