@@ -134,6 +134,8 @@ export type MemoryView = {
   companion: string | null;
   category: LifeCategory | null;
   deferred: boolean;
+  /** Своё фото, если человек его приложил. Иначе кадр рисуется узором. */
+  photo: string | null;
 };
 
 /** Понедельник текущей недели в UTC (ADR-004), для weekly_stories.weekStart (@db.Date). */
@@ -228,6 +230,7 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
           companion: existing.memory.companion,
           category: e.category,
           deferred: existing.memory.deferred,
+          photo: existing.memory.media[0] ?? null,
         },
       };
     }

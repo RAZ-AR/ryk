@@ -1,31 +1,21 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { LifeCategory } from "@/generated/prisma/enums";
 import type { MemoryView } from "@/lib/engine/weekly";
-import { MemoryCard, type MemoryDot } from "@/components/MemoryCard";
 import { SvcLabel } from "@/components/SvcLabel";
+import { FilmFrame } from "./FilmFrame";
 import styles from "./MemorySection.module.css";
 
 /*
- * Архив впечатлений (PRD 5.9). Перенесённые недели показываем наравне
- * с прожитыми — «незавершённые желания без чувства вины».
+ * Архив впечатлений (PRD 5.9) — проявленная плёнка, а не сетка превью.
+ *
+ * Сетка читается как коллекция, которую хочется пополнять: пустые ячейки
+ * просят себя заполнить, а это счёт и давление. Плёнка идёт сверху вниз,
+ * по одному кадру, и просто заканчивается там, где закончилась.
+ *
+ * Перенесённые недели — такие же кадры, только тише: «незавершённые
+ * желания без чувства вины».
  */
-
-/** Цвет точки по категории — чтобы архив читался как коллекция, а не список. */
-function dotFor(category: LifeCategory | null, deferred: boolean): MemoryDot {
-  if (deferred) return "empty";
-  switch (category) {
-    case "NATURE":
-    case "MOVEMENT":
-      return "gold";
-    case "CONNECTION":
-    case "JOY":
-      return "rose";
-    default:
-      return "pink";
-  }
-}
 
 export function MemorySection({ memories }: { memories: MemoryView[] }) {
   const t = useTranslations("memory");
@@ -47,24 +37,26 @@ export function MemorySection({ memories }: { memories: MemoryView[] }) {
       {memories.length === 0 ? (
         <p className={styles.empty}>{t("empty")}</p>
       ) : (
-        <div className={styles.grid}>
+        <div className={styles.film}>
           {memories.map((m) => {
-            // Неделя как «26.07» — год в карточке лишний шум.
+            // Неделя как «26.07» — год в кадре лишний шум.
             const d = new Date(`${m.weekLabel}T12:00:00.000Z`);
             const week = `${String(d.getUTCDate()).padStart(2, "0")}.${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 
             return (
-              <MemoryCard
+              <FilmFrame
                 key={m.id}
-                week={week}
+                id={m.id}
+                date={week}
                 title={m.deferred ? t("deferredCard") : m.title}
-                quote={m.note ?? undefined}
-                companion={
+                note={m.note}
+                footnote={
                   m.deferred
                     ? t("willReturn")
                     : (m.companion ?? (m.emotion ? tWeek(`emotion.${m.emotion}`) : t("alone")))
                 }
-                dot={dotFor(m.category, m.deferred)}
+                category={m.category}
+                photo={m.photo}
                 deferred={m.deferred}
               />
             );

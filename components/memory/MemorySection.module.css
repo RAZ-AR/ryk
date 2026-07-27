@@ -32,11 +32,15 @@
 }
 
 /* Сетка 2×N — как в хендоффе. */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--ryk-space-3);
+/* Плёнка: кадры встык, как настоящая — без промежутков между ними. */
+.film {
+  display: flex;
+  flex-direction: column;
   margin-top: var(--ryk-space-5);
+}
+
+.film > * + * {
+  border-top: none;
 }
 
 .empty {
