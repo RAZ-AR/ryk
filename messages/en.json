@@ -244,6 +244,8 @@
     "socialAny": "Any",
     "localeLabel": "Language",
     "noveltyLabel": "Share of new, %",
+    "nudgesLabel": "Ryk may message you on Telegram",
+    "nudgesHint": "No more than two a week, and only when there's something to offer.",
     "save": "Save",
     "saving": "Saving…",
     "saved": "Saved",

@@ -17,6 +17,8 @@ export type ProfileView = {
   socialMode: SocialMode | null;
   locale: Locale;
   noveltyRatio: number;
+  /** Разрешено ли боту писать первым. */
+  nudges: boolean;
 };
 
 export type PreferenceRow = {
@@ -55,6 +57,7 @@ export function ProfileSheet({
   const [socialMode, setSocialMode] = useState<SocialMode | "">(profile.socialMode ?? "");
   const [locale, setLocale] = useState<Locale>(profile.locale);
   const [noveltyRatio, setNoveltyRatio] = useState(String(profile.noveltyRatio));
+  const [nudges, setNudges] = useState(profile.nudges);
 
   const [saving, startSave] = useTransition();
   const [saved, setSaved] = useState(false);
@@ -77,6 +80,7 @@ export function ProfileSheet({
         socialMode: socialMode || null,
         locale,
         noveltyRatio: Number(noveltyRatio),
+        nudges,
       });
       if (res.ok) {
         setSaved(true);
@@ -170,6 +174,14 @@ export function ProfileSheet({
             value={noveltyRatio}
             onChange={(e) => setNoveltyRatio(e.target.value.replace(/[^\d]/g, ""))}
           />
+        </label>
+
+        <label className={styles.toggle}>
+          <input type="checkbox" checked={nudges} onChange={(e) => setNudges(e.target.checked)} />
+          <span>
+            <span className={styles.toggleLabel}>{t("nudgesLabel")}</span>
+            <span className={styles.toggleHint}>{t("nudgesHint")}</span>
+          </span>
         </label>
 
         {saveError && <p className={styles.error}>{t("saveError")}</p>}
