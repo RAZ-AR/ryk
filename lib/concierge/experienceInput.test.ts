@@ -71,4 +71,36 @@ describe("parseExperienceInput", () => {
     if (!res.ok) return;
     expect(res.value.sponsored).toBe(true);
   });
+  it("по умолчанию заводит событие — старые формы без поля «тип» не ломаются", () => {
+    const res = parseExperienceInput(form(VALID));
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.value.kind).toBe("EVENT");
+  });
+
+  it("принимает вызов и ритуал, но не выдуманный тип", () => {
+    for (const kind of ["CHALLENGE", "RITUAL"]) {
+      const res = parseExperienceInput(form({ ...VALID, kind }));
+      expect(res.ok).toBe(true);
+      if (!res.ok) return;
+      expect(res.value.kind).toBe(kind);
+    }
+
+    const bad = parseExperienceInput(form({ ...VALID, kind: "PARTY" }));
+    expect(bad.ok).toBe(false);
+    if (bad.ok) return;
+    expect(bad.errors).toContain("kind");
+  });
+
+  it("нормализует ссылку на афишу и не пускает javascript:", () => {
+    const ok = parseExperienceInput(form({ ...VALID, imageUrl: "kolarac.rs/poster.jpg" }));
+    expect(ok.ok).toBe(true);
+    if (!ok.ok) return;
+    expect(ok.value.imageUrl).toBe("https://kolarac.rs/poster.jpg");
+
+    const bad = parseExperienceInput(form({ ...VALID, imageUrl: "javascript:alert(1)" }));
+    expect(bad.ok).toBe(false);
+    if (bad.ok) return;
+    expect(bad.errors).toContain("imageUrl");
+  });
 });

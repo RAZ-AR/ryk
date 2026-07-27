@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import type { LifeCategory } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Dock, type DockTarget } from "@/components/Dock";
+import { ExperiencePattern } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
 import { RykNote } from "@/components/RykNote";
@@ -29,6 +31,19 @@ const SWATCHES: ReadonlyArray<{ token: string; varName: string }> = [
   { token: "ink", varName: "--ryk-ink" },
   { token: "text-muted", varName: "--ryk-text-muted" },
   { token: "success", varName: "--ryk-success" },
+];
+
+/** Все девять мотивов на одном экране — так видно, что они не похожи друг на друга. */
+const PATTERN_CATEGORIES: ReadonlyArray<LifeCategory> = [
+  "NATURE",
+  "CULTURE",
+  "MOVEMENT",
+  "CONNECTION",
+  "JOY",
+  "DISCOVERY",
+  "CHALLENGE",
+  "REST",
+  "CONTRIBUTION",
 ];
 
 const EMOTIONS = ["Восторг", "Спокойствие", "Гордость", "Близость"];
@@ -233,6 +248,21 @@ export default function DesignSystemPage() {
             </div>
           </div>
           <Dock active={section} onNavigate={setSection} />
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">09</SvcLabel>
+        <h2 className={styles.sectionTitle}>Узоры впечатлений</h2>
+        <div className={styles.patterns}>
+          {PATTERN_CATEGORIES.map((category) => (
+            <figure key={category} className={styles.patternCell}>
+              <div className={styles.patternBox}>
+                <ExperiencePattern seed={`demo-${category}`} category={category} />
+              </div>
+              <figcaption className={styles.patternCaption}>{category}</figcaption>
+            </figure>
+          ))}
         </div>
       </section>
     </main>

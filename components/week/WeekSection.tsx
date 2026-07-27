@@ -17,6 +17,7 @@ import { getTelegramWebApp } from "@/lib/telegram/webApp";
 import type { DayWeather } from "@/lib/weather/openMeteo";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
+import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { Input } from "@/components/Input";
 import { RykNote } from "@/components/RykNote";
@@ -81,7 +82,13 @@ export function WeekSection({ view }: { view: WeeklyView }) {
   /** Билет истории — общий для commit и committed. */
   const storyTicket = (story: SelectedStory, stubLabel: string, extra?: React.ReactNode) => (
     <Ticket
-      photoPlaceholder="Ryk"
+      photo={
+        <ExperienceVisual
+          id={story.experienceId}
+          category={story.category}
+          imageUrl={story.imageUrl}
+        />
+      }
       metaLeft={durationLabel(null)}
       metaRight={priceLabel(story.price, story.currency)}
       metaRightSub={tCat(story.category)}
@@ -442,7 +449,9 @@ export function WeekSection({ view }: { view: WeeklyView }) {
 
       <div className={styles.ticketWrap}>
         <Ticket
-          photoPlaceholder="Ryk"
+          photo={
+            <ExperienceVisual id={c.experienceId} category={c.category} imageUrl={c.imageUrl} />
+          }
           metaLeft={durationLabel(c.durationMin)}
           metaRight={priceLabel(c.price, c.currency)}
           metaRightSub={tCat(c.category)}

@@ -34,6 +34,7 @@
     "deferredTitle": "Эта неделя — тихая.",
     "deferredLine": "Ничего не потеряно, история вернётся.",
     "placeLabel": "Место",
+    "kindLabel": "Тип",
     "durationLabel": "Длительность",
     "pickAsWeek": "Сделать историей недели",
     "actionFailed": "не получилось — попробуй ещё раз"
@@ -216,6 +217,11 @@
     "CHALLENGE": "Вызов",
     "REST": "Отдых",
     "CONTRIBUTION": "Вклад"
+  },
+  "kinds": {
+    "EVENT": "Событие",
+    "CHALLENGE": "Вызов себе",
+    "RITUAL": "Ритуал"
   },
   "invites": {
     "badge": "Приглашения",

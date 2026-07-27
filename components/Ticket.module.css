@@ -17,6 +17,9 @@
 }
 
 .photoInner {
+  /* Опора для узора и афиши: они позиционируются абсолютно, чтобы размер
+     задавал слот, а не пропорция SVG (иначе компактный билет растягивается). */
+  position: relative;
   border-radius: var(--ryk-radius-photo);
   overflow: hidden;
   background: var(--ryk-surface-card);

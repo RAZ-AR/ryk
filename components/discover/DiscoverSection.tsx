@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { reactToExperience } from "@/app/actions/discover";
 import type { DeckCard } from "@/lib/engine/discover";
 import { Button } from "@/components/Button";
+import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { SvcLabel } from "@/components/SvcLabel";
 import { Ticket } from "@/components/Ticket";
@@ -20,6 +21,7 @@ import styles from "./DiscoverSection.module.css";
 export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
   const t = useTranslations("discover");
   const tCat = useTranslations("categories");
+  const tKind = useTranslations("kinds");
   const tWeek = useTranslations("week");
   const router = useRouter();
 
@@ -78,10 +80,16 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
               disabled={saving}
             >
               <Ticket
-                photoPlaceholder="Ryk"
+                photo={
+                  <ExperienceVisual
+                    id={card.id}
+                    category={card.category}
+                    imageUrl={card.imageUrl}
+                  />
+                }
                 metaLeft={durationLabel(card.durationMin)}
                 metaRight={priceLabel(card.price, card.currency)}
-                metaRightSub={tCat(card.category)}
+                metaRightSub={tKind(card.kind)}
                 title={card.title}
                 stubTone="neutral"
                 stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
