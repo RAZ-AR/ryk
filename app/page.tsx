@@ -7,6 +7,7 @@ import { getMemories } from "@/lib/engine/memories";
 import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
 import { getUpcoming } from "@/lib/engine/upcoming";
 import { getWeeklyView } from "@/lib/engine/weekly";
+import { getYear } from "@/lib/engine/year";
 import { prisma } from "@/lib/prisma";
 
 /*
@@ -20,7 +21,7 @@ export default async function Home() {
   if (!user) return <TelegramBootstrap />;
   if (user.onboardingState !== "DONE") return <OnboardingFlow initialCity={user.city} />;
 
-  const [wishes, weekly, memories, profile, preferences, invites, deck, upcoming] =
+  const [wishes, weekly, memories, profile, preferences, invites, deck, upcoming, year] =
     await Promise.all([
       prisma.wish.findMany({
         where: { userId: user.id, status: { not: "HIDDEN" } },
@@ -65,6 +66,7 @@ export default async function Home() {
       }),
       getDiscoverDeck(user.id),
       getUpcoming(user.id),
+      getYear(user.id),
     ]);
 
   const inviteViews = invites
@@ -93,6 +95,7 @@ export default async function Home() {
       invites={inviteViews}
       deck={deck}
       upcoming={upcoming}
+      year={year}
     />
   );
 }

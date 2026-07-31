@@ -1,0 +1,96 @@
+/*
+ * «Год»: спокойные полосы на бумаге. Ни шкалы, ни делений, ни отметки цели —
+ * сравнивать не с чем, кроме собственного года.
+ */
+
+.wrap {
+  padding-bottom: var(--ryk-screen-bottom-dock);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ryk-space-4);
+}
+
+.title {
+  margin-top: var(--ryk-space-2);
+  font-size: 34px;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--ryk-ink);
+}
+
+/* Число прожитого — единственный крупный акцент на экране. */
+.count {
+  font-family: var(--ryk-font-ticket);
+  font-size: 44px;
+  line-height: 1;
+  color: var(--ryk-pink);
+}
+
+.lead {
+  margin-top: var(--ryk-space-4);
+  font-family: var(--ryk-font-serif);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ryk-text-secondary);
+}
+
+.rows {
+  margin-top: var(--ryk-space-6);
+  border-top: 1px solid var(--ryk-border-row);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 92px 1fr 24px;
+  align-items: center;
+  gap: var(--ryk-space-3);
+  padding: var(--ryk-space-3) 0;
+  border-bottom: 1px solid var(--ryk-border-row);
+}
+
+.label {
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ryk-text-muted);
+}
+
+/* Дорожка без рамки и без делений: шкалы здесь нет намеренно. */
+.track {
+  display: block;
+  height: 10px;
+  min-width: 0;
+}
+
+.bar {
+  display: block;
+  height: 100%;
+  background: var(--ryk-pink);
+}
+
+.value {
+  font-family: var(--ryk-font-mono);
+  font-size: 13px;
+  text-align: right;
+  color: var(--ryk-ink);
+}
+
+.note {
+  margin-top: var(--ryk-space-5);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ryk-text-muted);
+}
+
+.empty {
+  margin-top: var(--ryk-space-6);
+  font-family: var(--ryk-font-serif);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ryk-text-muted);
+}

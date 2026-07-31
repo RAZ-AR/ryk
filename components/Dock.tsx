@@ -2,14 +2,14 @@ import Image from "next/image";
 import styles from "./Dock.module.css";
 
 /**
- * Глобальная навигация (§7): Неделя · Память · ◉ · Желания · Баланс.
+ * Глобальная навигация (§7): Неделя · Память · ◉ · Желания · Год.
  * В центре — круглая кнопка с логотипом, ведёт в ленту впечатлений.
  * Скрыта на онбординге — за это отвечает вызывающий экран.
  *
  * Метки можно передать через `labels` (i18n). Без пропа — русский дефолт,
  * чтобы витрина /design и превью работали без провайдера переводов.
  */
-export type DockSection = "week" | "memory" | "wishes" | "balance";
+export type DockSection = "week" | "memory" | "wishes" | "year";
 
 /** Лента — отдельная цель: у неё круглая кнопка, а не пилюля. */
 export type DockTarget = DockSection | "discover";
@@ -20,12 +20,12 @@ const DEFAULT_LABELS: DockLabels = {
   week: "Неделя",
   memory: "Память",
   wishes: "Желания",
-  balance: "Баланс",
+  year: "Год",
 };
 
 /** По две пилюли слева и справа от центральной кнопки. */
 const LEFT: readonly DockSection[] = ["week", "memory"];
-const RIGHT: readonly DockSection[] = ["wishes", "balance"];
+const RIGHT: readonly DockSection[] = ["wishes", "year"];
 
 type DockProps = {
   active: DockTarget;

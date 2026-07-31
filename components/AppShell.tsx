@@ -15,19 +15,19 @@ import {
   type ProfileView,
 } from "@/components/profile/ProfileSheet";
 import { WeekSection } from "@/components/week/WeekSection";
+import { YearSection } from "@/components/year/YearSection";
 import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
 import type { DeckCard } from "@/lib/engine/discover";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
 import type { MemoryView, WeeklyView } from "@/lib/engine/weekly";
+import type { YearView } from "@/lib/engine/year";
 import { AppHeader } from "./AppHeader";
 import { Dock, type DockLabels, type DockTarget } from "./Dock";
-import { SvcLabel } from "./SvcLabel";
 import styles from "./AppShell.module.css";
 
 /*
  * Каркас Mini App: контент + плавающий dock (§7) + логотип-возврат,
- * личный кабинет и приглашения. Неделя / Желания / Память / Лента — живые;
- * Баланс — заглушка (Фаза 10).
+ * личный кабинет и приглашения. Все пять разделов живые.
  */
 export function AppShell({
   wishes,
@@ -38,6 +38,7 @@ export function AppShell({
   invites,
   deck,
   upcoming,
+  year,
 }: {
   wishes: WishView[];
   weekly: WeeklyView;
@@ -47,6 +48,7 @@ export function AppShell({
   invites: InviteView[];
   deck: DeckCard[];
   upcoming: UpcomingItem[];
+  year: YearView;
 }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
@@ -67,7 +69,7 @@ export function AppShell({
     week: nav("week"),
     memory: nav("memory"),
     wishes: nav("wishes"),
-    balance: nav("balance"),
+    year: nav("year"),
   };
 
   return (
@@ -87,13 +89,7 @@ export function AppShell({
         ) : section === "memory" ? (
           <MemorySection memories={memories} />
         ) : (
-          <>
-            <header className={styles.header}>
-              <SvcLabel tone="pink">{app("weekActive")}</SvcLabel>
-              <h1 className={styles.title}>{labels[section]}</h1>
-            </header>
-            <p className={styles.placeholder}>{app("lead")}</p>
-          </>
+          <YearSection year={year} />
         )}
       </div>
       <Dock

@@ -3,7 +3,7 @@
     "week": "Semana",
     "memory": "Recuerdos",
     "wishes": "Deseos",
-    "balance": "Balance"
+    "year": "Año"
   },
   "app": {
     "promise": "Una historia real cada semana",
@@ -416,5 +416,12 @@
     "deferredCard": "Aplazado — sin culpa",
     "willReturn": "volverá",
     "alone": "solo"
+  },
+  "year": {
+    "kicker": "Año {year}",
+    "title": "De qué se compuso el año",
+    "mostly": "Este año fue sobre todo {category}.",
+    "note": "Aquí no hay meta ni cuota. Solo lo que pasó.",
+    "empty": "El año acaba de empezar. Tu primera historia vivida aparecerá aquí."
   }
 }
