@@ -98,7 +98,9 @@ export function AppShell({
         active={section}
         onNavigate={setSection}
         labels={labels}
-        ariaLabel={app("weekActive")}
+        // Имя навигации, а не состояние недели: скринридер читает его вместо
+        // «Week active», которое сюда попало по недосмотру и ничего не значило.
+        ariaLabel={nav("aria")}
         discoverLabel={tDiscover("title")}
       />
       <AppHeader label={app("home")} onHome={() => setSection("week")} />

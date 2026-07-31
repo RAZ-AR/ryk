@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { conciergeSignOut } from "@/app/actions/concierge";
 import { ConciergeLogin } from "@/components/concierge/ConciergeLogin";
 import { ExperienceForm } from "@/components/concierge/ExperienceForm";
@@ -16,10 +17,10 @@ import styles from "@/components/concierge/Concierge.module.css";
  * Внутренний раздел: не индексируется и не существует без CONCIERGE_TOKEN.
  */
 
-export const metadata: Metadata = {
-  title: "Ryk — инструмент куратора",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("concierge");
+  return { title: t("pageTitle"), robots: { index: false, follow: false } };
+}
 
 // Список должен показывать то, что в БД прямо сейчас, а не прошлый рендер.
 export const dynamic = "force-dynamic";
@@ -31,6 +32,8 @@ export default async function ConciergePage() {
   if (!isConciergeEnabled()) notFound();
 
   if (!(await isConciergeSignedIn())) return <ConciergeLogin />;
+
+  const t = await getTranslations("concierge");
 
   const experiences = await prisma.experience.findMany({
     // Живые события сверху: Postgres по умолчанию кладёт NULL в конец,
@@ -76,19 +79,18 @@ export default async function ConciergePage() {
     <main className={styles.page}>
       <header className={styles.header}>
         <div>
+          {/* Марка продукта, а не текст интерфейса — не переводится. */}
           <SvcLabel tone="ink">CONCIERGE</SvcLabel>
-          <h1 className={styles.title}>Каталог впечатлений</h1>
+          <h1 className={styles.title}>{t("catalogTitle")}</h1>
         </div>
         <form action={conciergeSignOut}>
           <button type="submit" className={styles.link}>
-            выйти
+            {t("signOut")}
           </button>
         </form>
       </header>
 
-      <SvcLabel tone="muted">
-        В КАНДИДАТАХ СЕЙЧАС: {live} ИЗ {items.length}
-      </SvcLabel>
+      <SvcLabel tone="muted">{t("inCandidates", { live, total: items.length })}</SvcLabel>
 
       <ExperienceForm defaultCity={DEFAULT_CITY} />
       <ExperienceList items={items} />

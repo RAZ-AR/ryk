@@ -20,6 +20,11 @@ export type TicketSize = "default" | "compact";
 type TicketProps = {
   /** Слот под фото. Пока не заменено реальным — рендерится плейсхолдер. */
   photo?: ReactNode;
+  /**
+   * Подпись пустого слота. Без значения слот остаётся пустым — своего
+   * текста у примитива нет: он не знает языка интерфейса, а зашитая
+   * по-русски строка вылезала бы у английского и испанского пользователя.
+   */
   photoPlaceholder?: string;
   /** Левая метка строки-меты: день недели или номер. */
   metaLeft: string;
@@ -38,7 +43,7 @@ type TicketProps = {
 
 export function Ticket({
   photo,
-  photoPlaceholder = "Фото впечатления",
+  photoPlaceholder,
   metaLeft,
   metaRight,
   metaRightSub,

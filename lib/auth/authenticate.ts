@@ -1,5 +1,6 @@
-import { cookies } from "next/headers";
 import type { Locale } from "@/generated/prisma/enums";
+import { DEFAULT_DB_LOCALE } from "@/lib/i18n/locale";
+import { setLocaleCookie } from "@/lib/i18n/localeCookie";
 import { prisma } from "@/lib/prisma";
 import { verifyInitData } from "@/lib/telegram/verifyInitData";
 import { createSession } from "./session";
@@ -25,19 +26,9 @@ const TELEGRAM_TO_LOCALE: Record<string, Locale> = {
 };
 
 function localeFromTelegram(code: string | undefined): Locale {
-  if (!code) return "RU";
+  if (!code) return DEFAULT_DB_LOCALE;
+  // Язык вне трёх наших — английский: он ближе к любому четвёртому, чем русский.
   return TELEGRAM_TO_LOCALE[code.slice(0, 2).toLowerCase()] ?? "EN";
-}
-
-/** Кладём язык в отдельную cookie, чтобы next-intl (i18n/request.ts) его читал. */
-async function setLocaleCookie(locale: Locale): Promise<void> {
-  const store = await cookies();
-  store.set("ryk_locale", locale.toLowerCase(), {
-    httpOnly: false,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-  });
 }
 
 /**

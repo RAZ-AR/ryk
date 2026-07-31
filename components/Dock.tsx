@@ -6,8 +6,10 @@ import styles from "./Dock.module.css";
  * В центре — круглая кнопка с логотипом, ведёт в ленту впечатлений.
  * Скрыта на онбординге — за это отвечает вызывающий экран.
  *
- * Метки можно передать через `labels` (i18n). Без пропа — русский дефолт,
- * чтобы витрина /design и превью работали без провайдера переводов.
+ * Все подписи приходят пропами и обязательны. Дефолтов нет намеренно:
+ * примитив не знает языка интерфейса, а зашитые по-русски метки молча
+ * пролезали бы в английскую и испанскую версию — и заметить это, правя
+ * только AppShell, было бы нечем.
  */
 export type DockSection = "week" | "memory" | "wishes" | "year";
 
@@ -16,13 +18,6 @@ export type DockTarget = DockSection | "discover";
 
 export type DockLabels = Record<DockSection, string>;
 
-const DEFAULT_LABELS: DockLabels = {
-  week: "Неделя",
-  memory: "Память",
-  wishes: "Желания",
-  year: "Год",
-};
-
 /** По две пилюли слева и справа от центральной кнопки. */
 const LEFT: readonly DockSection[] = ["week", "memory"];
 const RIGHT: readonly DockSection[] = ["wishes", "year"];
@@ -30,18 +25,14 @@ const RIGHT: readonly DockSection[] = ["wishes", "year"];
 type DockProps = {
   active: DockTarget;
   onNavigate?: (section: DockTarget) => void;
-  labels?: DockLabels;
-  ariaLabel?: string;
-  discoverLabel?: string;
+  labels: DockLabels;
+  /** Имя навигации для скринридера. */
+  ariaLabel: string;
+  /** Подпись центральной кнопки: на ней только знак, без текста. */
+  discoverLabel: string;
 };
 
-export function Dock({
-  active,
-  onNavigate,
-  labels = DEFAULT_LABELS,
-  ariaLabel,
-  discoverLabel = "Лента",
-}: DockProps) {
+export function Dock({ active, onNavigate, labels, ariaLabel, discoverLabel }: DockProps) {
   const pill = (id: DockSection) => {
     const isActive = id === active;
     return (
@@ -58,7 +49,7 @@ export function Dock({
   };
 
   return (
-    <nav className={styles.dock} aria-label={ariaLabel ?? "Основная навигация"}>
+    <nav className={styles.dock} aria-label={ariaLabel}>
       {LEFT.map(pill)}
 
       {/* Розовым в доке светится всегда ровно одно (§11.1): либо активная

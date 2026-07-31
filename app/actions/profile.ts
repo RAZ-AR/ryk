@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import type { Locale, SocialMode } from "@/generated/prisma/enums";
 import { track } from "@/lib/analytics/track";
 import { clearSession, getSession } from "@/lib/auth/session";
+import { setLocaleCookie } from "@/lib/i18n/localeCookie";
 import { prisma } from "@/lib/prisma";
 import { deleteMemoryPhoto } from "@/lib/storage/memoryPhotos";
 
@@ -65,6 +66,14 @@ export async function updateProfile(input: ProfileInput): Promise<ProfileResult>
   } catch {
     return { ok: false, reason: "db_error" };
   }
+
+  /*
+   * Язык живёт в двух местах, и запись в оба обязательна: в `users.locale` —
+   * чтобы бот писал на нём же из крона, где запроса нет, — и в cookie,
+   * откуда его берёт next-intl (i18n/request.ts). Без второй записи
+   * выбранный язык не менял интерфейс до следующего входа в Mini App.
+   */
+  await setLocaleCookie(input.locale);
 
   revalidatePath("/");
   return { ok: true };

@@ -103,4 +103,38 @@ describe("parseExperienceInput", () => {
     if (bad.ok) return;
     expect(bad.errors).toContain("imageUrl");
   });
+
+  it("собирает переводы из полей вида title_en", () => {
+    const res = parseExperienceInput(
+      form({
+        ...VALID,
+        title_en: "Organ evening at Kolarac",
+        description_en: "A classical programme by candlelight.",
+        location_en: "Kolarac Endowment",
+        title_es: "Noche de órgano en Kolarac",
+      }),
+    );
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.value.translations).toEqual({
+      en: {
+        title: "Organ evening at Kolarac",
+        description: "A classical programme by candlelight.",
+        location: "Kolarac Endowment",
+      },
+      es: { title: "Noche de órgano en Kolarac" },
+    });
+  });
+
+  /*
+   * Перевод не обязателен намеренно: карточку надо успеть завести, пока
+   * событие не прошло. Пустая колонка — откат на русский, а не пустая
+   * карточка (см. lib/i18n/experience.ts).
+   */
+  it("пустые переводы не создают мусорную колонку", () => {
+    const res = parseExperienceInput(form({ ...VALID, title_en: "  ", description_es: "" }));
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.value.translations).toEqual({});
+  });
 });

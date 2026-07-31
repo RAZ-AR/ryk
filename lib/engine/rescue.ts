@@ -1,4 +1,6 @@
 import type { BarrierType, LifeCategory } from "@/generated/prisma/enums";
+import { localizeExperience } from "@/lib/i18n/experience";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { prisma } from "@/lib/prisma";
 
 /*
@@ -32,6 +34,8 @@ export async function getRescueOptions(input: {
   currentPrice: number | null;
   currentDurationMin: number | null;
   currentCategory: LifeCategory | null;
+  /** Язык интерфейса: спасательные варианты человек читает прямо сейчас. */
+  locale?: string;
 }): Promise<RescueOption[]> {
   const { barrier, currentExperienceId, currentPrice, currentDurationMin, currentCategory } = input;
 
@@ -86,13 +90,17 @@ export async function getRescueOptions(input: {
     if (!picked.includes(s)) picked.push(s);
   }
 
-  return picked.map((s) => ({
-    experienceId: s.e.id,
-    title: s.e.title,
-    category: s.e.category,
-    price: s.e.price,
-    currency: s.e.currency,
-    durationMin: s.e.durationMin,
-    location: s.e.location,
-  }));
+  const locale = input.locale ?? DEFAULT_LOCALE;
+  return picked.map((s) => {
+    const text = localizeExperience(s.e, locale);
+    return {
+      experienceId: s.e.id,
+      title: text.title,
+      category: s.e.category,
+      price: s.e.price,
+      currency: s.e.currency,
+      durationMin: s.e.durationMin,
+      location: text.location,
+    };
+  });
 }

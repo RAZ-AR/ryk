@@ -1,3 +1,5 @@
+import { localizeExperience } from "@/lib/i18n/experience";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { signedPhotoUrl } from "@/lib/storage/memoryPhotos";
 import { prisma } from "@/lib/prisma";
 import type { MemoryView } from "./weekly";
@@ -7,7 +9,11 @@ import type { MemoryView } from "./weekly";
  * перенесённые — «незавершённые желания без чувства вины».
  */
 
-export async function getMemories(userId: string, limit = 24): Promise<MemoryView[]> {
+export async function getMemories(
+  userId: string,
+  locale: string = DEFAULT_LOCALE,
+  limit = 24,
+): Promise<MemoryView[]> {
   const stories = await prisma.weeklyStory.findMany({
     where: { userId, memory: { isNot: null } },
     orderBy: { weekStart: "desc" },
@@ -34,7 +40,7 @@ export async function getMemories(userId: string, limit = 24): Promise<MemoryVie
   return rows.map(({ story, memory }, i) => ({
     id: memory.id,
     weekLabel: story.weekStart.toISOString().slice(0, 10),
-    title: story.experience?.title ?? "",
+    title: story.experience ? localizeExperience(story.experience, locale).title : "",
     note: memory.note,
     emotion: memory.emotion,
     companion: memory.companion,

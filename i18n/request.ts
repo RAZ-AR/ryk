@@ -1,21 +1,18 @@
 import { cookies } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
+import { DEFAULT_LOCALE, LOCALE_COOKIE, isAppLocale, type AppLocale } from "@/lib/i18n/locale";
 
 /*
  * next-intl без locale-роутинга: язык не в URL, а из пользователя.
- * Источник — cookie `ryk_locale` (ставится при входе по языку Telegram),
- * дефолт — ru. См. ryk_docs/18-decisions-adr.md (i18n en/ru/es).
+ * Источник — cookie `ryk_locale`: её ставит вход по языку Telegram
+ * (lib/auth/authenticate.ts) и переставляет сохранение профиля
+ * (app/actions/profile.ts). Константы языка — в lib/i18n/locale.ts.
+ * См. ryk_docs/18-decisions-adr.md (i18n en/ru/es).
  */
-export const LOCALES = ["ru", "en", "es"] as const;
-export type AppLocale = (typeof LOCALES)[number];
-export const DEFAULT_LOCALE: AppLocale = "ru";
 
 export default getRequestConfig(async () => {
-  const cookieLocale = (await cookies()).get("ryk_locale")?.value;
-  const locale: AppLocale =
-    cookieLocale && (LOCALES as readonly string[]).includes(cookieLocale)
-      ? (cookieLocale as AppLocale)
-      : DEFAULT_LOCALE;
+  const cookieLocale = (await cookies()).get(LOCALE_COOKIE)?.value;
+  const locale: AppLocale = isAppLocale(cookieLocale) ? cookieLocale : DEFAULT_LOCALE;
 
   return {
     locale,

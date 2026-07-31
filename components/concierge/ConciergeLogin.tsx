@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { conciergeSignIn } from "@/app/actions/concierge";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
@@ -11,10 +12,11 @@ import styles from "./Concierge.module.css";
 /**
  * Вход куратора по общему токену.
  *
- * Интерфейс внутренний, поэтому текст здесь русский и не идёт в i18n:
- * переводить админку для двух кураторов пилота — работа впустую.
+ * Инструмент внутренний, но переведён наравне с продуктом: кураторов
+ * в пилоте несколько городов, и русский у них не обязательно первый.
  */
 export function ConciergeLogin() {
+  const t = useTranslations("concierge");
   const router = useRouter();
   const [token, setToken] = useState("");
   const [failed, setFailed] = useState(false);
@@ -37,10 +39,11 @@ export function ConciergeLogin() {
 
   return (
     <form className={styles.login} onSubmit={submit}>
+      {/* Марка продукта, а не текст интерфейса — не переводится. */}
       <SvcLabel tone="ink">CONCIERGE</SvcLabel>
-      <h1 className={styles.loginTitle}>Инструмент куратора</h1>
+      <h1 className={styles.loginTitle}>{t("loginTitle")}</h1>
       <label className={styles.field}>
-        <span className={styles.label}>Токен доступа</span>
+        <span className={styles.label}>{t("tokenLabel")}</span>
         <Input
           type="password"
           name="token"
@@ -52,9 +55,9 @@ export function ConciergeLogin() {
           }}
         />
       </label>
-      {failed && <p className={styles.error}>Токен не подошёл.</p>}
+      {failed && <p className={styles.error}>{t("tokenFailed")}</p>}
       <Button type="submit" disabled={pending || token.length === 0}>
-        {pending ? "Проверяем…" : "Войти"}
+        {pending ? t("checking") : t("signIn")}
       </Button>
     </form>
   );

@@ -306,6 +306,13 @@ model Experience {
 
   metadata Json @default("{}")
 
+  /// Переводы карточки. Базовый язык полей выше — русский, здесь остальные:
+  /// { "en": { title, description, location }, "es": { … } }.
+  /// Нет языка или нет поля — откат на базовый текст, а не пустота.
+  /// Отдельными колонками не делаем: языков три сейчас и, возможно, больше
+  /// потом, а искать и сортировать по переводам мы не собираемся.
+  translations Json @default("{}")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -18,6 +18,8 @@ export async function selectStory(experienceId: string): Promise<SelectResult> {
   const session = await getSession();
   if (!session) return { ok: false, reason: "no_session" };
 
+  // Без языка: наружу отсюда уходят только id, категория и код «почему» —
+  // текст карточки здесь никому не показывается, переводить нечего.
   const view = await getWeeklyView(session.userId);
   if (view.kind !== "choose") return { ok: true }; // история недели уже есть
 

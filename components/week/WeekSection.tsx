@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/i18n/locale";
 import {
   trackCalendarAdded,
   trackCandidatesViewed,
@@ -32,6 +33,8 @@ const SOCIAL_KEYS = ["SOLO", "CLOSE_ONES", "NEW_PEOPLE"] as const;
 export function WeekSection({ view }: { view: WeeklyView }) {
   const t = useTranslations("week");
   const tCat = useTranslations("categories");
+  // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
+  const locale = useLocale();
   const router = useRouter();
 
   const [idx, setIdx] = useState(0);
@@ -60,14 +63,12 @@ export function WeekSection({ view }: { view: WeeklyView }) {
     if (price == null) return "";
     if (price === 0) return t("priceFree");
     const unit = currency === "RSD" ? t("currencyRSD") : currency;
-    return `${price.toLocaleString("ru-RU")} ${unit}`;
+    return `${formatNumber(price, locale)} ${unit}`;
   };
 
   const durationLabel = (min: number | null) => {
     if (min == null) return "—";
-    return min >= 60
-      ? `${(min / 60).toLocaleString("ru-RU")} ${t("hours")}`
-      : `${min} ${t("minutes")}`;
+    return min >= 60 ? `${formatNumber(min / 60, locale)} ${t("hours")}` : `${min} ${t("minutes")}`;
   };
 
   const whyText = (code: WhyCode, category: string | null) =>

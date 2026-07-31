@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/i18n/locale";
 import { reactToExperience } from "@/app/actions/discover";
 import { selectStory } from "@/app/actions/weekly";
 import type { DeckCard } from "@/lib/engine/discover";
@@ -31,6 +32,8 @@ export function EventSheet({
   const tCat = useTranslations("categories");
   const tKind = useTranslations("kinds");
   const tWeek = useTranslations("week");
+  // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
+  const locale = useLocale();
   const router = useRouter();
 
   const [pending, start] = useTransition();
@@ -63,13 +66,13 @@ export function EventSheet({
       ? null
       : card.price === 0
         ? tWeek("priceFree")
-        : `${card.price.toLocaleString("ru-RU")} ${card.currency === "RSD" ? tWeek("currencyRSD") : card.currency}`;
+        : `${formatNumber(card.price, locale)} ${card.currency === "RSD" ? tWeek("currencyRSD") : card.currency}`;
 
   const durationLabel =
     card.durationMin == null
       ? null
       : card.durationMin >= 60
-        ? `${(card.durationMin / 60).toLocaleString("ru-RU")} ${tWeek("hours")}`
+        ? `${formatNumber(card.durationMin / 60, locale)} ${tWeek("hours")}`
         : `${card.durationMin} ${tWeek("minutes")}`;
 
   return (
