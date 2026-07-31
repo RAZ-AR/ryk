@@ -286,9 +286,17 @@ export function ExperienceVisual({
   imageUrl?: string | null;
 }) {
   if (imageUrl) {
-    // Декоративное: рядом заголовок билета, альтернативному тексту нечего добавить.
+    /*
+     * Без loading="lazy". С ним кадр, уже видимый на экране, оставался пустым:
+     * src приходит после гидратации, и наблюдатель пересечений на него
+     * не срабатывал (поймано на живой загрузке — картинка грузилась
+     * отдельным Image(), но не этим тегом). Пустое фото хуже лишнего
+     * запроса, тем более что кадров в архиве максимум два десятка.
+     *
+     * Декоративное: рядом заголовок, альтернативному тексту нечего добавить.
+     */
     // eslint-disable-next-line @next/next/no-img-element
-    return <img className={styles.photo} src={imageUrl} alt="" loading="lazy" />;
+    return <img className={styles.photo} src={imageUrl} alt="" />;
   }
 
   return <ExperiencePattern seed={id} category={category} />;
