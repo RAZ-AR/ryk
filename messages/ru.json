@@ -183,7 +183,13 @@
     "empty": "Здесь появятся прожитые истории.",
     "deferredCard": "Перенесено — без вины",
     "willReturn": "вернётся",
-    "alone": "один"
+    "alone": "один",
+    "photoAdd": "Добавить фото",
+    "photoReplace": "Заменить фото",
+    "photoRemove": "Убрать",
+    "photoSaving": "Загружаем…",
+    "photoFailed": "не получилось",
+    "photoTooLarge": "слишком большое, до 8 МБ"
   },
   "year": {
     "kicker": "Год {year}",

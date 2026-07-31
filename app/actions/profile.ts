@@ -5,6 +5,7 @@ import type { Locale, SocialMode } from "@/generated/prisma/enums";
 import { track } from "@/lib/analytics/track";
 import { clearSession, getSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import { deleteMemoryPhoto } from "@/lib/storage/memoryPhotos";
 
 /*
  * Личный кабинет (CLAUDE.md постулат №6): профиль редактируем, память
@@ -100,6 +101,18 @@ export async function deleteAccount(): Promise<ProfileResult> {
   // До удаления строк — иначе трекать будет нечего.
   await track(session.userId, { name: "account_deleted", props: {} });
 
+  /*
+   * Файлы в бакете каскадом не удаляются: строки Memory уйдут, а фотографии
+   * останутся лежать. «Удалить» должно значить удалить (PRD §8), поэтому
+   * собираем пути до транзакции и стираем их после неё.
+   */
+  const photos = (
+    await prisma.memory.findMany({
+      where: { weeklyStory: { userId: session.userId } },
+      select: { media: true },
+    })
+  ).flatMap((m) => m.media);
+
   try {
     await prisma.$transaction([
       prisma.intervention.deleteMany({ where: { userId: session.userId } }),
@@ -118,6 +131,9 @@ export async function deleteAccount(): Promise<ProfileResult> {
   } catch {
     return { ok: false, reason: "db_error" };
   }
+
+  // После транзакции: не удалившийся файл не должен отменять удаление аккаунта.
+  for (const path of photos) await deleteMemoryPhoto(path);
 
   await clearSession();
   revalidatePath("/");

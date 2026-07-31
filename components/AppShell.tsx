@@ -39,6 +39,7 @@ export function AppShell({
   deck,
   upcoming,
   year,
+  canAttachPhoto,
 }: {
   wishes: WishView[];
   weekly: WeeklyView;
@@ -49,6 +50,7 @@ export function AppShell({
   deck: DeckCard[];
   upcoming: UpcomingItem[];
   year: YearView;
+  canAttachPhoto: boolean;
 }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
@@ -87,7 +89,7 @@ export function AppShell({
         ) : section === "wishes" ? (
           <Wishlist wishes={wishes} />
         ) : section === "memory" ? (
-          <MemorySection memories={memories} />
+          <MemorySection memories={memories} canAttachPhoto={canAttachPhoto} />
         ) : (
           <YearSection year={year} />
         )}

@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth/currentUser";
 import { getDiscoverDeck } from "@/lib/engine/discover";
 import { getMemories } from "@/lib/engine/memories";
 import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
+import { isPhotoStorageConfigured } from "@/lib/storage/memoryPhotos";
 import { getUpcoming } from "@/lib/engine/upcoming";
 import { getWeeklyView } from "@/lib/engine/weekly";
 import { getYear } from "@/lib/engine/year";
@@ -96,6 +97,7 @@ export default async function Home() {
       deck={deck}
       upcoming={upcoming}
       year={year}
+      canAttachPhoto={isPhotoStorageConfigured()}
     />
   );
 }

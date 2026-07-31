@@ -14,6 +14,8 @@ const deleteManyWeeklyStory = vi.fn();
 const deleteManyWish = vi.fn();
 const deleteManyInvite = vi.fn();
 const updateUser = vi.fn();
+const findManyMemory = vi.fn();
+const deleteMemoryPhoto = vi.fn();
 const $transaction = vi.fn(async (ops: unknown[]) => Promise.all(ops));
 
 vi.mock("@/lib/prisma", () => ({
@@ -24,6 +26,7 @@ vi.mock("@/lib/prisma", () => ({
     weeklyStory: { deleteMany: deleteManyWeeklyStory },
     wish: { deleteMany: deleteManyWish },
     invite: { deleteMany: deleteManyInvite },
+    memory: { findMany: findManyMemory },
     $transaction,
   },
 }));
@@ -39,10 +42,15 @@ vi.mock("@/lib/auth/session", () => ({
 
 vi.mock("@/lib/analytics/track", () => ({ track: vi.fn() }));
 
+vi.mock("@/lib/storage/memoryPhotos", () => ({
+  deleteMemoryPhoto: (p: string) => deleteMemoryPhoto(p),
+}));
+
 const SESSION = { userId: "user-1", telegramId: "111" };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  findManyMemory.mockResolvedValue([]);
   getSession.mockResolvedValue(SESSION);
   updateUser.mockResolvedValue({});
   deleteManyPreference.mockResolvedValue({ count: 1 });
@@ -92,6 +100,21 @@ describe("deleteAccount", () => {
     // это была бы деактивация, а не удаление (постулат «удаляема»).
     expect($transaction).toHaveBeenCalledOnce();
     expect(clearSession).toHaveBeenCalledOnce();
+  });
+
+  it("стирает фотографии из хранилища — каскад БД до них не дотягивается", async () => {
+    findManyMemory.mockResolvedValue([
+      { media: ["user-1/mem-1/a.jpg"] },
+      { media: ["user-1/mem-2/b.jpg"] },
+      { media: [] },
+    ]);
+    const { deleteAccount } = await import("./profile");
+
+    await deleteAccount();
+
+    expect(deleteMemoryPhoto).toHaveBeenCalledTimes(2);
+    expect(deleteMemoryPhoto).toHaveBeenCalledWith("user-1/mem-1/a.jpg");
+    expect(deleteMemoryPhoto).toHaveBeenCalledWith("user-1/mem-2/b.jpg");
   });
 
   it("без сессии не удаляет ничего", async () => {

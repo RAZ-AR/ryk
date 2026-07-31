@@ -8,6 +8,7 @@ import type {
 import { prisma } from "@/lib/prisma";
 import { buildNudge, type Nudge } from "@/lib/engine/nudges";
 import { liveExperienceWhere } from "@/lib/engine/liveExperiences";
+import { signedPhotoUrl } from "@/lib/storage/memoryPhotos";
 import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
 
 /*
@@ -230,7 +231,8 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
           companion: existing.memory.companion,
           category: e.category,
           deferred: existing.memory.deferred,
-          photo: existing.memory.media[0] ?? null,
+          // Бакет приватный — наружу отдаём подписанную ссылку, не путь.
+          photo: existing.memory.media[0] ? await signedPhotoUrl(existing.memory.media[0]) : null,
         },
       };
     }

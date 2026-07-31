@@ -415,7 +415,13 @@
     "empty": "Aquí aparecerán las historias vividas.",
     "deferredCard": "Aplazado — sin culpa",
     "willReturn": "volverá",
-    "alone": "solo"
+    "alone": "solo",
+    "photoAdd": "Añadir foto",
+    "photoReplace": "Cambiar foto",
+    "photoRemove": "Quitar",
+    "photoSaving": "Subiendo…",
+    "photoFailed": "no funcionó",
+    "photoTooLarge": "demasiado grande, máx. 8 MB"
   },
   "year": {
     "kicker": "Año {year}",
