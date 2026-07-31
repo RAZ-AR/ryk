@@ -415,7 +415,13 @@
     "empty": "Lived stories will show up here.",
     "deferredCard": "Postponed — no guilt",
     "willReturn": "will return",
-    "alone": "solo"
+    "alone": "solo",
+    "photoAdd": "Add a photo",
+    "photoReplace": "Replace photo",
+    "photoRemove": "Remove",
+    "photoSaving": "Uploading…",
+    "photoFailed": "didn't work",
+    "photoTooLarge": "too large, 8 MB max"
   },
   "year": {
     "kicker": "Year {year}",

@@ -1,0 +1,35 @@
+/* Действия с фото под подписью кадра: служебные, поэтому моно и тихо. */
+
+.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ryk-space-4);
+  margin-top: var(--ryk-space-3);
+}
+
+/* Родное поле файла некрасиво и нелокализуемо — открываем его кнопкой. */
+.input {
+  display: none;
+}
+
+.action {
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ryk-pink-text);
+  padding: 2px 0;
+}
+
+.action:disabled {
+  color: var(--ryk-text-disabled);
+  cursor: default;
+}
+
+.error {
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ryk-pink-deep);
+}

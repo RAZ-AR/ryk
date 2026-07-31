@@ -2,6 +2,7 @@ import type { LifeCategory } from "@/generated/prisma/enums";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { SvcLabel } from "@/components/SvcLabel";
+import { PhotoButton } from "./PhotoButton";
 import styles from "./FilmFrame.module.css";
 
 /*
@@ -28,9 +29,21 @@ type Props = {
   category: LifeCategory | null;
   photo: string | null;
   deferred: boolean;
+  /** Настроено ли хранилище — без него кнопки загрузки нет. */
+  canAttachPhoto: boolean;
 };
 
-export function FilmFrame({ id, date, title, note, footnote, category, photo, deferred }: Props) {
+export function FilmFrame({
+  id,
+  date,
+  title,
+  note,
+  footnote,
+  category,
+  photo,
+  deferred,
+  canAttachPhoto,
+}: Props) {
   return (
     <article className={[styles.frame, deferred && styles.quiet].filter(Boolean).join(" ")}>
       <span className={styles.holes} aria-hidden="true" />
@@ -56,6 +69,11 @@ export function FilmFrame({ id, date, title, note, footnote, category, photo, de
               <HandNote>«{note}»</HandNote>
             </div>
           ) : null}
+
+          {/* У перенесённой недели фото быть не может — её не было. */}
+          {!deferred && (
+            <PhotoButton memoryId={id} hasPhoto={photo != null} enabled={canAttachPhoto} />
+          )}
         </div>
       </div>
 

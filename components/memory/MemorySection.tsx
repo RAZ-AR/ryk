@@ -17,7 +17,13 @@ import styles from "./MemorySection.module.css";
  * желания без чувства вины».
  */
 
-export function MemorySection({ memories }: { memories: MemoryView[] }) {
+export function MemorySection({
+  memories,
+  canAttachPhoto,
+}: {
+  memories: MemoryView[];
+  canAttachPhoto: boolean;
+}) {
   const t = useTranslations("memory");
   const tWeek = useTranslations("week");
 
@@ -58,6 +64,7 @@ export function MemorySection({ memories }: { memories: MemoryView[] }) {
                 category={m.category}
                 photo={m.photo}
                 deferred={m.deferred}
+                canAttachPhoto={canAttachPhoto}
               />
             );
           })}
