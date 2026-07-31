@@ -8,7 +8,6 @@
   color: var(--ryk-text-secondary);
   font-family: var(--ryk-font-ui);
   font-size: 13px;
-  font-weight: 400;
   padding: 11px 14px;
   min-height: 44px; /* touch target */
   transition:
@@ -17,7 +16,6 @@
 }
 
 .selected {
-  font-weight: 600;
 }
 
 /* Выбранный чип: серый — нейтральный выбор, розовый — смысловой.

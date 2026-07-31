@@ -12,7 +12,6 @@
 
 .heading {
   font-size: 44px;
-  font-weight: 700;
   letter-spacing: -2px;
   color: var(--ryk-ink);
   margin-top: 6px;
@@ -20,7 +19,6 @@
 
 .count {
   font-size: 44px;
-  font-weight: 700;
   letter-spacing: -2px;
   color: var(--ryk-pink);
 }

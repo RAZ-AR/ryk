@@ -42,7 +42,6 @@
   border: 2px solid var(--ryk-pink);
   font-family: var(--ryk-font-ticket);
   font-size: 24px;
-  font-weight: 600;
   color: var(--ryk-ink);
   text-transform: uppercase;
 }

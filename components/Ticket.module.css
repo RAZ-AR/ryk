@@ -64,7 +64,6 @@
   font-family: var(--ryk-font-ticket);
   font-size: 34px;
   line-height: 1.06;
-  font-weight: 600;
   text-align: center;
   padding: 6px 18px 18px;
   letter-spacing: 0.04em;
@@ -147,10 +146,23 @@
   margin-top: 9px;
 }
 
+/*
+ * Мелкий текст корешка — на PT Serif, а не на Prata. Две причины: дисплейная
+ * антиква на 11.5px теряет тонкие штрихи, и у неё нет жирного, а подписи
+ * полей («Почему:», «Погода:») различаются именно им. У PT Serif 700
+ * настоящий, поэтому `<b>` здесь снова работает.
+ */
 .stubContent {
+  font-family: var(--ryk-font-serif);
   font-size: 11.5px;
   line-height: 1.6;
   color: var(--ryk-ink);
+}
+
+.stubContent b,
+.stubContent strong {
+  font-weight: 700;
+  letter-spacing: normal;
 }
 
 .barcode {
