@@ -17,7 +17,7 @@
 .title {
   margin-top: var(--ryk-space-2);
   font-size: 34px;
-  line-height: 1.05;
+  line-height: 1.2;
   letter-spacing: -0.01em;
   color: var(--ryk-ink);
 }

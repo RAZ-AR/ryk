@@ -12,7 +12,6 @@
 
 .heading {
   font-size: 30px;
-  font-weight: 700;
   letter-spacing: -1.5px;
   color: var(--ryk-ink);
   margin-top: 6px;
@@ -21,7 +20,6 @@
 .counter {
   font-size: 52px;
   line-height: 0.8;
-  font-weight: 700;
   letter-spacing: -2.5px;
   color: var(--ryk-pink);
 }
@@ -79,8 +77,7 @@
 /* --- Commitment --- */
 .commitTitle {
   font-size: 33px;
-  font-weight: 700;
-  line-height: 1.14;
+  line-height: 1.2;
   letter-spacing: -1px;
   color: var(--ryk-ink);
   margin-top: var(--ryk-space-5);
@@ -196,14 +193,12 @@
 .countdownNum {
   font-size: 82px;
   line-height: 0.8;
-  font-weight: 700;
   letter-spacing: -4px;
   color: var(--ryk-ink);
 }
 
 .countdownUnit {
   font-size: 22px;
-  font-weight: 600;
   letter-spacing: -0.5px;
   color: var(--ryk-ink);
 }
@@ -215,8 +210,7 @@
 /* --- Rescue --- */
 .rescueTitle {
   font-size: 32px;
-  font-weight: 700;
-  line-height: 1.16;
+  line-height: 1.2;
   letter-spacing: -1px;
   color: var(--ryk-ink);
   margin-top: var(--ryk-space-5);
@@ -254,7 +248,6 @@
 
 .optionTitle {
   font-size: 17px;
-  font-weight: 600;
   color: var(--ryk-ink);
 }
 
@@ -278,8 +271,7 @@
 /* --- Deferred --- */
 .deferredTitle {
   font-size: 33px;
-  font-weight: 700;
-  line-height: 1.14;
+  line-height: 1.2;
   letter-spacing: -1px;
   color: var(--ryk-ink);
   margin-top: var(--ryk-space-5);

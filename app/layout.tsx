@@ -1,18 +1,24 @@
 import type { Metadata } from "next";
-import { Caveat, Cormorant, Golos_Text, IBM_Plex_Mono, PT_Serif } from "next/font/google";
+import { Caveat, IBM_Plex_Mono, PT_Serif, Prata } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import "./globals.css";
 
 /*
- * Пять гарнитур из хендоффа (ryk_docs/17-design-system.md §4).
+ * Гарнитуры (ryk_docs/17-design-system.md §4).
  * Кириллица обязательна: интерфейс en / ru / es.
+ *
+ * Prata заняла две роли сразу — интерфейс и билет, — поэтому Golos Text
+ * и Cormorant больше не грузятся. У Prata единственный вес 400 и нет
+ * курсива: иерархия держится на кегле, регистре и трекинге, а не на
+ * насыщенности. Синтетический жирный отключён в globals.css — на
+ * контрастной антикве он выглядит грязно.
  */
 
-const golos = Golos_Text({
-  variable: "--font-golos",
+const prata = Prata({
+  variable: "--font-prata",
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400"],
   display: "swap",
 });
 
@@ -20,14 +26,6 @@ const ptSerif = PT_Serif({
   variable: "--font-pt-serif",
   subsets: ["latin", "cyrillic"],
   weight: ["400", "700"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const cormorant = Cormorant({
-  variable: "--font-cormorant",
-  subsets: ["latin", "cyrillic"],
-  weight: ["500", "600"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -52,13 +50,9 @@ export const metadata: Metadata = {
     "Персональный AI-компаньон по жизненному опыту: помогает не откладывать жизнь и проживать одно впечатление каждую неделю.",
 };
 
-const fontVariables = [
-  golos.variable,
-  ptSerif.variable,
-  cormorant.variable,
-  plexMono.variable,
-  caveat.variable,
-].join(" ");
+const fontVariables = [prata.variable, ptSerif.variable, plexMono.variable, caveat.variable].join(
+  " ",
+);
 
 export default async function RootLayout({
   children,

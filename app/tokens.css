@@ -73,10 +73,14 @@
   --ryk-duration-standard: 200ms;
   --ryk-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 
-  /* --- Гарнитуры (переменные приходят из next/font в layout.tsx) --- */
-  --ryk-font-ui: var(--font-golos), system-ui, sans-serif;
+  /* --- Гарнитуры (переменные приходят из next/font в layout.tsx) ---
+     Prata держит и интерфейс, и билет. Вес у неё один — 400, курсива нет,
+     поэтому насыщенностью в системе не различаем ничего: иерархию задают
+     кегль, регистр и трекинг. Жирный остаётся только там, где под ним
+     реальное начертание, — PT Serif (700) и IBM Plex Mono (500). */
+  --ryk-font-ui: var(--font-prata), Georgia, serif;
   --ryk-font-serif: var(--font-pt-serif), Georgia, serif;
-  --ryk-font-ticket: var(--font-cormorant), Georgia, serif;
+  --ryk-font-ticket: var(--font-prata), Georgia, serif;
   --ryk-font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --ryk-font-hand: var(--font-caveat), cursive;
 

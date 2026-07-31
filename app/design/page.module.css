@@ -11,7 +11,6 @@
 
 .logo {
   font-size: 44px;
-  font-weight: 700;
   letter-spacing: -2px;
   line-height: 1;
 }
@@ -22,7 +21,6 @@
 
 .sectionTitle {
   font-size: 22px;
-  font-weight: 600;
   letter-spacing: -0.5px;
   margin: var(--ryk-space-2) 0 var(--ryk-space-5);
   padding-bottom: var(--ryk-space-2);
@@ -105,15 +103,13 @@
 /* --- Типографика --- */
 .display {
   font-size: 38px;
-  font-weight: 700;
-  line-height: 1.12;
+  line-height: 1.2;
   letter-spacing: -1.2px;
 }
 
 .h1 {
   font-size: 33px;
-  font-weight: 700;
-  line-height: 1.14;
+  line-height: 1.2;
   letter-spacing: -1px;
 }
 
@@ -135,7 +131,6 @@
 .ticketTitle {
   font-family: var(--ryk-font-ticket);
   font-size: 34px;
-  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   line-height: 1.06;
