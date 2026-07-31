@@ -6,6 +6,8 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Dock, type DockTarget } from "@/components/Dock";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
+import { YearSection } from "@/components/year/YearSection";
+import type { YearView } from "@/lib/engine/year";
 import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
 import { RykNote } from "@/components/RykNote";
@@ -45,6 +47,19 @@ const PATTERN_CATEGORIES: ReadonlyArray<LifeCategory> = [
   "REST",
   "CONTRIBUTION",
 ];
+
+/** Год с перекосом — так видно, что полосы читаются без шкалы и процентов. */
+const YEAR_DEMO: YearView = {
+  year: 2026,
+  total: 11,
+  rows: [
+    { category: "NATURE", count: 5, share: 1 },
+    { category: "CONNECTION", count: 3, share: 0.6 },
+    { category: "CULTURE", count: 2, share: 0.4 },
+    { category: "REST", count: 1, share: 0.2 },
+  ],
+  top: "NATURE",
+};
 
 const EMOTIONS = ["Восторг", "Спокойствие", "Гордость", "Близость"];
 const BUDGETS = ["до 500 ₽", "до 2 000 ₽", "не важно"];
@@ -264,6 +279,12 @@ export default function DesignSystemPage() {
             </figure>
           ))}
         </div>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">10</SvcLabel>
+        <h2 className={styles.sectionTitle}>Год</h2>
+        <YearSection year={YEAR_DEMO} />
       </section>
     </main>
   );

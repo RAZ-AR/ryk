@@ -3,7 +3,7 @@
     "week": "Week",
     "memory": "Memory",
     "wishes": "Wishes",
-    "balance": "Balance"
+    "year": "Year"
   },
   "app": {
     "promise": "One real story every week",
@@ -416,5 +416,12 @@
     "deferredCard": "Postponed — no guilt",
     "willReturn": "will return",
     "alone": "solo"
+  },
+  "year": {
+    "kicker": "Year {year}",
+    "title": "What the year was made of",
+    "mostly": "Most of this year was {category}.",
+    "note": "There's no target here and no quota. Only what happened.",
+    "empty": "The year is just starting. Your first lived story will show up here."
   }
 }
