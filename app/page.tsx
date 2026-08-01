@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/currentUser";
 import { getDiscoverDeck } from "@/lib/engine/discover";
 import { getMemories } from "@/lib/engine/memories";
 import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
+import { localizeCity } from "@/lib/i18n/city";
 import { localizeExperience } from "@/lib/i18n/experience";
 import { isPhotoStorageConfigured } from "@/lib/storage/memoryPhotos";
 import { getUpcoming } from "@/lib/engine/upcoming";
@@ -112,6 +113,8 @@ export default async function Home() {
       upcoming={upcoming}
       year={year}
       canAttachPhoto={isPhotoStorageConfigured()}
+      locale={locale}
+      city={localizeCity(profile.city, locale)}
     />
   );
 }

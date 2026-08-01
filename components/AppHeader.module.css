@@ -1,11 +1,31 @@
-/* Логотип поверх любого экрана — тот же приём position: fixed, что у dock,
-   ProfileEntry и InviteBadge. Тихий и мелкий: знак уже есть в центре дока,
-   и два одинаковых пятна не должны спорить. */
-.home {
+/*
+ * Шапка поверх любого экрана — тот же приём position: fixed, что у dock,
+ * ProfileEntry и InviteBadge.
+ *
+ * Справа резервируем ровно столько, сколько там реально занято: вход
+ * в профиль стоит всегда (right:20, 44px), а значок приглашений — только
+ * когда приглашения есть (right:74, 44px). Резервировать под него всегда
+ * значило бы отнимать 56px у города на каждом экране без приглашений.
+ */
+.bar {
   position: fixed;
   top: calc(14px + var(--tg-safe-area-inset-top, 0px));
   left: 20px;
+  right: 72px;
   z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: var(--ryk-space-3);
+  min-width: 0;
+}
+
+/* Приглашения пришли — уступаем место значку. */
+.withBadge {
+  right: 126px;
+}
+
+.home {
+  flex-shrink: 0;
   min-width: 44px;
   min-height: 44px;
   display: flex;
@@ -21,7 +41,83 @@
 }
 
 .mark {
-  width: 46px;
+  width: 60px;
   height: auto;
   display: block;
+}
+
+/* Город — только для чтения: уступает место языку и обрезается первым. */
+.city {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ryk-text-secondary);
+}
+
+/* Зазор минимальный: зону нажатия набирают сами кнопки полями, а не гэпом —
+   иначе блок раздувается и первым страдает город. */
+.locales {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--ryk-space-1);
+  margin-left: auto;
+}
+
+/*
+ * Выбранный язык помечен цветом, а не насыщенностью: у моно-меток вес
+ * ничего не различает, а у Prata его и нет. Оба состояния читаемы —
+ * text-secondary даёт 10.8:1 на бумаге, pink-text 5.1:1.
+ */
+.locale {
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ryk-text-secondary);
+  /* Метка мелкая, но палец крупный: 44px по высоте набираем полями. */
+  min-width: 30px;
+  min-height: 44px;
+  padding: 0 var(--ryk-space-1);
+  transition: color var(--ryk-duration-micro) var(--ryk-ease);
+}
+
+.localeOn {
+  color: var(--ryk-pink-text);
+}
+
+.locale:disabled {
+  cursor: default;
+}
+
+/*
+ * Только самые узкие вьюпорты (Android 360px). Планка именно 365, а не 380:
+ * 375 — основная ширина iPhone, и знак там должен быть полного размера.
+ *
+ * Место отбираем у трекинга и полей, а не у города: «БЕЛГРАД» — семь букв,
+ * и обрезать их до «БЕЛГРА…» глупо ради десятка пикселей. Кнопки языка
+ * сужаются до 26px — это выше минимума 24px, а 44px по высоте не трогаем.
+ */
+@media (max-width: 365px) {
+  .bar {
+    gap: var(--ryk-space-2);
+  }
+
+  .mark {
+    width: 52px;
+  }
+
+  .city {
+    letter-spacing: 0.06em;
+  }
+
+  .locale {
+    min-width: 26px;
+    padding: 0;
+  }
 }

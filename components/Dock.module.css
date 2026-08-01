@@ -12,12 +12,25 @@
   display: flex;
   align-items: center;
   gap: var(--ryk-space-1);
-  background: var(--ryk-ink);
+  background: var(--ryk-glass);
+  -webkit-backdrop-filter: var(--ryk-glass-blur);
+  backdrop-filter: var(--ryk-glass-blur);
+  border: 1px solid var(--ryk-glass-border);
   padding: 7px;
   border-radius: var(--ryk-radius-dock);
   box-shadow: var(--ryk-shadow-dock);
   max-width: calc(100% - 40px);
   z-index: 6;
+}
+
+/*
+ * Без размытия стекло стало бы мутным пятном, сквозь которое читается
+ * контент под доком. Тогда честнее непрозрачная подложка.
+ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dock {
+    background: var(--ryk-surface-card);
+  }
 }
 
 .item {
@@ -29,7 +42,8 @@
   padding: 11px var(--ryk-space-4);
   border-radius: var(--ryk-radius-dock-pill);
   background: transparent;
-  color: var(--ryk-text-disabled);
+  /* Не muted: на светлом стекле он даёт 3.3:1 — см. --ryk-glass в токенах. */
+  color: var(--ryk-text-secondary);
   white-space: nowrap;
   transition:
     background-color var(--ryk-duration-micro) var(--ryk-ease),
@@ -43,8 +57,9 @@
 }
 
 /* Центральная кнопка со знаком: вход в ленту впечатлений.
-   Бумажный круг на ink-фоне дока — знак читается, и розовым в доке
-   по-прежнему светится только что-то одно (§11.1). */
+   На матовом стекле белый круг сам по себе не читается (1.02 к фону) —
+   его держит волосяная граница, а розовым в доке по-прежнему светится
+   только что-то одно (§11.1). */
 .center {
   flex-shrink: 0;
   width: 46px;
@@ -54,7 +69,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--ryk-paper);
+  background: var(--ryk-white);
+  border: 1px solid var(--ryk-glass-border);
   transition: background-color var(--ryk-duration-micro) var(--ryk-ease);
 }
 
