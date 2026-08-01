@@ -37,16 +37,11 @@
   text-align: center;
 }
 
-.actions {
-  display: flex;
-  gap: var(--ryk-space-3);
-  margin-top: var(--ryk-space-5);
-}
-
-.actions > * {
-  flex: 1;
-  min-width: 0;
-}
+/*
+ * Реакции переехали внутрь билета — отрывной полосой под корешком.
+ * Отдельного блока кнопок под колодой больше нет: он оставался на месте,
+ * пока карточка уезжала от свайпа, и связь с ней распадалась.
+ */
 
 /* Каталог кончился — спокойное состояние, не упрёк (14-brand-and-copy). */
 .empty {
@@ -70,10 +65,4 @@
   font-size: 15px;
   line-height: 1.6;
   color: var(--ryk-text-muted);
-}
-
-@media (max-width: 400px) {
-  .actions {
-    flex-direction: column;
-  }
 }

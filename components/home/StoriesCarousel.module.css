@@ -44,6 +44,9 @@
   font-size: 24px;
   color: var(--ryk-ink);
   text-transform: uppercase;
+  /* Короткая тень, а не тень билета: на предмете в 64px та растеклась бы
+     шире самого кружка (см. --ryk-shadow-card в tokens.css). */
+  box-shadow: var(--ryk-shadow-card);
 }
 
 /* Куда позвали — другой контур, чтобы своё и чужое не путалось. */

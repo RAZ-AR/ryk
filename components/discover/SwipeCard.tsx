@@ -60,6 +60,13 @@ export function SwipeCard({
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (disabled || leaving) return;
+    /*
+     * С полосы действий жест не начинаем. Полоса — часть билета и лежит
+     * внутри карточки, поэтому нажатие на «интересно» иначе утаскивало бы
+     * всю карту: палец на кнопке неизбежно чуть смещается, и вместо
+     * нажатия человек получал бы дрожащую карточку.
+     */
+    if ((e.target as HTMLElement).closest("button")) return;
     startX.current = e.clientX;
     setDragging(true);
     setSettling(false);

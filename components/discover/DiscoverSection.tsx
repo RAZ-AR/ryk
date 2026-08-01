@@ -6,11 +6,11 @@ import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import { reactToExperience } from "@/app/actions/discover";
 import type { DeckCard } from "@/lib/engine/discover";
-import { Button } from "@/components/Button";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { SvcLabel } from "@/components/SvcLabel";
 import { Ticket } from "@/components/Ticket";
+import { TicketAction } from "@/components/TicketAction";
 import { SwipeCard, type SwipeDirection } from "./SwipeCard";
 import styles from "./DiscoverSection.module.css";
 
@@ -96,6 +96,27 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
                 title={card.title}
                 stubTone="neutral"
                 stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
+                /*
+                 * Та же отрывная полоса, что в ленте на главном. Она внутри
+                 * карточки, а значит едет вместе с ней при свайпе — жест
+                 * и нажатие ведут к одному и тому же и выглядят одним целым.
+                 */
+                actions={
+                  <>
+                    <TicketAction
+                      tone="no"
+                      label={t("no")}
+                      disabled={saving}
+                      onClick={() => decide("left")}
+                    />
+                    <TicketAction
+                      tone="yes"
+                      label={t("yes")}
+                      disabled={saving}
+                      onClick={() => decide("right")}
+                    />
+                  </>
+                }
               >
                 {card.description}
                 {card.location ? (
@@ -112,13 +133,6 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
                 {t("counter", { current: idx + 1, total: deck.length })}
               </SvcLabel>
             </div>
-          </div>
-
-          <div className={styles.actions}>
-            <Button variant="secondary" onClick={() => decide("left")}>
-              {t("no")}
-            </Button>
-            <Button onClick={() => decide("right")}>{t("yes")}</Button>
           </div>
         </>
       )}
