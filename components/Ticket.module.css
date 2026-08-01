@@ -3,13 +3,25 @@
 .ticket {
   display: flex;
   flex-direction: column;
+  /*
+   * Тень у билета целиком, а не у одной белой части. Раньше она висела на
+   * `.top`, и корешок оставался без неё; с появлением полосы действий это
+   * читалось бы как три отдельные плашки вместо одного предмета.
+   */
+  box-shadow: var(--ryk-shadow-ticket);
+}
+
+/* Лицо билета: верх + корешок. Опора для накладки-кнопки «открыть». */
+.face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 /* --- Верх: белая часть с фото и заголовком --- */
 .top {
   background: var(--ryk-white);
   border-radius: var(--ryk-radius-ticket) var(--ryk-radius-ticket) 0 0;
-  box-shadow: var(--ryk-shadow-ticket);
 }
 
 .photo {
@@ -170,4 +182,73 @@
   align-self: stretch;
   min-height: 44px;
   background: var(--ryk-barcode);
+}
+
+/* --- Зона нажатия на билет --- */
+
+/*
+ * Накладка поверх лица билета. Не мешает полосе действий: та лежит
+ * следующим элементом, вне `.face`, и накладка её не накрывает.
+ */
+.openOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.openOverlay:focus-visible {
+  outline: 2px solid var(--ryk-ink);
+  outline-offset: -3px;
+  border-radius: var(--ryk-radius-ticket) var(--ryk-radius-ticket) 0 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- Отрывная полоса действий --- */
+
+/*
+ * Третья полоса билета, пришитая второй перфорацией. Половины делит
+ * такая же пунктирная линия отрыва, повёрнутая вертикально: выбор
+ * читается как «оторви в свою сторону», а не как две кнопки рядом.
+ */
+.tear {
+  position: relative;
+  display: flex;
+  border-top: var(--ryk-perforation);
+}
+
+.tear > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/*
+ * Линия отрыва между половинами — псевдоэлементом полосы, а не бордюром
+ * кнопки. Через бордюр не выходит: у половины свой `border: 0` (иначе
+ * вылезает бордюр кнопки по умолчанию), специфичность правил равная, и
+ * победитель зависел бы от порядка склейки CSS-модулей — то есть от
+ * случайности сборки.
+ *
+ * Полоса рассчитана ровно на две половины: они всегда `flex: 1 1 0`,
+ * поэтому граница между ними всегда посередине.
+ */
+.tear::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  border-left: var(--ryk-perforation);
+  pointer-events: none;
 }

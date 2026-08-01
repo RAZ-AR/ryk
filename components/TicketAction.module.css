@@ -1,0 +1,78 @@
+/* Половина отрывной полосы билета (дизайн-система §6). */
+
+.action {
+  /* Ширину и линию отрыва задаёт полоса `.tear` в Ticket.module.css —
+     на call-site примитив не переопределяем (§ правила дизайн-системы). */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  /* 56px — с запасом над минимальным тач-таргетом 44px. */
+  min-height: 56px;
+  padding: 10px var(--ryk-space-3);
+
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: background-color 120ms ease-out;
+}
+
+/* Прямые углы: у билета скруглён только верх, низ оторван. */
+.no {
+  background: var(--ryk-surface-stub);
+  color: var(--ryk-ink);
+}
+
+/*
+ * Текст — ink, а не `--ryk-text-on-pink`: тот приглушённый и живёт в роли
+ * вторичной подписи (подзаголовок на розовом блоке). Здесь подпись набрана
+ * служебным кеглем 9px, для которого порог AA — 4.5:1, а приглушённый даёт
+ * 3.26:1. На ink выходит ≈8:1 — то же правило, что у Button.primary (§9).
+ */
+.yes {
+  background: var(--ryk-pink);
+  color: var(--ryk-ink);
+}
+
+.mark {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.label {
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  /* Длинная подпись («Не интересно» / «No me interesa») не должна ломать
+     полосу: перенос по словам, но без разрыва внутри слова. */
+  line-height: 1.2;
+  overflow-wrap: break-word;
+}
+
+/* Наведение только там, где есть настоящий курсор: на тач-устройстве
+   :hover залипает после нажатия и половина остаётся подсвеченной. */
+@media (hover: hover) {
+  .no:hover:not(:disabled) {
+    background: var(--ryk-grey);
+  }
+
+  .yes:hover:not(:disabled) {
+    background: var(--ryk-pink-deep);
+  }
+}
+
+.action:focus-visible {
+  outline: 2px solid var(--ryk-ink);
+  outline-offset: -4px;
+}
+
+.action:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

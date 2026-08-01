@@ -38,6 +38,23 @@ type TicketProps = {
   stubTone?: StubTone;
   stubLabel: string;
   size?: TicketSize;
+  /**
+   * Отрывная полоса действий под корешком — реакция на впечатление.
+   * Сюда кладут `TicketAction`; ширину половин и линию отрыва между ними
+   * задаёт полоса, не сами кнопки.
+   *
+   * Полоса — часть билета, а не строка под ним: пара кнопок в отдельном
+   * блоке ниже читалась как начало следующей карточки, а не как действие
+   * над этой (перфорация и общая тень делают принадлежность очевидной).
+   */
+  actions?: ReactNode;
+  /**
+   * Нажатие на сам билет — открыть впечатление. Без обработчика билет
+   * остаётся некликабельным (история недели, воспоминание, приглашение).
+   */
+  onOpen?: () => void;
+  /** Подпись зоны нажатия для скринридера. Обязательна вместе с `onOpen`. */
+  openLabel?: string;
   children: ReactNode;
 };
 
@@ -52,40 +69,65 @@ export function Ticket({
   stubTone = "pink",
   stubLabel,
   size = "default",
+  actions,
+  onOpen,
+  openLabel,
   children,
 }: TicketProps) {
   return (
     <article
       className={[styles.ticket, size === "compact" && styles.compact].filter(Boolean).join(" ")}
     >
-      <div className={styles.top}>
-        <div className={styles.photo}>
-          <div className={styles.photoInner}>{photo ?? photoPlaceholder}</div>
+      <div className={styles.face}>
+        <div className={styles.top}>
+          <div className={styles.photo}>
+            <div className={styles.photoInner}>{photo ?? photoPlaceholder}</div>
+          </div>
+
+          <div className={styles.meta}>
+            <span>{metaLeft}</span>
+            <span className={styles.rule} aria-hidden="true" />
+            <span className={styles.metaRight}>
+              {metaRight}
+              {metaRightSub ? <span className={styles.metaSub}>{metaRightSub}</span> : null}
+            </span>
+          </div>
+
+          <h2 className={styles.title}>{title}</h2>
+          {note ? <p className={styles.note}>«{note}»</p> : null}
         </div>
 
-        <div className={styles.meta}>
-          <span>{metaLeft}</span>
-          <span className={styles.rule} aria-hidden="true" />
-          <span className={styles.metaRight}>
-            {metaRight}
-            {metaRightSub ? <span className={styles.metaSub}>{metaRightSub}</span> : null}
-          </span>
+        <div className={[styles.stub, styles[stubTone]].join(" ")}>
+          <span className={[styles.notch, styles.notchLeft].join(" ")} aria-hidden="true" />
+          <span className={[styles.notch, styles.notchRight].join(" ")} aria-hidden="true" />
+
+          <SvcLabel tone="ink">● {stubLabel}</SvcLabel>
+          <div className={styles.stubBody}>
+            <div className={styles.stubContent}>{children}</div>
+            <div className={styles.barcode} aria-hidden="true" />
+          </div>
         </div>
 
-        <h2 className={styles.title}>{title}</h2>
-        {note ? <p className={styles.note}>«{note}»</p> : null}
+        {/*
+         * Зона нажатия — накладкой поверх лица билета, а не обёрткой вокруг
+         * него. Обёртка означала бы <button> с <h2> и <div> внутри (браузер
+         * такое терпит, но это недопустимая вложенность), а с появлением
+         * полосы действий давала бы ещё и кнопки внутри кнопки.
+         */}
+        {onOpen ? (
+          <button type="button" className={styles.openOverlay} onClick={onOpen}>
+            <span className={styles.srOnly}>{openLabel}</span>
+          </button>
+        ) : null}
       </div>
 
-      <div className={[styles.stub, styles[stubTone]].join(" ")}>
-        <span className={[styles.notch, styles.notchLeft].join(" ")} aria-hidden="true" />
-        <span className={[styles.notch, styles.notchRight].join(" ")} aria-hidden="true" />
-
-        <SvcLabel tone="ink">● {stubLabel}</SvcLabel>
-        <div className={styles.stubBody}>
-          <div className={styles.stubContent}>{children}</div>
-          <div className={styles.barcode} aria-hidden="true" />
+      {actions ? (
+        <div className={styles.tear}>
+          <span className={[styles.notch, styles.notchLeft].join(" ")} aria-hidden="true" />
+          <span className={[styles.notch, styles.notchRight].join(" ")} aria-hidden="true" />
+          {actions}
         </div>
-      </div>
+      ) : null}
     </article>
   );
 }

@@ -3,9 +3,9 @@
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import type { DeckCard } from "@/lib/engine/discover";
-import { Button } from "@/components/Button";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { Ticket } from "@/components/Ticket";
+import { TicketAction } from "@/components/TicketAction";
 import styles from "./EventFeed.module.css";
 
 /*
@@ -53,34 +53,41 @@ export function EventFeed({
   return (
     <ul className={styles.feed}>
       {deck.map((card) => (
-        <li key={card.id} className={styles.card}>
-          <button type="button" className={styles.open} onClick={() => onOpen(card)}>
-            <Ticket
-              size="compact"
-              photo={
-                <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
-              }
-              metaLeft={durationLabel(card.durationMin)}
-              metaRight={priceLabel(card.price, card.currency)}
-              // Тип, а не категория: категория и так стоит на корешке,
-              // а «вызов себе» против «события» — это разные обещания.
-              metaRightSub={tKind(card.kind)}
-              title={card.title}
-              stubTone="neutral"
-              stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
-            >
-              {card.location ?? card.description}
-            </Ticket>
-          </button>
-
-          <div className={styles.actions}>
-            <Button variant="secondary" disabled={busy} onClick={() => onReact(card, false)}>
-              {tDiscover("no")}
-            </Button>
-            <Button disabled={busy} onClick={() => onReact(card, true)}>
-              {tDiscover("yes")}
-            </Button>
-          </div>
+        <li key={card.id}>
+          <Ticket
+            size="compact"
+            photo={
+              <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
+            }
+            metaLeft={durationLabel(card.durationMin)}
+            metaRight={priceLabel(card.price, card.currency)}
+            // Тип, а не категория: категория и так стоит на корешке,
+            // а «вызов себе» против «события» — это разные обещания.
+            metaRightSub={tKind(card.kind)}
+            title={card.title}
+            stubTone="neutral"
+            stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
+            onOpen={() => onOpen(card)}
+            openLabel={t("open")}
+            actions={
+              <>
+                <TicketAction
+                  tone="no"
+                  label={tDiscover("no")}
+                  disabled={busy}
+                  onClick={() => onReact(card, false)}
+                />
+                <TicketAction
+                  tone="yes"
+                  label={tDiscover("yes")}
+                  disabled={busy}
+                  onClick={() => onReact(card, true)}
+                />
+              </>
+            }
+          >
+            {card.location ?? card.description}
+          </Ticket>
         </li>
       ))}
     </ul>
