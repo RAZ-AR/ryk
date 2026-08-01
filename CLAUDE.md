@@ -70,7 +70,9 @@
 - **Хостинг:** **Vercel** (app, free) + Supabase — preview-деплой = staging, `main` = prod (ADR-003).
 - **Аналитика:** **PostHog** (+ feature flags для экспериментов) (ADR-005).
 - **AI:** цепочка провайдеров со structured outputs (ADR-008): **Gemini Flash** (бесплатный tier, по умолчанию) → Claude (опционально, платно) → эвристика. Платных позиций на старте нет.
-- **i18n:** en / ru / es (шрифты latin + Cyrillic). RTL не нужен.
+- **i18n:** en / ru / es (шрифты latin + Cyrillic). RTL не нужен ([ADR-009](ryk_docs/18-decisions-adr.md)).
+  Язык запроса — из cookie `ryk_locale`, не из `users.locale`; меняешь язык — пиши
+  в оба места. Контент каталога — в колонке `experiences.translations`, не в `messages/`.
 - **Пилот:** Белград, Нови-Сад, возможно Ереван → Supabase регион EU; события — в основном ручная курация (ADR-006).
 - **Данные:** Open-Meteo + OSM + Ticketmaster (Eventbrite ограничен) + concierge (ADR-006).
 - **Дизайн:** бумажный принт + метафора билета; розовый `#F387C8` на бумаге `#EBEAE7`, плоско, прямые углы; шрифты Golos Text · PT Serif · Cormorant · IBM Plex Mono · Caveat. Источник — hi-fi прототип `design_handoff_ryk/` (16 экранов) → [17-design-system](ryk_docs/17-design-system.md), [ADR-007](ryk_docs/18-decisions-adr.md).
