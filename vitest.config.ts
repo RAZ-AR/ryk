@@ -15,6 +15,8 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["lib/**/*.test.ts", "app/**/*.test.ts"],
+    // prisma/ — потому что курируемый каталог и его переводы живут там,
+    // а полнота переводов проверяется тестом, а не типом (см. catalogI18n.test.ts).
+    include: ["lib/**/*.test.ts", "app/**/*.test.ts", "prisma/**/*.test.ts"],
   },
 });

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getLocale } from "next-intl/server";
 import type { BarrierType } from "@/generated/prisma/enums";
 import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
@@ -43,6 +44,7 @@ export async function startRescue(barrier: BarrierType): Promise<RescueResult> {
     currentPrice: story.experience?.price ?? null,
     currentDurationMin: story.experience?.durationMin ?? null,
     currentCategory: story.experience?.category ?? null,
+    locale: await getLocale(),
   });
 
   try {

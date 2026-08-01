@@ -4,6 +4,7 @@ import type { Locale } from "@/generated/prisma/enums";
 import { buildNudge, type NudgeCode } from "@/lib/engine/nudges";
 import { decideDelivery, notificationsEnabled } from "@/lib/engine/nudgeDelivery";
 import { weekStartUTC } from "@/lib/engine/weekly";
+import { localizeExperience } from "@/lib/i18n/experience";
 import { prisma } from "@/lib/prisma";
 import { callTelegramApi } from "@/lib/telegram/botApi";
 import { buildNudgeMessage, buildWitnessMessage } from "@/lib/telegram/nudgeMessage";
@@ -144,7 +145,9 @@ export async function GET(request: Request) {
     }
 
     const text = buildNudgeMessage(nudge.code, user.locale, {
-      title: experience.title,
+      // Язык из профиля, а не из cookie: у крона нет запроса, и это ровно тот
+      // случай, ради которого язык дублируется в `users.locale`.
+      title: localizeExperience(experience, user.locale).title,
       suggestedDay: nudge.suggestedDate ? weekdayName(nudge.suggestedDate, user.locale) : undefined,
       suggestedWeather: nudge.suggestedWeather
         ? describeWeather(nudge.suggestedWeather, user.locale)
@@ -188,7 +191,7 @@ export async function GET(request: Request) {
       invites: { some: { role: "WITNESS", status: "ACCEPTED", recipientId: { not: null } } },
     },
     include: {
-      experience: { select: { title: true } },
+      experience: { select: { title: true, translations: true } },
       invites: {
         where: { role: "WITNESS", status: "ACCEPTED" },
         include: { recipient: { select: { id: true, telegramId: true, locale: true } } },
@@ -214,7 +217,8 @@ export async function GET(request: Request) {
       story.status === "COMPLETED" ? "done" : "deferred",
       witness.locale,
       {
-        title: story.experience.title,
+        // Свидетель — другой человек: итог приходит на его языке, не автора.
+        title: localizeExperience(story.experience, witness.locale).title,
       },
     );
 

@@ -2,6 +2,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { config as loadEnv } from "dotenv";
 import { PrismaClient } from "../generated/prisma/client";
 import { CATALOG } from "./catalog";
+import { CATALOG_I18N } from "./catalogI18n";
 
 loadEnv({ path: [".env.local", ".env"], quiet: true });
 
@@ -9,6 +10,7 @@ loadEnv({ path: [".env.local", ".env"], quiet: true });
  * Сиды для локальной разработки и пилота.
  * Каталог курируемый (ADR-006) и лежит в ./catalog.ts — там же объяснена
  * пропорция типов: событий меньшинство, большая часть — вызовы и ритуалы.
+ * Переводы карточек — в ./catalogI18n.ts, по тому же slug.
  *
  * Скрипт идемпотентный: повторный запуск не плодит дубли, а обновляет
  * существующие строки по metadata.slug.
@@ -29,11 +31,22 @@ async function main() {
       where: { metadata: { path: ["slug"], equals: slug } },
     });
 
+    /*
+     * Перевода не должно не быть: полноту стережёт catalogI18n.test.ts.
+     * Но сид умеет запускаться и на ветке, где тест ещё не гоняли, — тогда
+     * лучше остановиться здесь, чем залить в базу карточку, которая
+     * у половины пользователей окажется на чужом языке.
+     */
+    const translations = CATALOG_I18N[slug];
+    if (!translations)
+      throw new Error(`Нет перевода для карточки «${slug}» (prisma/catalogI18n.ts)`);
+
     const data = {
       ...rest,
       source: "CURATED" as const,
       currency: "RSD",
       metadata: { slug },
+      translations,
     };
 
     if (existing) {

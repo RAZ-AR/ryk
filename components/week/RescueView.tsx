@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/i18n/locale";
 import { applyRescue, deferWeek, startRescue } from "@/app/actions/rescue";
 import type { BarrierType } from "@/generated/prisma/enums";
 import type { RescueOption } from "@/lib/engine/rescue";
@@ -30,6 +31,8 @@ const ROMAN = ["I", "II", "III"];
 export function RescueView({ onBack }: { onBack: () => void }) {
   const t = useTranslations("week");
   const tCat = useTranslations("categories");
+  // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
+  const locale = useLocale();
   const router = useRouter();
 
   const [barrier, setBarrier] = useState<BarrierType | null>(null);
@@ -63,14 +66,14 @@ export function RescueView({ onBack }: { onBack: () => void }) {
     if (price == null) return null;
     if (price === 0) return t("priceFree");
     const unit = currency === "RSD" ? t("currencyRSD") : currency;
-    return `${price.toLocaleString("ru-RU")} ${unit}`;
+    return `${formatNumber(price, locale)} ${unit}`;
   };
 
   const durationLabel = (min: number | null) =>
     min == null
       ? null
       : min >= 60
-        ? `${(min / 60).toLocaleString("ru-RU")} ${t("hours")}`
+        ? `${formatNumber(min / 60, locale)} ${t("hours")}`
         : `${min} ${t("minutes")}`;
 
   return (

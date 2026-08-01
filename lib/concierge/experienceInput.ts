@@ -1,4 +1,9 @@
 import type { ExperienceKind, LifeCategory } from "@/generated/prisma/enums";
+import {
+  buildTranslations,
+  type ExperienceTranslation,
+  type ExperienceTranslations,
+} from "@/lib/i18n/experience";
 
 /*
  * Разбор формы куратора в поля Experience.
@@ -28,6 +33,12 @@ export const CATEGORIES: LifeCategory[] = [
  */
 export const KINDS: ExperienceKind[] = ["EVENT", "CHALLENGE", "RITUAL"];
 
+/**
+ * Языки перевода в форме. Базовый (русский) сюда не входит: он и есть
+ * основные поля карточки.
+ */
+export const TRANSLATION_LOCALES = ["en", "es"] as const;
+
 export type ExperienceInput = {
   title: string;
   description: string | null;
@@ -42,6 +53,8 @@ export type ExperienceInput = {
   currency: string;
   bookingUrl: string | null;
   sponsored: boolean;
+  /** Английский и испанский текст карточки. Пустые языки не попадают сюда. */
+  translations: ExperienceTranslations;
 };
 
 export type ParseResult =
@@ -78,6 +91,29 @@ export function normalizeUrl(raw: string): string | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Переводы из полей вида `title_en`, `description_es`, `location_en`.
+ *
+ * Незаполненный язык — не ошибка: карточку надо уметь завести быстро,
+ * пока событие не ушло, а перевод дописать следующим заходом. Пока его
+ * нет, англоязычный пользователь увидит русский текст — это хуже перевода,
+ * но лучше пустой карточки (см. lib/i18n/experience.ts).
+ */
+function parseTranslationFields(form: FormData): ExperienceTranslations {
+  const draft: Partial<Record<(typeof TRANSLATION_LOCALES)[number], ExperienceTranslation>> = {};
+
+  for (const locale of TRANSLATION_LOCALES) {
+    draft[locale] = {
+      title: str(form.get(`title_${locale}`), 140),
+      description: str(form.get(`description_${locale}`), 500),
+      location: str(form.get(`location_${locale}`), 140),
+    };
+  }
+
+  // buildTranslations сам выбросит пустые поля и пустые языки.
+  return buildTranslations(draft);
 }
 
 export function parseExperienceInput(form: FormData): ParseResult {
@@ -134,6 +170,7 @@ export function parseExperienceInput(form: FormData): ParseResult {
       // Прозрачность спонсорства — продуктовое обещание (PRD §7):
       // отметка ставится здесь и дальше всегда видна пользователю.
       sponsored: form.get("sponsored") === "on",
+      translations: parseTranslationFields(form),
     },
   };
 }

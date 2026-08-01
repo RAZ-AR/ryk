@@ -1,5 +1,7 @@
 import type { LifeCategory } from "@/generated/prisma/enums";
 import { weekStartUTC } from "@/lib/engine/weekly";
+import { localizeExperience } from "@/lib/i18n/experience";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { prisma } from "@/lib/prisma";
 
 /*
@@ -27,7 +29,10 @@ function isoDay(date: Date | null): string | null {
   return date ? date.toISOString().slice(0, 10) : null;
 }
 
-export async function getUpcoming(userId: string): Promise<UpcomingItem[]> {
+export async function getUpcoming(
+  userId: string,
+  locale: string = DEFAULT_LOCALE,
+): Promise<UpcomingItem[]> {
   const weekStart = weekStartUTC();
 
   const [mine, invited] = await Promise.all([
@@ -43,7 +48,7 @@ export async function getUpcoming(userId: string): Promise<UpcomingItem[]> {
         id: true,
         plannedFor: true,
         companionName: true,
-        experience: { select: { title: true, category: true } },
+        experience: { select: { title: true, category: true, translations: true } },
       },
     }),
     prisma.invite.findMany({
@@ -59,7 +64,7 @@ export async function getUpcoming(userId: string): Promise<UpcomingItem[]> {
         weeklyStory: {
           select: {
             plannedFor: true,
-            experience: { select: { title: true, category: true } },
+            experience: { select: { title: true, category: true, translations: true } },
           },
         },
       },
@@ -71,7 +76,7 @@ export async function getUpcoming(userId: string): Promise<UpcomingItem[]> {
       .filter((s) => s.experience !== null)
       .map((s) => ({
         id: s.id,
-        title: s.experience!.title,
+        title: localizeExperience(s.experience!, locale).title,
         category: s.experience!.category,
         plannedFor: isoDay(s.plannedFor),
         withWhom: s.companionName,
@@ -81,7 +86,7 @@ export async function getUpcoming(userId: string): Promise<UpcomingItem[]> {
       .filter((i) => i.weeklyStory.experience !== null)
       .map((i) => ({
         id: i.id,
-        title: i.weeklyStory.experience!.title,
+        title: localizeExperience(i.weeklyStory.experience!, locale).title,
         category: i.weeklyStory.experience!.category,
         plannedFor: isoDay(i.weeklyStory.plannedFor),
         withWhom: i.inviterName,

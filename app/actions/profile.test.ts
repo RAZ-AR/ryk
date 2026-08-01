@@ -33,6 +33,10 @@ vi.mock("@/lib/prisma", () => ({
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
+// Смена языка обязана писать cookie: next-intl читает её, а не users.locale.
+const setCookie = vi.fn();
+vi.mock("next/headers", () => ({ cookies: async () => ({ set: setCookie }) }));
+
 const getSession = vi.fn();
 const clearSession = vi.fn();
 vi.mock("@/lib/auth/session", () => ({
@@ -196,5 +200,43 @@ describe("updateProfile", () => {
     });
 
     expect(updateUser.mock.calls[0][0].data.notificationPreferences).toEqual({ nudges: false });
+  });
+
+  /*
+   * Регрессия: язык сохранялся только в users.locale, а next-intl берёт его
+   * из cookie `ryk_locale`. Из-за этого выбор языка в профиле не менял
+   * интерфейс — до следующего входа в Mini App человек продолжал видеть
+   * старый. Пишем оба места.
+   */
+  it("переключает cookie языка, а не только поле в базе", async () => {
+    const { updateProfile } = await import("./profile");
+    const res = await updateProfile({
+      city: null,
+      radiusKm: 25,
+      budgetMax: null,
+      socialMode: null,
+      locale: "ES",
+      noveltyRatio: 40,
+      nudges: true,
+    });
+
+    expect(res).toEqual({ ok: true });
+    expect(updateUser.mock.calls[0][0].data.locale).toBe("ES");
+    expect(setCookie).toHaveBeenCalledWith("ryk_locale", "es", expect.anything());
+  });
+
+  it("не трогает cookie, когда значения не прошли проверку", async () => {
+    const { updateProfile } = await import("./profile");
+    await updateProfile({
+      city: null,
+      radiusKm: 999,
+      budgetMax: null,
+      socialMode: null,
+      locale: "EN",
+      noveltyRatio: 40,
+      nudges: true,
+    });
+
+    expect(setCookie).not.toHaveBeenCalled();
   });
 });

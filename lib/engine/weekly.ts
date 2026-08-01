@@ -8,6 +8,8 @@ import type {
 import { prisma } from "@/lib/prisma";
 import { buildNudge, type Nudge } from "@/lib/engine/nudges";
 import { liveExperienceWhere } from "@/lib/engine/liveExperiences";
+import { localizeExperience } from "@/lib/i18n/experience";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { signedPhotoUrl } from "@/lib/storage/memoryPhotos";
 import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
 
@@ -184,7 +186,10 @@ function buildDayOptions(byDate: Map<string, DayWeather>): DayOption[] {
   return days;
 }
 
-export async function getWeeklyView(userId: string): Promise<WeeklyView> {
+export async function getWeeklyView(
+  userId: string,
+  locale: string = DEFAULT_LOCALE,
+): Promise<WeeklyView> {
   const weekStart = weekStartUTC();
   const weekStartIso = weekStart.toISOString().slice(0, 10);
 
@@ -195,14 +200,15 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
   });
   if (existing?.experience) {
     const e = existing.experience;
+    const text = localizeExperience(e, locale);
     const whyCode = (existing.whyExplanation as WhyCode) || "CURATED";
     const story: SelectedStory = {
       experienceId: e.id,
-      title: e.title,
+      title: text.title,
       category: e.category,
       price: e.price,
       currency: e.currency,
-      location: e.location,
+      location: text.location,
       imageUrl: e.imageUrl,
       whyCode,
       // Для LIKED_CATEGORY «понравившаяся» категория = категория впечатления.
@@ -225,7 +231,7 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
         memory: {
           id: existing.memory.id,
           weekLabel: weekStartIso,
-          title: e.title,
+          title: text.title,
           note: existing.memory.note,
           emotion: existing.memory.emotion,
           companion: existing.memory.companion,
@@ -376,20 +382,25 @@ export async function getWeeklyView(userId: string): Promise<WeeklyView> {
     take(s);
   }
 
-  const candidates: Candidate[] = picked.map((s) => ({
-    experienceId: s.e.id,
-    title: s.e.title,
-    category: s.e.category,
-    price: s.e.price,
-    currency: s.e.currency,
-    durationMin: s.e.durationMin,
-    distanceKm: s.e.distanceKm,
-    location: s.e.location,
-    imageUrl: s.e.imageUrl,
-    sponsored: s.e.sponsored,
-    whyCode: s.whyCode,
-    whyCategory: s.whyCategory,
-  }));
+  const candidates: Candidate[] = picked.map((s) => {
+    // Отбор идёт по цене, длительности и категории — они от языка не зависят,
+    // поэтому переводим только то, что дошло до экрана.
+    const text = localizeExperience(s.e, locale);
+    return {
+      experienceId: s.e.id,
+      title: text.title,
+      category: s.e.category,
+      price: s.e.price,
+      currency: s.e.currency,
+      durationMin: s.e.durationMin,
+      distanceKm: s.e.distanceKm,
+      location: text.location,
+      imageUrl: s.e.imageUrl,
+      sponsored: s.e.sponsored,
+      whyCode: s.whyCode,
+      whyCategory: s.whyCategory,
+    };
+  });
 
   return { kind: "choose", weekStart: weekStartIso, candidates };
 }

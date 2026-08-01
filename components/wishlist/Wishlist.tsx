@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/i18n/locale";
 import { addWish, analyzeWish } from "@/app/actions/wishes";
 import type { LifeCategory, WishStatus } from "@/generated/prisma/enums";
 import type { StructuredWish } from "@/lib/ai/structureWish";
@@ -24,6 +25,8 @@ type Timing = "SOON" | "THIS_MONTH" | "SOMEDAY";
 export function Wishlist({ wishes }: { wishes: WishView[] }) {
   const t = useTranslations("wishes");
   const tCat = useTranslations("categories");
+  // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
+  const locale = useLocale();
   const router = useRouter();
 
   const [mode, setMode] = useState<"list" | "add">("list");
@@ -40,7 +43,7 @@ export function Wishlist({ wishes }: { wishes: WishView[] }) {
         : t("timingSOMEDAY");
 
   const budgetLabel = (budget: number | null) =>
-    budget ? `${budget.toLocaleString("ru-RU")} ${t("budgetUnit")}` : t("budgetUnknown");
+    budget ? `${formatNumber(budget, locale)} ${t("budgetUnit")}` : t("budgetUnknown");
 
   const resetAdd = () => {
     setMode("list");
@@ -100,7 +103,7 @@ export function Wishlist({ wishes }: { wishes: WishView[] }) {
               </div>
             </div>
             <div style={{ marginTop: 14 }}>
-              <HandNote>Ryk подскажет удачный момент ✓</HandNote>
+              <HandNote>{t("goodMomentNote")}</HandNote>
             </div>
           </div>
         ) : null}

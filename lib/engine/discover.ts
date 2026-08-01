@@ -1,6 +1,8 @@
 import type { ExperienceKind, LifeCategory } from "@/generated/prisma/enums";
 import { liveExperienceWhere } from "@/lib/engine/liveExperiences";
 import { dailySeed, mixByKind } from "@/lib/engine/mix";
+import { localizeExperience } from "@/lib/i18n/experience";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { prisma } from "@/lib/prisma";
 
 /*
@@ -31,7 +33,10 @@ export type DeckCard = {
 
 const DECK_LIMIT = 30;
 
-export async function getDiscoverDeck(userId: string): Promise<DeckCard[]> {
+export async function getDiscoverDeck(
+  userId: string,
+  locale: string = DEFAULT_LOCALE,
+): Promise<DeckCard[]> {
   const experiences = await prisma.experience.findMany({
     where: {
       ...liveExperienceWhere(),
@@ -50,8 +55,14 @@ export async function getDiscoverDeck(userId: string): Promise<DeckCard[]> {
       durationMin: true,
       imageUrl: true,
       sponsored: true,
+      translations: true,
     },
   });
 
-  return mixByKind(experiences, DECK_LIMIT, dailySeed(userId));
+  // Переводим после отбора: порядок в колоде от языка не зависит, а
+  // mixByKind отбрасывает лишнее — переводить его было бы напрасной работой.
+  return mixByKind(experiences, DECK_LIMIT, dailySeed(userId)).map(({ translations, ...card }) => ({
+    ...card,
+    ...localizeExperience({ ...card, translations }, locale),
+  }));
 }

@@ -4,6 +4,7 @@ import type { InviteRole as PrismaInviteRole } from "@/generated/prisma/enums";
 import { callTelegramApi } from "@/lib/telegram/botApi";
 import { buildInviteCard, buildInviteLink, type InviteRole } from "@/lib/telegram/inviteCard";
 import { weekStartUTC } from "@/lib/engine/weekly";
+import { localizeExperience } from "@/lib/i18n/experience";
 import { prisma } from "@/lib/prisma";
 
 /*
@@ -127,12 +128,19 @@ async function buildResults(query: TelegramInlineQuery): Promise<InlineQueryResu
     select: { id: true },
   });
 
+  /*
+   * Язык приглашающего, а не получателя: карточку он набирает у себя в чате
+   * и своими словами отправляет дальше. Получателя мы здесь ещё не знаем —
+   * приглашение «ничьё» до первого открытия ссылки.
+   */
+  const text = localizeExperience(story.experience, user.locale);
+
   const card = buildInviteCard(
     role,
     {
-      title: story.experience.title,
+      title: text.title,
       plannedForISO: story.plannedFor ? story.plannedFor.toISOString().slice(0, 10) : null,
-      location: story.experience.location,
+      location: text.location,
       price: story.experience.price,
       currency: story.experience.currency,
     },

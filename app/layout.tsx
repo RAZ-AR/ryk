@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Caveat, IBM_Plex_Mono, PT_Serif, Prata } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import "./globals.css";
 
 /*
@@ -44,11 +44,15 @@ const caveat = Caveat({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Ryk — одна настоящая история каждую неделю",
-  description:
-    "Персональный AI-компаньон по жизненному опыту: помогает не откладывать жизнь и проживать одно впечатление каждую неделю.",
-};
+/*
+ * Заголовок и описание — тоже интерфейс: их видно во вкладке браузера и
+ * в превью ссылки, которой человек делится. Поэтому не константа, а
+ * generateMetadata: она выполняется в контексте запроса и знает язык.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("meta");
+  return { title: t("title"), description: t("description") };
+}
 
 const fontVariables = [prata.variable, ptSerif.variable, plexMono.variable, caveat.variable].join(
   " ",

@@ -1,3 +1,4 @@
+import { getLocale } from "next-intl/server";
 import { AppShell } from "@/components/AppShell";
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
 import { TelegramBootstrap } from "@/components/TelegramBootstrap";
@@ -5,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/currentUser";
 import { getDiscoverDeck } from "@/lib/engine/discover";
 import { getMemories } from "@/lib/engine/memories";
 import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
+import { localizeExperience } from "@/lib/i18n/experience";
 import { isPhotoStorageConfigured } from "@/lib/storage/memoryPhotos";
 import { getUpcoming } from "@/lib/engine/upcoming";
 import { getWeeklyView } from "@/lib/engine/weekly";
@@ -22,6 +24,14 @@ export default async function Home() {
   if (!user) return <TelegramBootstrap />;
   if (user.onboardingState !== "DONE") return <OnboardingFlow initialCity={user.city} />;
 
+  /*
+   * Язык берём у next-intl, а не из user.locale: cookie — единственный
+   * источник правды в пределах запроса, и именно она переключается сразу
+   * после сохранения профиля. Читать поле из БД значило бы показать
+   * карточки на старом языке ровно до следующей перезагрузки.
+   */
+  const locale = await getLocale();
+
   const [wishes, weekly, memories, profile, preferences, invites, deck, upcoming, year] =
     await Promise.all([
       prisma.wish.findMany({
@@ -29,8 +39,8 @@ export default async function Home() {
         orderBy: { createdAt: "desc" },
         select: { id: true, text: true, category: true, budget: true, status: true },
       }),
-      getWeeklyView(user.id),
-      getMemories(user.id),
+      getWeeklyView(user.id, locale),
+      getMemories(user.id, locale),
       prisma.user.findUniqueOrThrow({
         where: { id: user.id },
         select: {
@@ -60,29 +70,33 @@ export default async function Home() {
           weeklyStory: {
             select: {
               plannedFor: true,
-              experience: { select: { title: true, location: true } },
+              experience: { select: { title: true, location: true, translations: true } },
             },
           },
         },
       }),
-      getDiscoverDeck(user.id),
-      getUpcoming(user.id),
+      getDiscoverDeck(user.id, locale),
+      getUpcoming(user.id, locale),
       getYear(user.id),
     ]);
 
   const inviteViews = invites
     .filter((i) => i.weeklyStory.experience !== null)
-    .map((i) => ({
-      id: i.id,
-      role: i.role,
-      inviterName: i.inviterName,
-      inviterUsername: i.inviterUsername,
-      storyTitle: i.weeklyStory.experience!.title,
-      plannedFor: i.weeklyStory.plannedFor
-        ? i.weeklyStory.plannedFor.toISOString().slice(0, 10)
-        : null,
-      location: i.weeklyStory.experience!.location,
-    }));
+    .map((i) => {
+      // Приглашение читает получатель — значит и язык его, а не позвавшего.
+      const text = localizeExperience(i.weeklyStory.experience!, locale);
+      return {
+        id: i.id,
+        role: i.role,
+        inviterName: i.inviterName,
+        inviterUsername: i.inviterUsername,
+        storyTitle: text.title,
+        plannedFor: i.weeklyStory.plannedFor
+          ? i.weeklyStory.plannedFor.toISOString().slice(0, 10)
+          : null,
+        location: text.location,
+      };
+    });
 
   return (
     <AppShell

@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/i18n/locale";
 import type { DeckCard } from "@/lib/engine/discover";
 import { Button } from "@/components/Button";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
@@ -28,6 +29,8 @@ export function EventFeed({
   const tCat = useTranslations("categories");
   const tKind = useTranslations("kinds");
   const tWeek = useTranslations("week");
+  // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
+  const locale = useLocale();
 
   if (deck.length === 0) {
     return <p className={styles.empty}>{t("feedEmpty")}</p>;
@@ -37,14 +40,14 @@ export function EventFeed({
     if (price == null) return "";
     if (price === 0) return tWeek("priceFree");
     const unit = currency === "RSD" ? tWeek("currencyRSD") : currency;
-    return `${price.toLocaleString("ru-RU")} ${unit}`;
+    return `${formatNumber(price, locale)} ${unit}`;
   };
 
   const durationLabel = (min: number | null) =>
     min == null
       ? "—"
       : min >= 60
-        ? `${(min / 60).toLocaleString("ru-RU")} ${tWeek("hours")}`
+        ? `${formatNumber(min / 60, locale)} ${tWeek("hours")}`
         : `${min} ${tWeek("minutes")}`;
 
   return (

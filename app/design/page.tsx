@@ -262,7 +262,15 @@ export default function DesignSystemPage() {
               Раздел: {section}
             </div>
           </div>
-          <Dock active={section} onNavigate={setSection} />
+          {/* Витрина живёт без провайдера переводов, поэтому подписи здесь —
+              русские литералы: /design внутренняя страница, а не продукт. */}
+          <Dock
+            active={section}
+            onNavigate={setSection}
+            labels={{ week: "Неделя", memory: "Память", wishes: "Желания", year: "Год" }}
+            ariaLabel="Основная навигация"
+            discoverLabel="Лента"
+          />
         </div>
       </section>
 
