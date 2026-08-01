@@ -7,40 +7,19 @@
   gap: var(--ryk-space-7);
 }
 
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ryk-space-3);
-}
-
-/* Билет кликабельный целиком — открывает карточку события. */
-.open {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 0;
-  background: none;
-}
-
-.actions {
-  display: flex;
-  gap: var(--ryk-space-3);
-}
-
-.actions > * {
-  flex: 1;
-  min-width: 0;
-}
+/*
+ * Реакции и зона нажатия живут внутри билета: полоса отрыва под корешком
+ * и накладка поверх лица (Ticket.module.css). Своей разметки у карточки
+ * здесь больше нет — пара кнопок отдельным блоком под билетом читалась
+ * как начало следующей карточки, а не как действие над этой.
+ *
+ * Заодно ушёл перенос кнопок в столбик на узких экранах: половины полосы
+ * держат 44px тач-таргета и на 320px, ломать их незачем.
+ */
 
 .empty {
   font-family: var(--ryk-font-ui);
   font-size: 14px;
   line-height: 1.6;
   color: var(--ryk-text-muted);
-}
-
-@media (max-width: 400px) {
-  .actions {
-    flex-direction: column;
-  }
 }
