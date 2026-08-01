@@ -24,13 +24,20 @@
   color: var(--ryk-text-muted);
 }
 
-/* Афиша или узор — тот же слот, что на билете, только шире. */
+/*
+ * Афиша или узор — тот же слот, что на билете, только шире.
+ *
+ * Тень здесь, а не на `.sheet`: штора занимает весь экран (`inset: 0`),
+ * и тень контейнера показывать некому — снаружи него ничего нет. Отрыв
+ * от бумаги даёт афиша, единственный предмет-карточка на этом экране.
+ */
 .visual {
   position: relative;
   margin-top: var(--ryk-space-4);
   height: 132px;
   overflow: hidden;
   border-radius: var(--ryk-radius-photo);
+  box-shadow: var(--ryk-shadow-card);
 }
 
 .title {

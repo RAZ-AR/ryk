@@ -7,6 +7,8 @@
   background: var(--ryk-pink);
   padding: var(--ryk-space-5);
   margin-top: var(--ryk-space-2);
+  /* Отрыв от бумаги: блок нажимается, а плоская заливка читалась как фон. */
+  box-shadow: var(--ryk-shadow-ticket);
 }
 
 /* Нечего показывать (неделя перенесена) — тише, без розового призыва. */
