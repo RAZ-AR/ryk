@@ -21,6 +21,7 @@ import type { DeckCard } from "@/lib/engine/discover";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
 import type { MemoryView, WeeklyView } from "@/lib/engine/weekly";
 import type { YearView } from "@/lib/engine/year";
+import { isAppLocale, DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { AppHeader } from "./AppHeader";
 import { Dock, type DockLabels, type DockTarget } from "./Dock";
 import styles from "./AppShell.module.css";
@@ -40,6 +41,8 @@ export function AppShell({
   upcoming,
   year,
   canAttachPhoto,
+  locale,
+  city,
 }: {
   wishes: WishView[];
   weekly: WeeklyView;
@@ -51,6 +54,10 @@ export function AppShell({
   upcoming: UpcomingItem[];
   year: YearView;
   canAttachPhoto: boolean;
+  /** Язык текущего рендера — из cookie, а не из профиля. */
+  locale: string;
+  /** Город на языке интерфейса; сырое значение живёт в profile.city. */
+  city: string | null;
 }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
@@ -103,7 +110,13 @@ export function AppShell({
         ariaLabel={nav("aria")}
         discoverLabel={tDiscover("title")}
       />
-      <AppHeader label={app("home")} onHome={() => setSection("week")} />
+      <AppHeader
+        label={app("home")}
+        city={city}
+        hasBadge={invites.length > 0}
+        locale={isAppLocale(locale) ? locale : DEFAULT_LOCALE}
+        onHome={() => setSection("week")}
+      />
       <ProfileEntry label={tProfile("entry")} onClick={() => setProfileOpen(true)} />
       <InviteBadge
         count={invites.length}
