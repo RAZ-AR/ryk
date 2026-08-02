@@ -12,7 +12,9 @@
     "greeting": "Welcome back",
     "weekActive": "Week active",
     "home": "Back to the main screen",
-    "back": "Back"
+    "back": "Back",
+    "languageGroup": "Language",
+    "localeFailed": "didn't switch"
   },
   "home": {
     "lead": "One week — one story. The rest can wait.",

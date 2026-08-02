@@ -1,8 +1,9 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { switchLocale } from "@/app/actions/locale";
 import { LOCALES, type AppLocale } from "@/lib/i18n/locale";
 import styles from "./AppHeader.module.css";
@@ -31,15 +32,25 @@ export function AppHeader({
   hasBadge: boolean;
   onHome: () => void;
 }) {
+  const t = useTranslations("app");
   const router = useRouter();
   const [pending, start] = useTransition();
+  const [failed, setFailed] = useState(false);
 
   const pick = (next: AppLocale) => {
     if (next === locale || pending) return;
+    setFailed(false);
     start(async () => {
       const res = await switchLocale(next);
-      // Тексты приходят с сервера — без refresh страница осталась бы прежней.
-      if (res.ok) router.refresh();
+      if (res.ok) {
+        // Тексты приходят с сервера — без refresh страница осталась бы прежней.
+        router.refresh();
+      } else {
+        // Молчаливый провал хуже видимого: человек нажал и вправе знать,
+        // что ничего не произошло. Место занято, поэтому сообщение занимает
+        // слот города — он единственный здесь только для чтения.
+        setFailed(true);
+      }
     });
   };
 
@@ -56,9 +67,20 @@ export function AppHeader({
         />
       </button>
 
-      {city && <span className={styles.city}>{city}</span>}
+      {failed ? (
+        <span className={styles.failed} role="status">
+          {t("localeFailed")}
+        </span>
+      ) : (
+        // title — полное название: на узких экранах строка обрезается.
+        city && (
+          <span className={styles.city} title={city}>
+            {city}
+          </span>
+        )
+      )}
 
-      <div className={styles.locales} role="group" aria-label="Language">
+      <div className={styles.locales} role="group" aria-label={t("languageGroup")}>
         {LOCALES.map((code) => (
           <button
             key={code}

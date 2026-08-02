@@ -12,7 +12,9 @@
     "greeting": "Bienvenido de nuevo",
     "weekActive": "Semana activa",
     "home": "Volver a la pantalla principal",
-    "back": "Atrás"
+    "back": "Atrás",
+    "languageGroup": "Idioma",
+    "localeFailed": "no cambió"
   },
   "home": {
     "lead": "Una semana, una historia. Lo demás puede esperar.",
