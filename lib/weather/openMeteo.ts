@@ -1,3 +1,5 @@
+import { DEFAULT_CITY, findCity } from "@/lib/cities";
+
 /*
  * Погода через Open-Meteo (ADR-006): без ключа, покрывает EU/Балканы/Кавказ.
  * Используется в planning assistance — «в субботу ясно, +8°».
@@ -14,20 +16,6 @@ export type DayWeather = {
   tempMax: number;
 };
 
-/** Координаты пилотных городов (ADR-006). Для остальных — Белград как дефолт. */
-const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
-  белград: { lat: 44.79, lng: 20.45 },
-  beograd: { lat: 44.79, lng: 20.45 },
-  belgrade: { lat: 44.79, lng: 20.45 },
-  "нови-сад": { lat: 45.25, lng: 19.83 },
-  "нови сад": { lat: 45.25, lng: 19.83 },
-  "novi sad": { lat: 45.25, lng: 19.83 },
-  ереван: { lat: 40.18, lng: 44.51 },
-  yerevan: { lat: 40.18, lng: 44.51 },
-};
-
-const DEFAULT_COORDS = CITY_COORDS["белград"];
-
 /** WMO weather code → наша укрупнённая категория. */
 function kindFromCode(code: number): WeatherKind {
   if (code >= 95) return "STORM";
@@ -37,9 +25,17 @@ function kindFromCode(code: number): WeatherKind {
   return "CLEAR";
 }
 
+/**
+ * Координаты пилотных городов берём из общего списка (lib/cities.ts): раньше
+ * он был свой, и написания разъезжались — «Ereván» шапка узнавала, а погода
+ * нет и молча считала прогноз по Белграду.
+ *
+ * Незнакомый город по-прежнему уходит в Белград: показать погоду не того
+ * города плохо, но не показать её вовсе — тоже, а пилот начинается с Белграда.
+ */
 export function coordsForCity(city: string | null): { lat: number; lng: number } {
-  if (!city) return DEFAULT_COORDS;
-  return CITY_COORDS[city.trim().toLowerCase()] ?? DEFAULT_COORDS;
+  const found = findCity(city) ?? DEFAULT_CITY;
+  return { lat: found.lat, lng: found.lng };
 }
 
 /**

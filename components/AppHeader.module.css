@@ -121,3 +121,17 @@
     padding: 0;
   }
 }
+
+/* Сообщение о неудачной смене языка: занимает слот города, чтобы не
+   раздвигать шапку. Розовый глубокий — тот же, что у остальных ошибок. */
+.failed {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ryk-pink-deep);
+}

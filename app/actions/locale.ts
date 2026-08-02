@@ -25,19 +25,28 @@ export async function switchLocale(locale: string): Promise<LocaleResult> {
   if (!isAppLocale(locale)) return { ok: false, reason: "bad_locale" };
 
   const dbLocale = toDbLocale(locale);
-  await setLocaleCookie(dbLocale);
 
-  // Гость языком тоже управляет: cookie уже записана, профиля просто нет.
+  /*
+   * Порядок важен: сначала база, потом cookie.
+   *
+   * Было наоборот, и провал записи оставлял систему в противоречии — cookie
+   * уже переключена, действие вернуло ошибку, клиент не обновил экран.
+   * Человек нажимал EN, не видел ничего, а на следующем переходе приложение
+   * внезапно оказывалось английским.
+   *
+   * Теперь неудача не меняет ничего, и повторный тап — единственное, что
+   * нужно сделать. Гость проходит мимо базы: профиля у него просто нет.
+   */
   const session = await getSession();
   if (session) {
     try {
       await prisma.user.update({ where: { id: session.userId }, data: { locale: dbLocale } });
     } catch {
-      // Cookie важнее: интерфейс переключится, а профиль догонит при
-      // следующем сохранении. Ронять переключатель из-за этого незачем.
       return { ok: false, reason: "db_error" };
     }
   }
+
+  await setLocaleCookie(dbLocale);
 
   revalidatePath("/");
   return { ok: true };
