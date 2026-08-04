@@ -1,0 +1,139 @@
+/* Шторка «Когда»: три горизонта и дни оставшейся недели. */
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-5);
+  background: var(--ryk-paper);
+  padding: var(--ryk-space-6) var(--ryk-screen-x) var(--ryk-screen-bottom-dock);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}
+
+.wish {
+  font-family: var(--ryk-font-serif);
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--ryk-ink);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}
+
+.week {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-3);
+  padding-top: var(--ryk-space-4);
+  border-top: 1px solid var(--ryk-border-row);
+}
+
+/* Дни лежат в ряд и переносятся: в понедельник их семь, в субботу два. */
+.days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ryk-space-2);
+}
+
+.day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 52px;
+  padding: var(--ryk-space-2) 6px;
+  background: var(--ryk-white);
+  border: 1px solid var(--ryk-border-card);
+  border-radius: var(--ryk-radius-none);
+  color: var(--ryk-ink);
+  cursor: pointer;
+}
+
+.day:focus-visible {
+  outline: 2px solid var(--ryk-ink);
+  outline-offset: 2px;
+}
+
+.dayPicked {
+  border-color: var(--ryk-border-strong);
+}
+
+.dayName {
+  font-family: var(--ryk-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ryk-text-muted);
+}
+
+.dayNum {
+  font-family: var(--ryk-font-ticket);
+  font-size: 18px;
+  line-height: 1;
+}
+
+/*
+ * Компостер. Выбор дня — не смена цвета рамки, а пробивка: розовый круг
+ * распускается из центра, как след от компостера на билете. Тот же знак,
+ * что у пункта «Сейчас» в доке, и то же действие по смыслу — «этот день
+ * отмечен».
+ */
+.punch {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ryk-pink);
+  transform: scale(0);
+  transition: transform var(--ryk-duration-standard) var(--ryk-ease);
+}
+
+.dayPicked .punch {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .punch {
+    transition: none;
+  }
+}
+
+/* --- Неделя занята --- */
+
+.taken {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-4);
+  padding: var(--ryk-space-4);
+  background: var(--ryk-surface-card);
+  border-left: 3px solid var(--ryk-pink);
+}
+
+.takenLine {
+  font-family: var(--ryk-font-serif);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ryk-ink);
+}
+
+.takenActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}
+
+.failed {
+  font-size: 13px;
+  color: var(--ryk-pink-text);
+}

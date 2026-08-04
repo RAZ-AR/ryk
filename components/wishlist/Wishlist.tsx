@@ -4,13 +4,14 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
-import { addWish, analyzeWish } from "@/app/actions/wishes";
+import { addWish, analyzeWish, realizeWish } from "@/app/actions/wishes";
 import type { LifeCategory, WishStatus } from "@/generated/prisma/enums";
 import type { StructuredWish } from "@/lib/ai/structureWish";
 import { Button } from "@/components/Button";
 import { HandNote } from "@/components/HandNote";
 import { EmptyMark } from "@/components/EmptyMark";
 import { SvcLabel } from "@/components/SvcLabel";
+import { WishSchedule } from "./WishSchedule";
 import styles from "./Wishlist.module.css";
 
 export type WishView = {
@@ -19,11 +20,22 @@ export type WishView = {
   category: LifeCategory | null;
   budget: number | null;
   status: WishStatus;
+  /** Стало историей этой недели — тогда «сделано» идёт через чек-ин. */
+  isWeekStory: boolean;
+  /** Назначенный день `YYYY-MM-DD`, если он выбран. */
+  plannedFor: string | null;
 };
 
 type Timing = "SOON" | "THIS_MONTH" | "SOMEDAY";
 
-export function Wishlist({ wishes }: { wishes: WishView[] }) {
+export function Wishlist({
+  wishes,
+  onOpenWeek,
+}: {
+  wishes: WishView[];
+  /** Желание уже стало историей недели — «сделано» ведёт в чек-ин туда. */
+  onOpenWeek: () => void;
+}) {
   const t = useTranslations("wishes");
   const tCat = useTranslations("categories");
   // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
@@ -31,6 +43,11 @@ export function Wishlist({ wishes }: { wishes: WishView[] }) {
   const router = useRouter();
 
   const [mode, setMode] = useState<"list" | "add">("list");
+  /** Открытая шторка «Когда» — id желания. */
+  const [scheduling, setScheduling] = useState<WishView | null>(null);
+  /** Желание, у которого сейчас играет отрыв корешка. */
+  const [tearing, setTearing] = useState<string | null>(null);
+  const [realizing, startRealize] = useTransition();
   const [text, setText] = useState("");
   const [structured, setStructured] = useState<StructuredWish | null>(null);
   const [analyzing, startAnalyze] = useTransition();
@@ -43,8 +60,31 @@ export function Wishlist({ wishes }: { wishes: WishView[] }) {
         ? t("timingTHIS_MONTH")
         : t("timingSOMEDAY");
 
+  /** Назначенный день на билетный лад: «ср · 12». */
+  const dayLabel = (iso: string) => {
+    const d = new Date(`${iso}T12:00:00.000Z`);
+    const weekday = d.getUTCDay() === 0 ? 7 : d.getUTCDay();
+    return `${t(`weekday.${weekday}`)} · ${d.getUTCDate()}`;
+  };
+
   const budgetLabel = (budget: number | null) =>
     budget ? `${formatNumber(budget, locale)} ${t("budgetUnit")}` : t("budgetUnknown");
+
+  /*
+   * «Случилось». Отрыв корешка играется до запроса, а не после: ждать
+   * сервер, глядя в неподвижную строку, незачем — тот же приём, что при
+   * свайпе в колоде. Если запрос упадёт, `router.refresh()` вернёт строку
+   * на место, и это честнее, чем блокировать интерфейс на время сети.
+   */
+  const runRealize = (wishId: string) => {
+    setTearing(wishId);
+    startRealize(async () => {
+      await new Promise((r) => setTimeout(r, 320));
+      await realizeWish(wishId);
+      setTearing(null);
+      router.refresh();
+    });
+  };
 
   const resetAdd = () => {
     setMode("list");
@@ -137,7 +177,7 @@ export function Wishlist({ wishes }: { wishes: WishView[] }) {
       <div className={styles.header}>
         <div>
           <SvcLabel tone="pink">{t("title")}</SvcLabel>
-          <div className={styles.heading}>Wishlist</div>
+          <div className={styles.heading}>{t("heading")}</div>
         </div>
         <span className={styles.count}>{wishes.length}</span>
       </div>
@@ -149,24 +189,68 @@ export function Wishlist({ wishes }: { wishes: WishView[] }) {
         </div>
       ) : (
         <div className={styles.list}>
-          {wishes.map((w) => (
-            <div key={w.id} className={styles.row}>
-              <div className={styles.rowTop}>
-                <span className={styles.rowTitle}>{w.text}</span>
-                <SvcLabel tone="muted" className={styles.tag}>
-                  {timingLabel(
-                    w.status === "THIS_MONTH" || w.status === "SOON" ? w.status : "SOMEDAY",
+          {wishes.map((w) => {
+            const done = w.status === "REALIZED";
+            return (
+              <div
+                key={w.id}
+                className={[
+                  styles.row,
+                  done && styles.rowDone,
+                  tearing === w.id && styles.rowTearing,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                {/*
+                 * Зона нажатия — накладкой, а не обёрткой: внутри строки
+                 * лежит кнопка «Сделано», и <button> вокруг неё дал бы
+                 * кнопку внутри кнопки (тот же урок, что на билете).
+                 * Прожитому сроки уже не назначают — накладки у него нет.
+                 */}
+                {!done && (
+                  <button
+                    type="button"
+                    className={styles.rowOverlay}
+                    onClick={() => setScheduling(w)}
+                  >
+                    <span className={styles.srOnly}>{t("whenAria", { wish: w.text })}</span>
+                  </button>
+                )}
+
+                <div className={styles.rowTop}>
+                  <span className={styles.rowTitle}>{w.text}</span>
+                  <SvcLabel tone="muted" className={styles.tag}>
+                    {w.plannedFor
+                      ? dayLabel(w.plannedFor)
+                      : timingLabel(
+                          w.status === "THIS_MONTH" || w.status === "SOON" ? w.status : "SOMEDAY",
+                        )}
+                  </SvcLabel>
+                </div>
+
+                <div className={styles.rowMeta}>
+                  <span className={styles.meta}>
+                    {w.category ? tCat(w.category) : "—"}
+                    {w.budget ? ` · ${budgetLabel(w.budget)}` : ""}
+                  </span>
+
+                  {done ? (
+                    <HandNote>{t("happened")}</HandNote>
+                  ) : (
+                    <button
+                      type="button"
+                      className={styles.doneBtn}
+                      disabled={realizing}
+                      onClick={() => (w.isWeekStory ? onOpenWeek() : runRealize(w.id))}
+                    >
+                      {t("markDone")}
+                    </button>
                   )}
-                </SvcLabel>
+                </div>
               </div>
-              <div className={styles.rowMeta}>
-                <span className={styles.meta}>
-                  {w.category ? tCat(w.category) : "—"}
-                  {w.budget ? ` · ${budgetLabel(w.budget)}` : ""}
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -175,6 +259,16 @@ export function Wishlist({ wishes }: { wishes: WishView[] }) {
           {t("add")}
         </Button>
       </div>
+
+      {scheduling && (
+        <div className={styles.sheetLayer}>
+          <WishSchedule
+            wishId={scheduling.id}
+            wishText={scheduling.text}
+            onClose={() => setScheduling(null)}
+          />
+        </div>
+      )}
     </div>
   );
 }

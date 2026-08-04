@@ -10,7 +10,7 @@ import { localizeCity } from "@/lib/i18n/city";
 import { localizeExperience } from "@/lib/i18n/experience";
 import { isPhotoStorageConfigured } from "@/lib/storage/memoryPhotos";
 import { getUpcoming } from "@/lib/engine/upcoming";
-import { getWeeklyView } from "@/lib/engine/weekly";
+import { getWeeklyView, weekStartUTC } from "@/lib/engine/weekly";
 import { getYear } from "@/lib/engine/year";
 import { prisma } from "@/lib/prisma";
 
@@ -38,7 +38,23 @@ export default async function Home() {
       prisma.wish.findMany({
         where: { userId: user.id, status: { not: "HIDDEN" } },
         orderBy: { createdAt: "desc" },
-        select: { id: true, text: true, category: true, budget: true, status: true },
+        select: {
+          id: true,
+          text: true,
+          category: true,
+          budget: true,
+          status: true,
+          /*
+           * Стало ли желание историей этой недели. Нужно списку, чтобы
+           * показать назначенный день и увести «Сделано» в чек-ин, а не
+           * заводить второй путь к тому же итогу.
+           */
+          weeklyStories: {
+            where: { weekStart: weekStartUTC() },
+            select: { plannedFor: true },
+            take: 1,
+          },
+        },
       }),
       getWeeklyView(user.id, locale),
       getMemories(user.id, locale),
@@ -81,6 +97,16 @@ export default async function Home() {
       getYear(user.id),
     ]);
 
+  /*
+   * Плоский вид для списка: связь на историю недели интересна ему одним
+   * фактом — назначено или нет, и на какой день.
+   */
+  const wishViews = wishes.map(({ weeklyStories, ...w }) => ({
+    ...w,
+    isWeekStory: weeklyStories.length > 0,
+    plannedFor: weeklyStories[0]?.plannedFor?.toISOString().slice(0, 10) ?? null,
+  }));
+
   const inviteViews = invites
     .filter((i) => i.weeklyStory.experience !== null)
     .map((i) => {
@@ -101,7 +127,7 @@ export default async function Home() {
 
   return (
     <AppShell
-      wishes={wishes}
+      wishes={wishViews}
       weekly={weekly}
       memories={memories}
       // Json из БД разворачиваем здесь: экрану профиля нужен простой флаг,

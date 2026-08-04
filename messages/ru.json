@@ -222,7 +222,29 @@
     "timingSOON": "Скоро",
     "timingTHIS_MONTH": "В этом месяце",
     "timingSOMEDAY": "Когда-нибудь",
-    "goodMomentNote": "Ryk подскажет удачный момент ✓"
+    "goodMomentNote": "Ryk подскажет удачный момент ✓",
+    "heading": "Желания",
+    "whenTitle": "Когда",
+    "whenAria": "Назначить срок: {wish}",
+    "thisWeekLabel": "На этой неделе",
+    "makeWeekStory": "Сделать историей недели",
+    "pickDayFirst": "Выбери день",
+    "weekTaken": "На этой неделе уже: {title}.",
+    "weekTakenNote": "История недели одна — так и задумано.",
+    "replace": "Заменить",
+    "keep": "Оставить как есть",
+    "markDone": "Сделано",
+    "happened": "случилось",
+    "actionFailed": "не получилось — попробуй ещё раз",
+    "weekday": {
+      "1": "пн",
+      "2": "вт",
+      "3": "ср",
+      "4": "чт",
+      "5": "пт",
+      "6": "сб",
+      "7": "вс"
+    }
   },
   "categories": {
     "NATURE": "Природа",
