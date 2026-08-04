@@ -69,6 +69,12 @@ export function AppShell({
   const [invitesOpen, setInvitesOpen] = useState(false);
   /** Полный недельный цикл — оверлей поверх главного, а не отдельная секция. */
   const [weekOpen, setWeekOpen] = useState(false);
+  /*
+   * Колода — тоже оверлей. Разделом она была дублем: та же `deck`, те же
+   * «интересно / не интересно», что в ленте на главном, — отличалась только
+   * подача. Две вершины навигации в одно содержимое.
+   */
+  const [deckOpen, setDeckOpen] = useState(false);
 
   // Пришли по ссылке — открываем приглашения сразу: человек за этим и пришёл,
   // прятать их за значком было бы издевательством.
@@ -90,9 +96,8 @@ export function AppShell({
             weekly={weekly}
             deck={deck}
             onOpenWeek={() => setWeekOpen(true)}
+            onOpenDeck={() => setDeckOpen(true)}
           />
-        ) : section === "discover" ? (
-          <DiscoverSection deck={deck} />
         ) : section === "wishes" ? (
           <Wishlist wishes={wishes} />
         ) : section === "memory" ? (
@@ -103,7 +108,9 @@ export function AppShell({
       </div>
       <Dock
         active={section}
-        onNavigate={setSection}
+        // Знак в центре пока ведёт в колоду — теперь оверлеем, а не сменой
+        // раздела. Сама кнопка уходит следующим шагом (§7).
+        onNavigate={(target) => (target === "discover" ? setDeckOpen(true) : setSection(target))}
         labels={labels}
         // Имя навигации, а не состояние недели: скринридер читает его вместо
         // «Week active», которое сюда попало по недосмотру и ничего не значило.
@@ -140,6 +147,14 @@ export function AppShell({
             {app("back")}
           </button>
           <WeekSection view={weekly} />
+        </div>
+      )}
+      {deckOpen && (
+        <div className={styles.overlay}>
+          <button type="button" className={styles.overlayClose} onClick={() => setDeckOpen(false)}>
+            {app("back")}
+          </button>
+          <DiscoverSection deck={deck} />
         </div>
       )}
     </div>
