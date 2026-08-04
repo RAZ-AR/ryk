@@ -6,7 +6,7 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Dock, type DockTarget } from "@/components/Dock";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
-import { YearSection } from "@/components/year/YearSection";
+import { YearSummary } from "@/components/year/YearSummary";
 import type { YearView } from "@/lib/engine/year";
 import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
@@ -292,7 +292,7 @@ export default function DesignSystemPage() {
       <section className={styles.section}>
         <SvcLabel tone="pink">10</SvcLabel>
         <h2 className={styles.sectionTitle}>Год</h2>
-        <YearSection year={YEAR_DEMO} />
+        <YearSummary year={YEAR_DEMO} />
       </section>
     </main>
   );

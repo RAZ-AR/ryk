@@ -96,7 +96,7 @@ export function AppShell({
         ) : section === "wishes" ? (
           <Wishlist wishes={wishes} />
         ) : section === "memory" ? (
-          <MemorySection memories={memories} canAttachPhoto={canAttachPhoto} />
+          <MemorySection memories={memories} year={year} canAttachPhoto={canAttachPhoto} />
         ) : (
           <YearSection year={year} />
         )}
