@@ -1,9 +1,8 @@
 {
   "nav": {
-    "week": "Week",
-    "memory": "Memory",
-    "wishes": "Wishes",
-    "year": "Year",
+    "now": "Now",
+    "wish": "Want",
+    "past": "Lived",
     "aria": "Main navigation"
   },
   "app": {

@@ -54,7 +54,7 @@
   --ryk-space-8: 32px;
   --ryk-screen-x: 26px;
   --ryk-screen-top: 28px;
-  --ryk-screen-bottom-dock: 104px; /* CTA не уходят под dock */
+  --ryk-screen-bottom-dock: 92px; /* CTA не уходят под dock */
 
   /* --- Радиусы: по умолчанию 0, исключения точечные --- */
   --ryk-radius-none: 0;

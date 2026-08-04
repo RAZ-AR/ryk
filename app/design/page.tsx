@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { LifeCategory } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { Dock, type DockTarget } from "@/components/Dock";
+import { Dock, type DockSection } from "@/components/Dock";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
 import { YearSummary } from "@/components/year/YearSummary";
 import type { YearView } from "@/lib/engine/year";
@@ -67,7 +67,7 @@ const BUDGETS = ["до 500 ₽", "до 2 000 ₽", "не важно"];
 export default function DesignSystemPage() {
   const [emotion, setEmotion] = useState(1);
   const [budget, setBudget] = useState(0);
-  const [section, setSection] = useState<DockTarget>("week");
+  const [section, setSection] = useState<DockSection>("now");
 
   return (
     <main className={styles.page}>
@@ -267,9 +267,8 @@ export default function DesignSystemPage() {
           <Dock
             active={section}
             onNavigate={setSection}
-            labels={{ week: "Неделя", memory: "Память", wishes: "Желания", year: "Год" }}
+            labels={{ now: "Сейчас", wish: "Хочу", past: "Было" }}
             ariaLabel="Основная навигация"
-            discoverLabel="Лента"
           />
         </div>
       </section>
