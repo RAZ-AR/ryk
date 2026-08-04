@@ -5,6 +5,8 @@ import type { LifeCategory } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Dock, type DockSection } from "@/components/Dock";
+import { CategoryIcon } from "@/components/CategoryIcon";
+import { EmptyMark } from "@/components/EmptyMark";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
 import { YearSummary } from "@/components/year/YearSummary";
 import type { YearView } from "@/lib/engine/year";
@@ -290,6 +292,37 @@ export default function DesignSystemPage() {
 
       <section className={styles.section}>
         <SvcLabel tone="pink">10</SvcLabel>
+        <h2 className={styles.sectionTitle}>Знаки категорий</h2>
+        <p className={styles.body}>
+          Тот же мотив, что у узора выше, сжатый до 16px. Слева — как стоит рядом с подписью корешка
+          (12px), справа — в кружке карусели (28px).
+        </p>
+        <div className={styles.patterns}>
+          {PATTERN_CATEGORIES.map((category) => (
+            <figure key={category} className={styles.patternCell}>
+              <div className={styles.iconRow}>
+                <SvcLabel tone="ink">
+                  <CategoryIcon category={category} /> {category}
+                </SvcLabel>
+                <CategoryIcon category={category} size="m" />
+              </div>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">11</SvcLabel>
+        <h2 className={styles.sectionTitle}>Пусто</h2>
+        <p className={styles.body}>
+          Один знак на все пустые экраны: билет, которого ещё нет. Стоит над фразой, тише её.
+        </p>
+        <EmptyMark />
+        <p className={styles.body}>Здесь появятся прожитые истории.</p>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">12</SvcLabel>
         <h2 className={styles.sectionTitle}>Год</h2>
         <YearSummary year={YEAR_DEMO} />
       </section>

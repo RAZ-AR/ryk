@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { MemoryView } from "@/lib/engine/weekly";
 import type { YearView } from "@/lib/engine/year";
+import { EmptyMark } from "@/components/EmptyMark";
 import { SvcLabel } from "@/components/SvcLabel";
 import { YearSummary } from "@/components/year/YearSummary";
 import { FilmFrame } from "./FilmFrame";
@@ -48,7 +49,10 @@ export function MemorySection({
       <YearSummary year={year} />
 
       {memories.length === 0 ? (
-        <p className={styles.empty}>{t("empty")}</p>
+        <div className={styles.empty}>
+          <EmptyMark />
+          <p>{t("empty")}</p>
+        </div>
       ) : (
         <div className={styles.film}>
           {memories.map((m) => {

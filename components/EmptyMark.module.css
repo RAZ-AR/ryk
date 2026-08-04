@@ -1,0 +1,25 @@
+/*
+ * Пустой билет над фразой пустого состояния. Приглушён намеренно: знак
+ * сопровождает текст, а не спорит с ним — на бумаге это отпечаток, а не
+ * иллюстрация.
+ */
+
+.mark {
+  display: block;
+  width: 56px;
+  height: 70px;
+  margin-bottom: var(--ryk-space-5);
+  fill: none;
+  stroke: var(--ryk-text-disabled);
+  stroke-width: 1.5;
+  stroke-linecap: square;
+}
+
+.outline {
+  stroke-dasharray: 5 4;
+}
+
+/* Линия отрыва — тот же шаг пунктира, что у настоящей перфорации билета. */
+.perforation {
+  stroke-dasharray: 2 3;
+}
