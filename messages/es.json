@@ -1,9 +1,8 @@
 {
   "nav": {
-    "week": "Semana",
-    "memory": "Recuerdos",
-    "wishes": "Deseos",
-    "year": "Año",
+    "now": "Ahora",
+    "wish": "Quiero",
+    "past": "Vivido",
     "aria": "Navegación principal"
   },
   "app": {
@@ -20,6 +19,7 @@
     "lead": "Una semana, una historia. Lo demás puede esperar.",
     "upcomingTitle": "Por delante",
     "feedTitle": "Lo que podrías vivir",
+    "oneByOne": "Una por una →",
     "feedEmpty": "Por ahora lo has visto todo. Aparecerá más cuando el curador lo añada.",
     "noDate": "sin fecha",
     "open": "Abrir",

@@ -4,9 +4,12 @@ import { useState } from "react";
 import type { LifeCategory } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { Dock, type DockTarget } from "@/components/Dock";
+import { Dock, type DockSection } from "@/components/Dock";
+import { DockIcon } from "@/components/DockIcon";
+import { CategoryIcon } from "@/components/CategoryIcon";
+import { EmptyMark } from "@/components/EmptyMark";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
-import { YearSection } from "@/components/year/YearSection";
+import { YearSummary } from "@/components/year/YearSummary";
 import type { YearView } from "@/lib/engine/year";
 import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
@@ -67,7 +70,7 @@ const BUDGETS = ["до 500 ₽", "до 2 000 ₽", "не важно"];
 export default function DesignSystemPage() {
   const [emotion, setEmotion] = useState(1);
   const [budget, setBudget] = useState(0);
-  const [section, setSection] = useState<DockTarget>("week");
+  const [section, setSection] = useState<DockSection>("now");
 
   return (
     <main className={styles.page}>
@@ -267,9 +270,8 @@ export default function DesignSystemPage() {
           <Dock
             active={section}
             onNavigate={setSection}
-            labels={{ week: "Неделя", memory: "Память", wishes: "Желания", year: "Год" }}
+            labels={{ now: "Сейчас", wish: "Хочу", past: "Было" }}
             ariaLabel="Основная навигация"
-            discoverLabel="Лента"
           />
         </div>
       </section>
@@ -291,8 +293,60 @@ export default function DesignSystemPage() {
 
       <section className={styles.section}>
         <SvcLabel tone="pink">10</SvcLabel>
+        <h2 className={styles.sectionTitle}>Знаки категорий</h2>
+        <p className={styles.body}>
+          Тот же мотив, что у узора выше, сжатый до 16px. Слева — как стоит рядом с подписью корешка
+          (12px), справа — в кружке карусели (28px).
+        </p>
+        <div className={styles.patterns}>
+          {PATTERN_CATEGORIES.map((category) => (
+            <figure key={category} className={styles.patternCell}>
+              <div className={styles.iconRow}>
+                <SvcLabel tone="ink">
+                  <CategoryIcon category={category} /> {category}
+                </SvcLabel>
+                <CategoryIcon category={category} size="m" />
+              </div>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">11</SvcLabel>
+        <h2 className={styles.sectionTitle}>Знаки дока</h2>
+        <p className={styles.body}>
+          Крупно — как нарисовано. В размере 16px они стоят в самом доке (раздел 08).
+        </p>
+
+        <div className={styles.dockIconRow}>
+          {(["now", "wish", "past"] as const).map((section) => (
+            <figure key={section} className={styles.dockIconCell}>
+              <span className={styles.dockIconBig}>
+                <DockIcon section={section} />
+              </span>
+              <figcaption className={styles.patternCaption}>
+                {section === "now" ? "Сейчас" : section === "wish" ? "Хочу" : "Было"}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">12</SvcLabel>
+        <h2 className={styles.sectionTitle}>Пусто</h2>
+        <p className={styles.body}>
+          Один знак на все пустые экраны: билет, которого ещё нет. Стоит над фразой, тише её.
+        </p>
+        <EmptyMark />
+        <p className={styles.body}>Здесь появятся прожитые истории.</p>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">13</SvcLabel>
         <h2 className={styles.sectionTitle}>Год</h2>
-        <YearSection year={YEAR_DEMO} />
+        <YearSummary year={YEAR_DEMO} />
       </section>
     </main>
   );

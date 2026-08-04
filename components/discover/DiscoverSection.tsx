@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import { reactToExperience } from "@/app/actions/discover";
 import type { DeckCard } from "@/lib/engine/discover";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { SvcLabel } from "@/components/SvcLabel";
@@ -96,6 +97,7 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
                 title={card.title}
                 stubTone="neutral"
                 stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
+                stubIcon={card.sponsored ? undefined : <CategoryIcon category={card.category} />}
                 /*
                  * Та же отрывная полоса, что в ленте на главном. Она внутри
                  * карточки, а значит едет вместе с ней при свайпе — жест

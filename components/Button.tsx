@@ -4,8 +4,11 @@ import styles from "./Button.module.css";
 /**
  * Кнопка. Прямые углы (радиус 0) — характер принта, дизайн-система §5.
  * На экране только один `primary` (§11.1).
+ *
+ * `ghost` — текстовое действие во всю ширину, `link` — оно же по
+ * содержимому, для строки заголовка раздела.
  */
-export type ButtonVariant = "primary" | "secondary" | "grey" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "grey" | "ghost" | "link";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;

@@ -311,3 +311,12 @@
   border-left: var(--ryk-perforation);
   pointer-events: none;
 }
+
+/* Подпись корешка со знаком: знак и текст на одной оптической линии.
+   `inline-flex`, а не пробел между инлайнами, — иначе svg сидит на базовой
+   линии текста и заваливается ниже строчных. */
+.stubLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

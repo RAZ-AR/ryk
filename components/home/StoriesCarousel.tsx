@@ -2,12 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import styles from "./StoriesCarousel.module.css";
 
 /** Ряд предстоящего: своя история недели и события, куда позвали. */
 export function StoriesCarousel({ items }: { items: UpcomingItem[] }) {
   const t = useTranslations("home");
-  const tCat = useTranslations("categories");
 
   if (items.length === 0) return null;
 
@@ -27,7 +27,7 @@ export function StoriesCarousel({ items }: { items: UpcomingItem[] }) {
               .join(" ")}
             aria-hidden="true"
           >
-            {tCat(item.category).slice(0, 1)}
+            <CategoryIcon category={item.category} size="m" />
           </span>
           <span className={styles.title}>{item.title}</span>
           <span className={styles.meta}>

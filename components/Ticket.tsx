@@ -37,6 +37,15 @@ type TicketProps = {
   note?: string;
   stubTone?: StubTone;
   stubLabel: string;
+  /**
+   * Знак перед подписью корешка — обычно `CategoryIcon`. Без него остаётся
+   * точка: подпись бывает и не категорией («История недели · кандидат»,
+   * «Приглашение · кому»), и рисовать там знак категории было бы враньём.
+   *
+   * Тип — узел, а не `LifeCategory`: примитив не должен знать доменного
+   * перечисления, ровно как не знает его слот фото.
+   */
+  stubIcon?: ReactNode;
   size?: TicketSize;
   /**
    * Отрывная полоса действий под корешком — реакция на впечатление.
@@ -68,6 +77,7 @@ export function Ticket({
   note,
   stubTone = "pink",
   stubLabel,
+  stubIcon,
   size = "default",
   actions,
   onOpen,
@@ -106,7 +116,9 @@ export function Ticket({
             actions ? styles.cutBoth : styles.cutTop,
           ].join(" ")}
         >
-          <SvcLabel tone="ink">● {stubLabel}</SvcLabel>
+          <SvcLabel tone="ink" className={styles.stubLabel}>
+            {stubIcon ?? <span aria-hidden="true">●</span>} {stubLabel}
+          </SvcLabel>
           <div className={styles.stubBody}>
             <div className={styles.stubContent}>{children}</div>
             <div className={styles.barcode} aria-hidden="true" />

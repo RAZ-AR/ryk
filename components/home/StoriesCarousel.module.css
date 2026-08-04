@@ -29,8 +29,10 @@
   text-align: center;
 }
 
-/* Кружок — не фото, а инициал категории: фотографий у впечатлений пока нет,
-   а пустой серый круг выглядел бы сломанным. */
+/* Кружок — не фото, а знак категории: фотографий у впечатлений пока нет,
+   а пустой серый круг выглядел бы сломанным. Была первая буква названия
+   категории — но «Природа» и «Прогулка» начинаются одинаково, а в трёх
+   языках инициалы у одной категории разные (П / N / N). */
 .circle {
   width: 64px;
   height: 64px;
@@ -40,10 +42,7 @@
   justify-content: center;
   background: var(--ryk-white);
   border: 2px solid var(--ryk-pink);
-  font-family: var(--ryk-font-ticket);
-  font-size: 24px;
   color: var(--ryk-ink);
-  text-transform: uppercase;
   /* Короткая тень, а не тень билета: на предмете в 64px та растеклась бы
      шире самого кружка (см. --ryk-shadow-card в tokens.css). */
   box-shadow: var(--ryk-shadow-card);

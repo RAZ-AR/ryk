@@ -9,6 +9,7 @@ import type { LifeCategory, WishStatus } from "@/generated/prisma/enums";
 import type { StructuredWish } from "@/lib/ai/structureWish";
 import { Button } from "@/components/Button";
 import { HandNote } from "@/components/HandNote";
+import { EmptyMark } from "@/components/EmptyMark";
 import { SvcLabel } from "@/components/SvcLabel";
 import styles from "./Wishlist.module.css";
 
@@ -142,7 +143,10 @@ export function Wishlist({ wishes }: { wishes: WishView[] }) {
       </div>
 
       {wishes.length === 0 ? (
-        <p className={styles.empty}>{t("empty")}</p>
+        <div className={styles.empty}>
+          <EmptyMark />
+          <p>{t("empty")}</p>
+        </div>
       ) : (
         <div className={styles.list}>
           {wishes.map((w) => (
