@@ -7,8 +7,13 @@
    * Тень у билета целиком, а не у одной белой части. Раньше она висела на
    * `.top`, и корешок оставался без неё; с появлением полосы действий это
    * читалось бы как три отдельные плашки вместо одного предмета.
+   *
+   * `filter`, а не `box-shadow`: вырезы перфорации — дырки в форме (см.
+   * `.cut*` ниже), и тень обязана идти по вырубленному силуэту, включая
+   * края самих вырезов. `box-shadow` рисуется по прямоугольнику и о дырках
+   * не знает.
    */
-  box-shadow: var(--ryk-shadow-ticket);
+  filter: var(--ryk-drop-ticket);
 }
 
 /* Лицо билета: верх + корешок. Опора для накладки-кнопки «открыть». */
@@ -141,22 +146,68 @@
   background: var(--ryk-grey);
 }
 
-/* Два выреза-полукруга цвета бумаги */
-.notch {
-  position: absolute;
-  top: calc(var(--ryk-notch-size) / -2);
-  width: var(--ryk-notch-size);
-  height: var(--ryk-notch-size);
-  border-radius: 50%;
-  background: var(--ryk-paper);
+/* --- Вырубка: полукруглые вырезы по краям перфорации ---
+ *
+ * Дырка — в форме билета, а не кружком поверх него. Кружком цвета бумаги
+ * было видно, что это отдельный предмет: заливка закрывала собой тень и
+ * край карточки, и на бумаге оставалось светлое пятно ровно там, где
+ * должен быть вырез. Теперь полоса режется маской, а тень (`filter` на
+ * `.ticket`) идёт по вырубленному силуэту — вырез читается как прорезь.
+ *
+ * Полукруги на стыке двух полос складываются в круг: нижний край верхней
+ * полосы и верхний край нижней вырезаны по одной и той же окружности.
+ *
+ * Слои маски по умолчанию складываются (`mask-composite: add`), поэтому
+ * композитинг не нужен — вместо него непересекающиеся плитки: каждая
+ * закрывает свою половину (или четверть) полосы и несёт ровно один вырез.
+ * Плитки берут по 51%, чтобы на стыке не осталось прозрачного волоса.
+ */
+.cutTop,
+.cutBottom,
+.cutBoth {
+  --notch-r: calc(var(--ryk-notch-size) / 2);
+  /* Полпикселя растушёвки — иначе край выреза лесенкой. `black` здесь не
+     цвет из палитры, а непрозрачность маски: билет виден там, где маска
+     плотная, и вырезан там, где прозрачная. */
+  --notch-hole: transparent calc(var(--notch-r) - 0.5px), black var(--notch-r);
+  mask-repeat: no-repeat;
 }
 
-.notchLeft {
-  left: calc(var(--ryk-notch-size) / -2);
+.cutTop {
+  mask-image:
+    radial-gradient(circle var(--notch-r) at left top, var(--notch-hole)),
+    radial-gradient(circle var(--notch-r) at right top, var(--notch-hole));
+  mask-size: 51% 100%;
+  mask-position:
+    left top,
+    right top;
 }
 
-.notchRight {
-  right: calc(var(--ryk-notch-size) / -2);
+.cutBottom {
+  mask-image:
+    radial-gradient(circle var(--notch-r) at left bottom, var(--notch-hole)),
+    radial-gradient(circle var(--notch-r) at right bottom, var(--notch-hole));
+  mask-size: 51% 100%;
+  mask-position:
+    left bottom,
+    right bottom;
+}
+
+/* Корешок между двумя перфорациями — вырезан с обеих сторон, поэтому
+   плитки уже четвертинки: полосой во всю высоту нижний слой затянул бы
+   верхний вырез обратно. */
+.cutBoth {
+  mask-image:
+    radial-gradient(circle var(--notch-r) at left top, var(--notch-hole)),
+    radial-gradient(circle var(--notch-r) at right top, var(--notch-hole)),
+    radial-gradient(circle var(--notch-r) at left bottom, var(--notch-hole)),
+    radial-gradient(circle var(--notch-r) at right bottom, var(--notch-hole));
+  mask-size: 51% 51%;
+  mask-position:
+    left top,
+    right top,
+    left bottom,
+    right bottom;
 }
 
 .stubBody {
