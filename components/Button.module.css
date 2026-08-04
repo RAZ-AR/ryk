@@ -44,6 +44,18 @@
   padding: 14px var(--ryk-space-2);
 }
 
+/*
+ * Та же ссылка-действие, но по содержимому, а не во всю ширину: для строки
+ * заголовка раздела, где блочная кнопка разорвала бы строку и утащила бы
+ * подпись раздела наверх. Высота касания остаётся 44px от `.btn`.
+ */
+.link {
+  composes: ghost;
+  display: inline-block;
+  width: auto;
+  padding: 12px 0;
+}
+
 .btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;

@@ -7,6 +7,7 @@ import { reactToExperience } from "@/app/actions/discover";
 import type { DeckCard } from "@/lib/engine/discover";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
 import type { WeeklyView } from "@/lib/engine/weekly";
+import { Button } from "@/components/Button";
 import { SvcLabel } from "@/components/SvcLabel";
 import { EventFeed } from "./EventFeed";
 import { EventSheet } from "./EventSheet";
@@ -24,11 +25,14 @@ export function HomeSection({
   weekly,
   deck,
   onOpenWeek,
+  onOpenDeck,
 }: {
   upcoming: UpcomingItem[];
   weekly: WeeklyView;
   deck: DeckCard[];
   onOpenWeek: () => void;
+  /** Открыть ту же ленту колодой — по одной карточке со свайпом. */
+  onOpenDeck: () => void;
 }) {
   const t = useTranslations("home");
   const app = useTranslations("app");
@@ -66,6 +70,14 @@ export function HomeSection({
       <section className={styles.section}>
         <div className={styles.sectionHead}>
           <SvcLabel tone="muted">{t("feedTitle")}</SvcLabel>
+          {/* Колода — не отдельный раздел, а второй способ смотреть эту же
+              ленту: те же карточки, те же «интересно / не интересно», просто
+              по одной. Поэтому вход отсюда, а не из навигации. */}
+          {deck.length > 0 && (
+            <Button variant="link" onClick={onOpenDeck}>
+              {t("oneByOne")}
+            </Button>
+          )}
         </div>
         <EventFeed deck={deck} onOpen={setOpenCard} onReact={react} busy={reacting} />
       </section>

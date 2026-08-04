@@ -15,7 +15,6 @@ import {
   type ProfileView,
 } from "@/components/profile/ProfileSheet";
 import { WeekSection } from "@/components/week/WeekSection";
-import { YearSection } from "@/components/year/YearSection";
 import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
 import type { DeckCard } from "@/lib/engine/discover";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
@@ -23,12 +22,16 @@ import type { MemoryView, WeeklyView } from "@/lib/engine/weekly";
 import type { YearView } from "@/lib/engine/year";
 import { isAppLocale, DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { AppHeader } from "./AppHeader";
-import { Dock, type DockLabels, type DockTarget } from "./Dock";
+import { Dock, type DockLabels, type DockSection } from "./Dock";
 import styles from "./AppShell.module.css";
 
 /*
  * Каркас Mini App: контент + плавающий dock (§7) + логотип-возврат,
- * личный кабинет и приглашения. Все пять разделов живые.
+ * личный кабинет и приглашения.
+ *
+ * Три раздела по времени: «Сейчас» (неделя и лента), «Хочу» (желания),
+ * «Было» (архив и год). Недельный цикл и колода — оверлеи поверх них,
+ * а не собственные вершины навигации.
  */
 export function AppShell({
   wishes,
@@ -63,42 +66,43 @@ export function AppShell({
   const app = useTranslations("app");
   const tProfile = useTranslations("profile");
   const tInvites = useTranslations("invites");
-  const tDiscover = useTranslations("discover");
-  const [section, setSection] = useState<DockTarget>("week");
+  const [section, setSection] = useState<DockSection>("now");
   const [profileOpen, setProfileOpen] = useState(false);
   const [invitesOpen, setInvitesOpen] = useState(false);
   /** Полный недельный цикл — оверлей поверх главного, а не отдельная секция. */
   const [weekOpen, setWeekOpen] = useState(false);
+  /*
+   * Колода — тоже оверлей. Разделом она была дублем: та же `deck`, те же
+   * «интересно / не интересно», что в ленте на главном, — отличалась только
+   * подача. Две вершины навигации в одно содержимое.
+   */
+  const [deckOpen, setDeckOpen] = useState(false);
 
   // Пришли по ссылке — открываем приглашения сразу: человек за этим и пришёл,
   // прятать их за значком было бы издевательством.
   const openInvites = useCallback(() => setInvitesOpen(true), []);
 
   const labels: DockLabels = {
-    week: nav("week"),
-    memory: nav("memory"),
-    wishes: nav("wishes"),
-    year: nav("year"),
+    now: nav("now"),
+    wish: nav("wish"),
+    past: nav("past"),
   };
 
   return (
     <div className={styles.shell}>
       <div className={styles.content}>
-        {section === "week" ? (
+        {section === "now" ? (
           <HomeSection
             upcoming={upcoming}
             weekly={weekly}
             deck={deck}
             onOpenWeek={() => setWeekOpen(true)}
+            onOpenDeck={() => setDeckOpen(true)}
           />
-        ) : section === "discover" ? (
-          <DiscoverSection deck={deck} />
-        ) : section === "wishes" ? (
+        ) : section === "wish" ? (
           <Wishlist wishes={wishes} />
-        ) : section === "memory" ? (
-          <MemorySection memories={memories} canAttachPhoto={canAttachPhoto} />
         ) : (
-          <YearSection year={year} />
+          <MemorySection memories={memories} year={year} canAttachPhoto={canAttachPhoto} />
         )}
       </div>
       <Dock
@@ -108,14 +112,13 @@ export function AppShell({
         // Имя навигации, а не состояние недели: скринридер читает его вместо
         // «Week active», которое сюда попало по недосмотру и ничего не значило.
         ariaLabel={nav("aria")}
-        discoverLabel={tDiscover("title")}
       />
       <AppHeader
         label={app("home")}
         city={city}
         hasBadge={invites.length > 0}
         locale={isAppLocale(locale) ? locale : DEFAULT_LOCALE}
-        onHome={() => setSection("week")}
+        onHome={() => setSection("now")}
       />
       <ProfileEntry label={tProfile("entry")} onClick={() => setProfileOpen(true)} />
       <InviteBadge
@@ -140,6 +143,14 @@ export function AppShell({
             {app("back")}
           </button>
           <WeekSection view={weekly} />
+        </div>
+      )}
+      {deckOpen && (
+        <div className={styles.overlay}>
+          <button type="button" className={styles.overlayClose} onClick={() => setDeckOpen(false)}>
+            {app("back")}
+          </button>
+          <DiscoverSection deck={deck} />
         </div>
       )}
     </div>

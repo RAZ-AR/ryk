@@ -3,6 +3,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import type { DeckCard } from "@/lib/engine/discover";
+import { CategoryIcon } from "@/components/CategoryIcon";
+import { EmptyMark } from "@/components/EmptyMark";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { Ticket } from "@/components/Ticket";
 import { TicketAction } from "@/components/TicketAction";
@@ -10,8 +12,8 @@ import styles from "./EventFeed.module.css";
 
 /*
  * Лента билетов на главном: спокойный вертикальный поток, а не колода.
- * Быстрые решения живут в свайп-режиме (кнопка в центре дока) — здесь
- * можно неспешно листать и заходить внутрь.
+ * Быстрые решения живут в свайп-режиме («По одной →» в шапке ленты) —
+ * здесь можно неспешно листать и заходить внутрь.
  */
 export function EventFeed({
   deck,
@@ -33,7 +35,12 @@ export function EventFeed({
   const locale = useLocale();
 
   if (deck.length === 0) {
-    return <p className={styles.empty}>{t("feedEmpty")}</p>;
+    return (
+      <div className={styles.empty}>
+        <EmptyMark />
+        <p>{t("feedEmpty")}</p>
+      </div>
+    );
   }
 
   const priceLabel = (price: number | null, currency: string) => {
@@ -67,6 +74,9 @@ export function EventFeed({
             title={card.title}
             stubTone="neutral"
             stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
+            // У спонсорского корешка подпись не категория, а пометка —
+            // знак категории рядом с ней сообщал бы неправду.
+            stubIcon={card.sponsored ? undefined : <CategoryIcon category={card.category} />}
             onOpen={() => onOpen(card)}
             openLabel={t("open")}
             actions={

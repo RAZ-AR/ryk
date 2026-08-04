@@ -181,3 +181,12 @@
   letter-spacing: 0.08em;
   color: var(--ryk-text-muted);
 }
+
+/* Знаки категорий: строка «знак + подпись» и тот же знак крупно. */
+.iconRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ryk-space-4);
+  min-height: 44px;
+}

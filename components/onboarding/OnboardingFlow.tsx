@@ -8,6 +8,7 @@ import { completeOnboarding } from "@/app/actions/onboarding";
 import type { FreeWindow, LifeBarrier, LifeCategory, SocialMode } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { Input } from "@/components/Input";
@@ -207,6 +208,7 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
             title={tIdeas(`${probe.id}.title`)}
             stubTone="neutral"
             stubLabel={tCatLabel(probe.category)}
+            stubIcon={<CategoryIcon category={probe.category} />}
           >
             {tIdeas(`${probe.id}.note`)}
             <br />

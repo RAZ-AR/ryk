@@ -2,16 +2,20 @@
 
 import { useTranslations } from "next-intl";
 import type { MemoryView } from "@/lib/engine/weekly";
+import type { YearView } from "@/lib/engine/year";
+import { EmptyMark } from "@/components/EmptyMark";
 import { SvcLabel } from "@/components/SvcLabel";
+import { YearSummary } from "@/components/year/YearSummary";
 import { FilmFrame } from "./FilmFrame";
 import styles from "./MemorySection.module.css";
 
 /*
- * Архив впечатлений (PRD 5.9) — проявленная плёнка, а не сетка превью.
+ * «Было» — всё прожитое: архив впечатлений (PRD 5.9) и сводка года над ним.
  *
- * Сетка читается как коллекция, которую хочется пополнять: пустые ячейки
- * просят себя заполнить, а это счёт и давление. Плёнка идёт сверху вниз,
- * по одному кадру, и просто заканчивается там, где закончилась.
+ * Архив — проявленная плёнка, а не сетка превью. Сетка читается как
+ * коллекция, которую хочется пополнять: пустые ячейки просят себя
+ * заполнить, а это счёт и давление. Плёнка идёт сверху вниз, по одному
+ * кадру, и просто заканчивается там, где закончилась.
  *
  * Перенесённые недели — такие же кадры, только тише: «незавершённые
  * желания без чувства вины».
@@ -19,9 +23,11 @@ import styles from "./MemorySection.module.css";
 
 export function MemorySection({
   memories,
+  year,
   canAttachPhoto,
 }: {
   memories: MemoryView[];
+  year: YearView;
   canAttachPhoto: boolean;
 }) {
   const t = useTranslations("memory");
@@ -40,8 +46,13 @@ export function MemorySection({
       </div>
       <p className={styles.subtitle}>{t("subtitle")}</p>
 
+      <YearSummary year={year} />
+
       {memories.length === 0 ? (
-        <p className={styles.empty}>{t("empty")}</p>
+        <div className={styles.empty}>
+          <EmptyMark />
+          <p>{t("empty")}</p>
+        </div>
       ) : (
         <div className={styles.film}>
           {memories.map((m) => {
