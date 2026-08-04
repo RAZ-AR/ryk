@@ -5,7 +5,7 @@ import type { LifeCategory } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Dock, type DockSection } from "@/components/Dock";
-import { DockIcon, type PastVariant } from "@/components/DockIcon";
+import { DockIcon } from "@/components/DockIcon";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { EmptyMark } from "@/components/EmptyMark";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
@@ -316,7 +316,7 @@ export default function DesignSystemPage() {
         <SvcLabel tone="pink">11</SvcLabel>
         <h2 className={styles.sectionTitle}>Знаки дока</h2>
         <p className={styles.body}>
-          Крупно — как нарисовано, ниже — 16px, как будет в доке. Для «Было» три варианта.
+          Крупно — как нарисовано. В размере 16px они стоят в самом доке (раздел 08).
         </p>
 
         <div className={styles.dockIconRow}>
@@ -326,42 +326,11 @@ export default function DesignSystemPage() {
                 <DockIcon section={section} />
               </span>
               <figcaption className={styles.patternCaption}>
-                {section === "now" ? "Сейчас" : section === "wish" ? "Хочу" : "Было · stack"}
+                {section === "now" ? "Сейчас" : section === "wish" ? "Хочу" : "Было"}
               </figcaption>
             </figure>
           ))}
         </div>
-
-        <p className={styles.body}>Варианты знака «Было»:</p>
-        <div className={styles.dockIconRow}>
-          {(["stack", "frame", "ticket"] as PastVariant[]).map((variant) => (
-            <figure key={variant} className={styles.dockIconCell}>
-              <span className={styles.dockIconBig}>
-                <DockIcon section="past" pastVariant={variant} />
-              </span>
-              <figcaption className={styles.patternCaption}>{variant}</figcaption>
-            </figure>
-          ))}
-        </div>
-
-        <p className={styles.body}>Как будет в доке — статичный макет, без анимации:</p>
-        {(["stack", "frame", "ticket"] as PastVariant[]).map((variant) => (
-          <div key={variant} className={styles.dockMockWrap}>
-            <div className={styles.dockMock}>
-              <span className={[styles.dockMockItem, styles.dockMockActive].join(" ")}>
-                <DockIcon section="now" />
-                <SvcLabel tone="ink">Сейчас</SvcLabel>
-              </span>
-              <span className={styles.dockMockItem}>
-                <DockIcon section="wish" />
-              </span>
-              <span className={styles.dockMockItem}>
-                <DockIcon section="past" pastVariant={variant} />
-              </span>
-            </div>
-            <SvcLabel tone="muted">Было · {variant}</SvcLabel>
-          </div>
-        ))}
       </section>
 
       <section className={styles.section}>

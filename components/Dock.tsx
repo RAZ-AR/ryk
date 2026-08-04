@@ -1,3 +1,4 @@
+import { DockIcon } from "./DockIcon";
 import styles from "./Dock.module.css";
 
 /**
@@ -44,7 +45,18 @@ export function Dock({ active, onNavigate, labels, ariaLabel }: DockProps) {
             className={[styles.item, isActive && styles.active].filter(Boolean).join(" ")}
             onClick={() => onNavigate?.(id)}
           >
-            {labels[id]}
+            <DockIcon section={id} />
+            {/*
+             * Подпись остаётся в разметке всегда и схлопывается по ширине,
+             * а не выкидывается из дерева. Две причины: скринридер читает
+             * имя кнопки и у неактивного пункта (иначе пришлось бы дублировать
+             * его в `aria-label` и держать две копии текста в синхроне),
+             * и схлопывать нечего, если элемента нет, — переход был бы
+             * скачком, а не раскрытием.
+             */}
+            <span className={styles.label}>
+              <span className={styles.labelText}>{labels[id]}</span>
+            </span>
           </button>
         );
       })}

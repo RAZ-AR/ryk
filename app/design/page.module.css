@@ -210,39 +210,3 @@
   height: 72px;
   color: var(--ryk-ink);
 }
-
-.dockMock {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ryk-space-1);
-  background: var(--ryk-glass);
-  border: 1px solid var(--ryk-glass-border);
-  padding: 7px;
-  border-radius: var(--ryk-radius-dock);
-  box-shadow: var(--ryk-shadow-dock);
-}
-
-.dockMockItem {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--ryk-space-2);
-  min-width: 44px;
-  min-height: 40px;
-  padding: 0 var(--ryk-space-3);
-  border-radius: var(--ryk-radius-dock-pill);
-  color: var(--ryk-text-secondary);
-}
-
-.dockMockActive {
-  background: var(--ryk-pink);
-  color: var(--ryk-ink);
-  --dock-icon-bg: var(--ryk-pink);
-}
-
-.dockMockWrap {
-  display: flex;
-  align-items: center;
-  gap: var(--ryk-space-4);
-  margin-bottom: var(--ryk-space-4);
-}
