@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  Внутренняя карта системы. Отдаётся статикой из public/, мимо приложения:
+  ей не нужны ни сессия, ни язык, ни данные — значит, не нужен и роут.
+  Адрес: /architecture (rewrite в next.config.ts) либо прямой /architecture.html.
+
+  Индексации нет дважды: app/robots.ts закрывает весь домен, meta ниже — на
+  случай, если robots когда-нибудь откроют. Страница техническая: доступна
+  по ссылке, но в поиске ей делать нечего.
+-->
+<meta name="robots" content="noindex, nofollow">
+<title>Ryk — архитектура целиком</title>
+<style>
+  :root{
+    --paper:#EBEAE7;
+    --card:#FFFFFF;
+    --ink:#1A1A1A;
+    --ink-2:#4A4844;
+    --ink-3:#807C74;
+    --pink:#F387C8;
+    --line:#CFCCC5;
+    --line-2:#E0DDD7;
+    --stub:#E3E0DA;
+    --shadow: 0 1px 3px rgba(0,0,0,.24), 0 12px 30px rgba(0,0,0,.10);
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:16px; line-height:1.55;
+  }
+  a{color:inherit}
+
+  /* ── шапка ─────────────────────────────────────────── */
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background:var(--paper); border-bottom:1px solid var(--line);
+  }
+  .top-in{max-width:1180px; margin:0 auto; padding:14px 20px; display:flex; gap:16px; align-items:baseline; flex-wrap:wrap}
+  .brand{font-size:22px; letter-spacing:.02em}
+  .brand b{font-weight:400; color:var(--pink)}
+  .top-meta{font-family:var(--mono); font-size:11px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.08em}
+  nav.toc{max-width:1180px; margin:0 auto; padding:0 20px 12px; display:flex; gap:6px 10px; flex-wrap:wrap}
+  nav.toc a{
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    text-decoration:none; color:var(--ink-2); border:1px solid var(--line);
+    padding:4px 9px; background:var(--card);
+  }
+  nav.toc a:hover{border-color:var(--ink); color:var(--ink)}
+
+  main{max-width:1180px; margin:0 auto; padding:28px 20px 80px}
+
+  section{margin:0 0 46px; scroll-margin-top:120px}
+  .sec-head{display:flex; align-items:baseline; gap:12px; border-bottom:2px solid var(--ink); padding-bottom:8px; margin-bottom:18px; flex-wrap:wrap}
+  .sec-num{font-family:var(--mono); font-size:11px; color:var(--pink); letter-spacing:.14em}
+  h1{font-size:30px; font-weight:400; margin:0 0 6px; line-height:1.2}
+  h2{font-size:22px; font-weight:400; margin:0; letter-spacing:.01em}
+  h3{font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin:22px 0 10px}
+  p{margin:0 0 12px; color:var(--ink-2); max-width:78ch}
+  .lede{font-size:17px; color:var(--ink)}
+  code{font-family:var(--mono); font-size:.86em; background:#fff; border:1px solid var(--line-2); padding:1px 5px; white-space:nowrap}
+
+  /* ── билет-карточка ────────────────────────────────── */
+  .ticket{background:var(--card); box-shadow:var(--shadow); margin:0 0 14px}
+  .ticket .t-top{padding:14px 16px}
+  .ticket .t-stub{
+    background:var(--stub); padding:10px 16px;
+    border-top:1px dashed var(--line);
+    font-family:var(--mono); font-size:11.5px; color:var(--ink-2); line-height:1.6;
+  }
+  .t-title{font-size:16px; margin:0 0 6px; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+  .t-title .path{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
+
+  /* ── сетки ─────────────────────────────────────────── */
+  .grid{display:grid; gap:14px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media (max-width:900px){ .g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:620px){ .g2,.g3,.g4{grid-template-columns:minmax(0,1fr)} }
+
+  .box{background:var(--card); border:1px solid var(--line); padding:12px 14px}
+  .box.hi{border-color:var(--ink)}
+  .box.ext{background:transparent; border-style:dashed}
+  .box .bt{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:6px}
+  .box .bn{font-size:15px; margin-bottom:4px}
+  .box .bd{font-size:13.5px; color:var(--ink-2); line-height:1.5}
+  .box ul{margin:6px 0 0; padding-left:16px; font-size:13.5px; color:var(--ink-2)}
+  .box li{margin:2px 0}
+
+  /* ── поток / стрелки ───────────────────────────────── */
+  .flow{display:flex; align-items:stretch; gap:0; flex-wrap:wrap; margin:6px 0 18px}
+  .flow .node{
+    background:var(--card); border:1px solid var(--line); padding:10px 13px; flex:1 1 150px; min-width:0;
+  }
+  .flow .node .n1{font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3)}
+  .flow .node .n2{font-size:14px; margin-top:3px}
+  .flow .node .n3{font-size:12.5px; color:var(--ink-2); margin-top:3px; line-height:1.45}
+  .flow .arr{display:flex; align-items:center; justify-content:center; padding:0 8px; color:var(--pink); font-family:var(--mono); font-size:16px; flex:0 0 auto}
+  @media (max-width:620px){
+    .flow{flex-direction:column}
+    .flow .arr{padding:4px 0; transform:rotate(90deg)}
+  }
+
+  /* стек слоёв */
+  .layer{display:grid; grid-template-columns:150px minmax(0,1fr); border:1px solid var(--line); background:var(--card); margin-bottom:-1px}
+  .layer .lh{background:var(--stub); border-right:1px solid var(--line); padding:12px 14px; font-family:var(--mono); font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-2)}
+  .layer .lb{padding:12px 14px; display:flex; gap:6px; flex-wrap:wrap; align-items:flex-start}
+  @media (max-width:620px){ .layer{grid-template-columns:minmax(0,1fr)} .layer .lh{border-right:0; border-bottom:1px solid var(--line)} }
+  .chip{font-family:var(--mono); font-size:11.5px; border:1px solid var(--line); padding:3px 8px; background:#fff; white-space:nowrap}
+  .chip.p{border-color:var(--pink); background:#FFF4FB}
+  .chip.d{border-style:dashed; color:var(--ink-3)}
+
+  /* ── таблицы ───────────────────────────────────────── */
+  .tw{overflow-x:auto; border:1px solid var(--line); background:var(--card); margin-bottom:14px}
+  table{border-collapse:collapse; width:100%; min-width:640px; font-size:13.5px}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line-2); vertical-align:top}
+  th{font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); background:var(--stub); border-bottom:1px solid var(--line); white-space:nowrap}
+  td:first-child{font-family:var(--mono); font-size:12.5px; white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  td .m{font-family:var(--mono); font-size:12px}
+
+  /* ── заметка от руки ───────────────────────────────── */
+  .note{
+    border-left:3px solid var(--pink); background:#FFF7FC;
+    padding:10px 14px; margin:14px 0; font-size:14px; color:var(--ink-2);
+  }
+  .note b{color:var(--ink); font-weight:400; border-bottom:1px solid var(--pink)}
+
+  .kv{display:grid; grid-template-columns:auto minmax(0,1fr); gap:4px 14px; font-size:13.5px; color:var(--ink-2)}
+  .kv dt{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); white-space:nowrap}
+  .kv dd{margin:0}
+
+  footer{border-top:1px solid var(--line); margin-top:40px; padding-top:16px; font-family:var(--mono); font-size:11px; color:var(--ink-3); letter-spacing:.04em}
+
+  /* ── дерево (блок-схема) ───────────────────────────── */
+  .tree{overflow-x:auto; padding:4px 0 10px}
+  .tree ul{list-style:none; margin:0; padding:0 0 0 24px; position:relative}
+  .tree > ul{padding-left:0}
+  .tree li{position:relative; padding:3px 0 3px 20px}
+  .tree > ul > li{padding-left:0}
+  /* вертикальная линия от родителя вниз вдоль всех детей */
+  .tree li::before{
+    content:""; position:absolute; left:0; top:0; bottom:0;
+    border-left:1px solid var(--line);
+  }
+  /* у последнего ребёнка линия обрывается на уровне отвода */
+  .tree li:last-child::before{bottom:auto; height:20px}
+  /* горизонтальный отвод к узлу */
+  .tree li::after{
+    content:""; position:absolute; left:0; top:20px; width:13px;
+    border-top:1px solid var(--line);
+  }
+  .tree > ul > li::before, .tree > ul > li::after{display:none}
+
+  .nd{
+    display:inline-flex; flex-direction:column; gap:1px;
+    background:var(--card); border:1px solid var(--line);
+    padding:6px 11px; max-width:100%; vertical-align:top;
+  }
+  .nd .k{font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
+  .nd .n{font-size:14px; line-height:1.3}
+  .nd .s{font-family:var(--mono); font-size:11px; color:var(--ink-2); line-height:1.5}
+  .nd.root{border:2px solid var(--ink); padding:10px 15px}
+  .nd.root .n{font-size:19px}
+  .nd.br{border-left:3px solid var(--pink)}
+  .nd.leaf{border-style:dashed; background:transparent; padding:4px 9px}
+  .nd.leaf .n{font-family:var(--mono); font-size:12px; color:var(--ink-2)}
+  .nd.ext{border-style:dashed; background:transparent}
+  .nd.stop{border-color:var(--ink)}
+  /* подпись на ребре дерева решений */
+  .edge{
+    font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--pink); margin-right:7px;
+  }
+  @media (max-width:620px){
+    .tree ul{padding-left:15px}
+    .tree li{padding-left:14px}
+    .tree li::after{width:9px}
+    .nd{padding:5px 9px}
+    .nd .n{font-size:13px}
+    .nd .s{font-size:10.5px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Ryk <b>◉</b> архитектура</div>
+    <div class="top-meta">Next.js 16 · React 19 · Prisma 7 · Postgres · Telegram Mini App</div>
+  </div>
+  <nav class="toc">
+    <a href="#tree">00 дерево</a>
+    <a href="#ctx">01 контекст</a>
+    <a href="#run">02 рантайм</a>
+    <a href="#layers">03 слои</a>
+    <a href="#auth">04 доступ</a>
+    <a href="#engine">05 движок</a>
+    <a href="#data">06 данные</a>
+    <a href="#actions">07 действия</a>
+    <a href="#http">08 http</a>
+    <a href="#i18n">09 язык</a>
+    <a href="#bg">10 фон</a>
+    <a href="#ui">11 ui</a>
+    <a href="#ops">12 деплой</a>
+    <a href="#inv">13 инварианты</a>
+  </nav>
+</header>
+
+<main>
+
+  <h1>Одна история в неделю — и весь код, который это обслуживает</h1>
+  <p class="lede">Монолит на Next.js App Router: один процесс отдаёт и UI, и API. Клиента-SPA нет —
+  экраны собираются на сервере (RSC), мутации идут через server actions. Всё, что снаружи,
+  подключено так, чтобы его отсутствие не ломало продукт: нет ключа AI — работает эвристика,
+  нет PostHog — тихий no-op, нет Storage — просто нет кнопки фото.</p>
+
+  <!-- ══════════ 00 ══════════ -->
+  <section id="tree">
+    <div class="sec-head"><span class="sec-num">00</span><h2>Дерево системы: от корня до листа</h2></div>
+    <p>Та же архитектура, но одним разворачивающимся деревом — девять ветвей от корня,
+    листья — реальные файлы и таблицы. Ниже, вторым деревом, — единственное место с настоящим ветвлением
+    решения: когда боту позволено написать первым.</p>
+
+    <div class="tree">
+      <ul>
+        <li>
+          <div class="nd root"><div class="k">telegram mini app</div><div class="n">Ryk ◉</div><div class="s">Next.js 16 · монолит: UI и API в одном процессе</div></div>
+          <ul>
+
+            <!-- 1 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 1</div><div class="n">Вход и сессия</div><div class="s">lib/auth · app/api/auth</div></div>
+              <ul>
+                <li><div class="nd"><div class="n">TelegramBootstrap</div><div class="s">ждёт window.Telegram.WebApp → шлёт initData</div></div></li>
+                <li><div class="nd"><div class="n">verifyInitData</div><div class="s">HMAC("WebAppData", bot_token) · timingSafeEqual</div></div>
+                  <ul>
+                    <li><div class="nd leaf"><div class="n">подпись не сошлась → 401</div></div></li>
+                  </ul>
+                </li>
+                <li><div class="nd"><div class="n">authenticate</div><div class="s">upsert по telegramId · сброс deletedAt при возврате</div></div>
+                  <ul>
+                    <li><div class="nd leaf"><div class="n">authenticateDev() — только вне production</div></div></li>
+                  </ul>
+                </li>
+                <li><div class="nd"><div class="n">session</div><div class="s">jose HS256 · httpOnly ryk_session · 30 дней</div></div></li>
+              </ul>
+            </li>
+
+            <!-- 2 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 2</div><div class="n">Экран</div><div class="s">app/page.tsx → AppShell</div></div>
+              <ul>
+                <li><div class="nd"><div class="n">Promise.all ×9</div><div class="s">весь экран одним серверным рендером</div></div>
+                  <ul>
+                    <li><div class="nd leaf"><div class="n">getWeeklyView · getMemories · getDiscoverDeck</div></div></li>
+                    <li><div class="nd leaf"><div class="n">getUpcoming · getYear</div></div></li>
+                    <li><div class="nd leaf"><div class="n">wishes · profile · preferences · invites</div></div></li>
+                  </ul>
+                </li>
+                <li><div class="nd"><div class="n">AppShell</div><div class="s">клиентский каркас, данные только сверху</div></div>
+                  <ul>
+                    <li><div class="nd leaf"><div class="n">WeekSection + CheckinView + RescueView</div></div></li>
+                    <li><div class="nd leaf"><div class="n">MemorySection + FilmFrame + PhotoButton</div></div></li>
+                    <li><div class="nd leaf"><div class="n">DiscoverSection + SwipeCard</div></div></li>
+                    <li><div class="nd leaf"><div class="n">Wishlist · YearSection</div></div></li>
+                    <li><div class="nd leaf"><div class="n">HomeSection + StoriesCarousel + EventFeed</div></div></li>
+                    <li><div class="nd leaf"><div class="n">ProfileSheet · InviteSheet · Dock · AppHeader</div></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+            <!-- 3 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 3</div><div class="n">Мутации</div><div class="s">app/actions — 13 файлов, "use server"</div></div>
+              <ul>
+                <li><div class="nd"><div class="n">Цикл недели</div><div class="s">selectStory → commitStory → completeStory</div></div>
+                  <ul>
+                    <li><div class="nd leaf"><div class="n">uncommitStory · deferStory · deferWeek</div></div></li>
+                    <li><div class="nd leaf"><div class="n">startRescue · applyRescue</div></div></li>
+                  </ul>
+                </li>
+                <li><div class="nd"><div class="n">Вход в продукт</div><div class="s">completeOnboarding · analyzeWish · addWish · reactToExperience</div></div></li>
+                <li><div class="nd"><div class="n">Социальное</div><div class="s">claimInvite · respondInvite</div></div></li>
+                <li><div class="nd"><div class="n">Владение данными</div><div class="s">updateProfile · deletePreference · deleteAccount · switchLocale · фото</div></div></li>
+                <li><div class="nd"><div class="n">Куратор</div><div class="s">createExperience · setExperienceArchived · signIn/Out</div></div></li>
+              </ul>
+            </li>
+
+            <!-- 4 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 4</div><div class="n">Движок</div><div class="s">lib/engine — где живёт продукт</div></div>
+              <ul>
+                <li><div class="nd"><div class="n">weekly.ts</div><div class="s">Relevance × Feasibility × Timing + WhyCode · barrierBoost ×1.6</div></div></li>
+                <li><div class="nd"><div class="n">mix.ts</div><div class="s">EVENT_SHARE 0.25 · детерминированное тасование по userId+дате</div></div></li>
+                <li><div class="nd"><div class="n">nudges + nudgeDelivery</div><div class="s">коды, не тексты · потолок 2 в неделю</div></div></li>
+                <li><div class="nd"><div class="n">rescue.ts</div><div class="s">барьер задаёт, что считать «меньше»</div></div></li>
+                <li><div class="nd"><div class="n">discover · upcoming · year · memories</div><div class="s">чтение для экранов</div></div></li>
+                <li><div class="nd"><div class="n">liveExperiences.ts</div><div class="s">общее «что вообще можно показывать»</div></div></li>
+              </ul>
+            </li>
+
+            <!-- 5 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 5</div><div class="n">Сервисы</div><div class="s">lib/* — всё выключаемо без потери продукта</div></div>
+              <ul>
+                <li><div class="nd"><div class="n">ai/structureWish</div><div class="s">Gemini → Claude → эвристика</div></div></li>
+                <li><div class="nd"><div class="n">i18n</div><div class="s">locale · localeCookie · city · experience</div></div></li>
+                <li><div class="nd"><div class="n">telegram</div><div class="s">verifyInitData · botApi · inviteCard · nudgeMessage</div></div></li>
+                <li><div class="nd"><div class="n">storage/memoryPhotos</div><div class="s">приватный бакет · подписанная ссылка на час</div></div></li>
+                <li><div class="nd"><div class="n">analytics · weather · calendar · cities · concierge</div></div></li>
+              </ul>
+            </li>
+
+            <!-- 6 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 6</div><div class="n">Данные</div><div class="s">Prisma 7 + adapter-pg → Postgres (Supabase EU)</div></div>
+              <ul>
+                <li><div class="nd"><div class="n">users</div><div class="s">telegramId unique · deletedAt · рамки недели</div></div>
+                  <ul>
+                    <li><div class="nd leaf"><div class="n">preferences — unique (userId, category, entity)</div></div></li>
+                    <li><div class="nd leaf"><div class="n">wishes · experience_reactions · interventions</div></div></li>
+                  </ul>
+                </li>
+                <li><div class="nd"><div class="n">weekly_stories</div><div class="s">unique (userId, weekStart) — одна история в неделю</div></div>
+                  <ul>
+                    <li><div class="nd leaf"><div class="n">memories 1—1 (deferred = перенос без вины)</div></div></li>
+                    <li><div class="nd leaf"><div class="n">invites — unique (weeklyStoryId, role)</div></div></li>
+                  </ul>
+                </li>
+                <li><div class="nd"><div class="n">experiences</div><div class="s">EVENT / CHALLENGE / RITUAL · translations Json · archivedAt</div></div></li>
+                <li><div class="nd stop"><div class="n">RLS на всех таблицах, политик нет</div><div class="s">anon-ключ Supabase не видит ничего</div></div></li>
+              </ul>
+            </li>
+
+            <!-- 7 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 7</div><div class="n">Внешние системы</div><div class="s">ни одна не обязательна</div></div>
+              <ul>
+                <li><div class="nd ext"><div class="n">Telegram Bot API</div><div class="s">инлайн-карточки приглашений · подсказки</div></div></li>
+                <li><div class="nd ext"><div class="n">Gemini Flash / Claude</div><div class="s">нет ключа → эвристика по ключевым словам</div></div></li>
+                <li><div class="nd ext"><div class="n">Open-Meteo</div><div class="s">без ключа · кэш 1 час · сбой → [] и молчание про погоду</div></div></li>
+                <li><div class="nd ext"><div class="n">PostHog EU · Supabase Storage</div><div class="s">нет ключа → no-op / кнопки фото просто нет</div></div></li>
+              </ul>
+            </li>
+
+            <!-- 8 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 8</div><div class="n">Фон</div><div class="s">два входа без участия человека</div></div>
+              <ul>
+                <li><div class="nd"><div class="n">GET /api/cron/nudge</div><div class="s">Vercel Cron 0 8 * * * · Bearer CRON_SECRET</div></div></li>
+                <li><div class="nd"><div class="n">POST /api/telegram/webhook</div><div class="s">inline_query → приглашение → ссылка startapp</div></div></li>
+                <li><div class="nd"><div class="n">GET /api/calendar/ics · /api/profile/export</div><div class="s">файлом через Content-Disposition</div></div></li>
+              </ul>
+            </li>
+
+            <!-- 9 -->
+            <li>
+              <div class="nd br"><div class="k">ветвь 9</div><div class="n">Конвейер</div><div class="s">.github + Vercel</div></div>
+              <ul>
+                <li><div class="nd"><div class="n">ci.yml</div><div class="s">format → lint → typecheck → test (167 в 25 файлах) → build</div></div></li>
+                <li><div class="nd"><div class="n">Vercel</div><div class="s">preview = staging · main = prod</div></div></li>
+                <li><div class="nd"><div class="n">smoke.yml</div><div class="s">по deployment_status: / 200 · /api/auth 405 · /concierge 200 · /design 200</div></div></li>
+              </ul>
+            </li>
+
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <h3>Дерево решения: писать ли человеку первым</h3>
+    <p>Единственная ветвящаяся логика, которую стоит держать перед глазами целиком —
+    <code>lib/engine/nudgeDelivery.ts</code>. Четыре из пяти путей заканчиваются молчанием, и это правильная пропорция.</p>
+
+    <div class="tree decide">
+      <ul>
+        <li>
+          <div class="nd root"><div class="k">08:00 ежедневно</div><div class="n">Крон проснулся</div></div>
+          <ul>
+            <li><span class="edge">задача 2 — итог свидетелю</span><div class="nd"><div class="n">COMPLETED / DEFERRED + принятое приглашение WITNESS</div><div class="s">только обещание и результат — ни места, ни бюджета</div></div></li>
+            <li><span class="edge">задача 1 — подсказка</span><div class="nd"><div class="n">истории со статусом COMMITTED / AT_RISK</div><div class="s">есть впечатление · пользователь не удалён</div></div>
+              <ul>
+                <li><span class="edge">таких историй нет</span><div class="nd stop"><div class="n">молчим</div></div></li>
+                <li><span class="edge">есть</span><div class="nd"><div class="n">собираем контекст</div><div class="s">plannedFor · прогноз по координатам · отправленное на этой неделе</div></div>
+                  <ul>
+                    <li><span class="edge">уведомления выключены</span><div class="nd stop"><div class="n">opted_out</div></div></li>
+                    <li><span class="edge">включены</span><div class="nd"><div class="n">buildNudge → код</div></div>
+                      <ul>
+                        <li><span class="edge">ON_TRACK · WEATHER_WATCH · TODAY</span><div class="nd stop"><div class="n">nothing_to_say</div><div class="s">нечего просить / тревога без действия / уже поздно</div></div></li>
+                        <li><span class="edge">WEATHER_SWAP · TOMORROW · INVITE_SOMEONE</span><div class="nd"><div class="n">есть конкретное действие</div></div>
+                          <ul>
+                            <li><span class="edge">этот код уже слали</span><div class="nd stop"><div class="n">already_said</div></div></li>
+                            <li><span class="edge">уже 2 сообщения за неделю</span><div class="nd stop"><div class="n">weekly_cap</div></div></li>
+                            <li><span class="edge">квота свободна</span><div class="nd"><div class="n">buildNudgeMessage(код, user.locale)</div><div class="s">язык из профиля — у крона нет cookie</div></div>
+                              <ul>
+                                <li><span class="edge">нет шаблона</span><div class="nd stop"><div class="n">no_template</div></div></li>
+                                <li><span class="edge">бот заблокирован</span><div class="nd stop"><div class="n">telegram:*</div><div class="s">нормальный исход, не ошибка</div></div></li>
+                                <li><span class="edge">отправлено</span><div class="nd br"><div class="n">запись в interventions</div><div class="s">она же дедуп: повтор крона в тот же день ничего не пришлёт</div></div></li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="note">
+      Дерево читается сверху вниз как приоритет: <b>сначала согласие человека, потом польза сообщения,
+      и только в конце — частота</b>. Порядок проверок в коде такой же, и менять его нельзя:
+      если сперва считать лимит, выключивший уведомления начнёт тратить квоту молчанием.
+    </div>
+  </section>
+
+  <!-- ══════════ 01 ══════════ -->
+  <section id="ctx">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Контекст: кто с кем разговаривает</h2></div>
+
+    <div class="grid g3">
+      <div class="box hi">
+        <div class="bt">Клиент</div>
+        <div class="bn">Telegram Mini App</div>
+        <div class="bd">WebView внутри Telegram. <code>telegram-web-app.js</code> подгружается в
+        <code>app/layout.tsx</code> как hoistable-ресурс (не <code>next/script</code> — React 19 ругается).</div>
+      </div>
+      <div class="box hi">
+        <div class="bt">Приложение</div>
+        <div class="bn">Next.js на Vercel</div>
+        <div class="bd">RSC + server actions + 5 route handlers. Прод — <code>ryk-ten.vercel.app</code>,
+        preview-деплой = staging.</div>
+      </div>
+      <div class="box hi">
+        <div class="bt">Хранилище</div>
+        <div class="bn">Supabase (EU)</div>
+        <div class="bd">Postgres через Prisma + приватный бакет <code>memories</code> для фото.
+        RLS включён на всех таблицах, политик нет — ходит только сервер.</div>
+      </div>
+    </div>
+
+    <h3>Внешние сервисы — все опциональны</h3>
+    <div class="grid g4">
+      <div class="box ext">
+        <div class="bt">Telegram Bot API</div>
+        <div class="bd">Проверка <code>initData</code> (HMAC, без сети) · <code>answerInlineQuery</code> для приглашений · <code>sendMessage</code> для подсказок.</div>
+      </div>
+      <div class="box ext">
+        <div class="bt">Gemini → Claude → эвристика</div>
+        <div class="bd">Разбор желания в структуру. Цепочка по ADR-008: бесплатное по умолчанию, сбой любого звена уводит в следующее.</div>
+      </div>
+      <div class="box ext">
+        <div class="bt">Open-Meteo</div>
+        <div class="bd">Прогноз на 7 дней, без ключа, кэш 1 час. Падение = просто нет погоды на экране.</div>
+      </div>
+      <div class="box ext">
+        <div class="bt">PostHog (EU)</div>
+        <div class="bd">Серверная отправка воронки. Без ключа — no-op. В свойствах нет персональных данных.</div>
+      </div>
+    </div>
+
+    <div class="note">
+      Правило по всему периметру: <b>внешний сервис не может сделать продукт нерабочим</b>.
+      Каждый интегратор возвращает <code>null</code>/<code>[]</code> вместо исключения, а вызывающий знает, что делать без него.
+    </div>
+  </section>
+
+  <!-- ══════════ 02 ══════════ -->
+  <section id="run">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Рантайм: путь запроса</h2></div>
+
+    <h3>Чтение экрана — один серверный рендер</h3>
+    <div class="flow">
+      <div class="node"><div class="n1">браузер</div><div class="n2">GET /</div><div class="n3">cookie <code>ryk_session</code> + <code>ryk_locale</code></div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">app/page.tsx</div><div class="n2">getCurrentUser()</div><div class="n3">нет сессии → <code>TelegramBootstrap</code><br>не DONE → <code>OnboardingFlow</code></div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">Promise.all ×9</div><div class="n2">движок + Prisma</div><div class="n3">weekly · memories · deck · upcoming · year · wishes · profile · prefs · invites</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">AppShell</div><div class="n2">клиентский каркас</div><div class="n3">5 секций + dock, всё данными сверху</div></div>
+    </div>
+
+    <h3>Запись — server action, без REST-слоя</h3>
+    <div class="flow">
+      <div class="node"><div class="n1">компонент</div><div class="n2">"use client"</div><div class="n3">вызывает импортированную функцию</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">app/actions/*.ts</div><div class="n2">"use server"</div><div class="n3">сессия → валидация → Prisma → <code>track()</code> → <code>revalidatePath("/")</code></div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">lib/prisma.ts</div><div class="n2">PrismaPg adapter</div><div class="n3">пул Supabase (pgbouncer), синглтон в globalThis</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">Postgres</div><div class="n2">9 таблиц</div><div class="n3">RLS on, доступ только владельцем БД</div></div>
+    </div>
+
+    <div class="note">
+      Server action — это <b>публичный HTTP-эндпоинт</b>, а не «внутренний вызов». Поэтому каждое
+      действие само проверяет сессию заново; то, что страница отрисовалась вошедшему, ничего не гарантирует.
+      Явно проговорено в <code>app/actions/concierge.ts</code>.
+    </div>
+  </section>
+
+  <!-- ══════════ 03 ══════════ -->
+  <section id="layers">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Слои кода</h2></div>
+
+    <div class="layer"><div class="lh">app/ — вход</div><div class="lb">
+      <span class="chip p">page.tsx</span><span class="chip">layout.tsx</span><span class="chip">globals.css + tokens.css</span>
+      <span class="chip">concierge/page.tsx</span><span class="chip">design/page.tsx</span><span class="chip">robots.ts</span>
+    </div></div>
+    <div class="layer"><div class="lh">app/actions/ — мутации</div><div class="lb">
+      <span class="chip">onboarding</span><span class="chip">wishes</span><span class="chip">weekly</span><span class="chip">commitment</span>
+      <span class="chip">completion</span><span class="chip">rescue</span><span class="chip">discover</span><span class="chip">invites</span>
+      <span class="chip">profile</span><span class="chip">locale</span><span class="chip">memoryPhoto</span><span class="chip">concierge</span><span class="chip">analytics</span>
+    </div></div>
+    <div class="layer"><div class="lh">app/api/ — роуты</div><div class="lb">
+      <span class="chip">auth</span><span class="chip">telegram/webhook</span><span class="chip">cron/nudge</span><span class="chip">calendar/ics</span><span class="chip">profile/export</span>
+    </div></div>
+    <div class="layer"><div class="lh">lib/engine/ — продукт</div><div class="lb">
+      <span class="chip p">weekly</span><span class="chip p">mix</span><span class="chip">discover</span><span class="chip">rescue</span>
+      <span class="chip">nudges</span><span class="chip">nudgeDelivery</span><span class="chip">upcoming</span><span class="chip">year</span>
+      <span class="chip">memories</span><span class="chip">liveExperiences</span>
+    </div></div>
+    <div class="layer"><div class="lh">lib/ — сервисы</div><div class="lb">
+      <span class="chip">auth/{session,authenticate,currentUser}</span><span class="chip">ai/{structureWish,types,providers}</span>
+      <span class="chip">telegram/{verifyInitData,botApi,inviteCard,nudgeMessage,webApp}</span>
+      <span class="chip">i18n/{locale,localeCookie,city,experience}</span><span class="chip">storage/memoryPhotos</span>
+      <span class="chip">analytics/{events,track}</span><span class="chip">weather/openMeteo</span>
+      <span class="chip">calendar/{ics,googleCalendarLink}</span><span class="chip">concierge/{auth,experienceInput}</span><span class="chip">cities</span><span class="chip">prisma</span>
+    </div></div>
+    <div class="layer"><div class="lh">components/ — UI</div><div class="lb">
+      <span class="chip">примитивы: Ticket · Button · Chip · Input · Select · Textarea · HandNote · RykNote · SvcLabel</span>
+      <span class="chip">каркас: AppShell · AppHeader · Dock · TelegramBootstrap</span>
+      <span class="chip">секции: home · week · memory · discover · wishlist · year · profile · invite · onboarding · concierge</span>
+    </div></div>
+    <div class="layer"><div class="lh">prisma/</div><div class="lb">
+      <span class="chip">schema.prisma</span><span class="chip">9 миграций</span><span class="chip">seed.ts</span><span class="chip">catalog.ts + catalogI18n.ts</span>
+      <span class="chip d">generated/prisma (клиент в репо)</span>
+    </div></div>
+
+    <h3>Правило зависимостей</h3>
+    <p><code>components</code> → <code>lib/*</code> (только типы и чистые функции) · <code>app/actions</code> → <code>lib/engine</code> → <code>lib/prisma</code>.
+    Обратных стрелок нет: движок ничего не знает об UI, а примитивы не знают о языке — все подписи приходят пропами
+    (см. комментарий в <code>Dock.tsx</code>: дефолтов по-русски нет намеренно).</p>
+  </section>
+
+  <!-- ══════════ 04 ══════════ -->
+  <section id="auth">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Четыре независимых контура доступа</h2></div>
+
+    <div class="ticket">
+      <div class="t-top">
+        <div class="t-title">Пользователь <span class="path">lib/auth/*</span></div>
+        <p style="margin:0">Клиент шлёт <code>initData</code> → <code>POST /api/auth</code> → HMAC-проверка по схеме Telegram
+        (<code>secret = HMAC("WebAppData", bot_token)</code>, сравнение в постоянном времени) → upsert по <code>telegramId</code> →
+        подписанный JWT (jose, HS256, 30 дней) в httpOnly-cookie <code>ryk_session</code>.</p>
+      </div>
+      <div class="t-stub">
+        dev-вход <code>{dev:true}</code> → пользователь <code>dev-local</code>, жёстко заблокирован при <code>NODE_ENV=production</code><br>
+        возврат после удаления аккаунта: <code>deletedAt</code> сбрасывается вместе со всем профилем — иначе вечный экран входа
+      </div>
+    </div>
+
+    <div class="grid g3">
+      <div class="box">
+        <div class="bt">Куратор</div>
+        <div class="bn">cookie <code>ryk_concierge</code></div>
+        <div class="bd">Один общий <code>CONCIERGE_TOKEN</code>, 12 часов, подписан тем же <code>SESSION_SECRET</code>.
+        Нет токена → раздела не существует (404), а не «пустая админка».</div>
+      </div>
+      <div class="box">
+        <div class="bt">Cron</div>
+        <div class="bn">Bearer <code>CRON_SECRET</code></div>
+        <div class="bd">Заголовок ставит Vercel Cron. Сравнение <code>timingSafeEqual</code>, минимум 16 символов, иначе отказ.</div>
+      </div>
+      <div class="box">
+        <div class="bt">Вебхук бота</div>
+        <div class="bn">x-telegram-bot-api-secret-token</div>
+        <div class="bd">Telegram не подписывает вебхуки HMAC — секрет задаётся при <code>setWebhook</code> и сверяется побайтно.</div>
+      </div>
+    </div>
+
+    <p style="margin-top:14px">Пятый рубеж — на уровне БД: миграция <code>enable_rls</code> включает Row Level Security на всех
+    таблицах и не заводит ни одной политики. Авто-REST Supabase с anon-ключом не прочитает ничего; Prisma ходит владельцем (BYPASSRLS).</p>
+  </section>
+
+  <!-- ══════════ 05 ══════════ -->
+  <section id="engine">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Experience Engine — где живёт продукт</h2></div>
+
+    <div class="flow">
+      <div class="node"><div class="n1">A</div><div class="n2">Understand</div><div class="n3">онбординг → Preference, барьер, окна</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">B/C</div><div class="n2">Discover</div><div class="n3">лента + кандидаты недели</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">D/E</div><div class="n2">Commit</div><div class="n3">день, бюджет, спутник, свидетель</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">F</div><div class="n2">Experience</div><div class="n3">подсказки, rescue при барьере</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">G</div><div class="n2">Remember</div><div class="n3">3 вопроса → Memory → Год</div></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="ticket"><div class="t-top">
+        <div class="t-title">weekly.ts <span class="path">406 строк — ядро</span></div>
+        <div class="bd">Скоринг Relevance × Feasibility × Timing + портфель с разнообразием категорий.
+        Каждая рекомендация несёт <code>WhyCode</code> (LIKED_CATEGORY · IN_BUDGET · NEARBY · CURATED · FRESH) —
+        объяснение обязательно по PRD §7.</div>
+      </div><div class="t-stub">
+        <code>barrierBoost</code>: NO_TIME → ≤60 мин ×1.6 · TOO_EXPENSIVE → цена 0 ×1.6 · NO_ENERGY → RITUAL ×1.6<br>
+        <code>MAX_EVENT_CANDIDATES = 1</code> — остальные места за вызовами и ритуалами
+      </div></div>
+
+      <div class="ticket"><div class="t-top">
+        <div class="t-title">mix.ts <span class="path">пропорция ленты</span></div>
+        <div class="bd">Событий не больше <code>EVENT_SHARE = 0.25</code>, иначе лента скатывается в афишу города.
+        Перемешивание детерминированное: mulberry32 + FNV-хеш от <code>userId + дата</code> — карточки не прыгают между рендерами
+        и проверяемы тестом.</div>
+      </div><div class="t-stub">
+        недостача одного типа добирается другим: пустая лента хуже ленты без событий
+      </div></div>
+
+      <div class="ticket"><div class="t-top">
+        <div class="t-title">nudges.ts + nudgeDelivery.ts <span class="path">самое опасное место</span></div>
+        <div class="bd">Движок возвращает <b>код</b>, не текст — тон живёт в <code>messages/*</code>.
+        Отправлять разрешено только <code>WEATHER_SWAP · TOMORROW · INVITE_SOMEONE</code>.</div>
+      </div><div class="t-stub">
+        молчат всегда: ON_TRACK (ничего не просит) · WEATHER_WATCH (тревога без действия) · TODAY (уже поздно, читается как давление)<br>
+        потолок <code>MAX_NUDGES_PER_WEEK = 2</code>, повтор кода за неделю запрещён
+      </div></div>
+
+      <div class="ticket"><div class="t-top">
+        <div class="t-title">rescue.ts <span class="path">спасение недели</span></div>
+        <div class="bd">Барьер задаёт, что считать «меньше»: WEATHER → под крышу (CULTURE/JOY/REST/CONNECTION),
+        NO_ENERGY → ≤90 мин, TOO_EXPENSIVE → бесплатное. Ни один путь не помечает неделю провалом —
+        <code>DEFERRED</code> это нормальный исход.</div>
+      </div><div class="t-stub">
+        year.ts сознательно НЕ радар с целями: пустые категории не рисуются, процентов нет — счётчики стыда запрещены
+      </div></div>
+    </div>
+
+    <p><code>liveExperiences.ts</code> — общее условие «что вообще можно показывать»: не архивировано куратором
+    и дата не в прошлом. Вынесено отдельно, чтобы лента и недельные кандидаты не разъехались.</p>
+  </section>
+
+  <!-- ══════════ 06 ══════════ -->
+  <section id="data">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Данные: 9 таблиц, 18 enum'ов</h2></div>
+
+    <div class="tw"><table>
+      <thead><tr><th>Таблица</th><th>Роль</th><th>Ключевые связи и ограничения</th></tr></thead>
+      <tbody>
+        <tr><td>users</td><td>Пользователь Mini App</td><td><code>telegramId</code> unique · мягкое удаление <code>deletedAt</code> · рамки недели: budgetMax, socialMode, mainBarrier, freeWindows[], noveltyRatio</td></tr>
+        <tr><td>preferences</td><td>Модель вкуса</td><td>unique <code>(userId, category, entity)</code> · confidence 0..1 · source: ONBOARDING_* / BEHAVIOR / EXPLICIT / AI_INFERRED · удаляема поштучно</td></tr>
+        <tr><td>wishes</td><td>Желание — намерение без срока</td><td>status: SOMEDAY / THIS_MONTH / SOON / HIDDEN / REALIZED · скрытие мягкое</td></tr>
+        <tr><td>experiences</td><td>Каталог (ведёт куратор)</td><td>kind: EVENT / CHALLENGE / RITUAL · <code>translations</code> Json (базовый язык — русский) · <code>archivedAt</code> вместо удаления · <code>sponsored</code> всегда виден в UI</td></tr>
+        <tr><td>experience_reactions</td><td>«Интересно / нет» в ленте</td><td>unique <code>(userId, experienceId)</code> — карточка не возвращается дважды</td></tr>
+        <tr><td>weekly_stories</td><td>Ядро продукта</td><td>unique <code>(userId, weekStart)</code> — одна история в неделю · статусы SELECTED → COMMITTED → AT_RISK → RESCUED / COMPLETED / DEFERRED · <code>whyExplanation</code></td></tr>
+        <tr><td>invites</td><td>Спутник (Flow D) / свидетель (Flow E)</td><td>unique <code>(weeklyStoryId, role)</code> · снимок <code>inviterName</code> · до первого открытия <code>recipientId</code> пуст — приглашение «ничьё»</td></tr>
+        <tr><td>memories</td><td>Завершённая история</td><td>1—1 к weekly_story · rating, emotion, одна фраза, media[] · <code>deferred</code> — перенос без вины</td></tr>
+        <tr><td>interventions</td><td>Действия компаньона</td><td>type NUDGE / PLANNING / BARRIER_PROMPT / RESCUE / CHECK_IN · <code>reason</code> для объяснимости · служит журналом идемпотентности для крона</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Как связано</h3>
+    <div class="flow">
+      <div class="node"><div class="n2">User</div><div class="n3">1—N → preferences, wishes, weekly_stories, interventions, reactions, invites (sent/received)</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n2">WeeklyStory</div><div class="n3">→ Experience (SetNull) · → Wish (SetNull) · 1—1 Memory · 1—N Invite, Intervention</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n2">Memory</div><div class="n3">кормит getMemories («Плёнка») и getYear (полосы по категориям)</div></div>
+    </div>
+
+    <div class="note">
+      Каскады <code>onDelete: Cascade</code> срабатывают только на реальный DELETE. Поэтому <code>deleteAccount()</code>
+      стирает зависимые записи <b>явно</b>, а строку <code>User</code> оставляет: <code>telegramId</code> должен остаться занятым,
+      чтобы возврат опознавался, а не плодил вторую строку.
+    </div>
+  </section>
+
+  <!-- ══════════ 07 ══════════ -->
+  <section id="actions">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Server actions — вся запись в систему</h2></div>
+
+    <div class="tw"><table>
+      <thead><tr><th>Файл</th><th>Действия</th><th>Что делает</th></tr></thead>
+      <tbody>
+        <tr><td>onboarding.ts</td><td>completeOnboarding</td><td>Flow A: предпочтения + рамки недели + барьер/окна → <code>DONE</code>, атомарно в транзакции</td></tr>
+        <tr><td>wishes.ts</td><td>analyzeWish · addWish · hideWish</td><td>«Ryk понял так» — разбор без сохранения, затем подтверждение</td></tr>
+        <tr><td>weekly.ts</td><td>selectStory</td><td>Кандидат → weekly_story (SELECTED), одна на неделю</td></tr>
+        <tr><td>commitment.ts</td><td>commitStory · uncommitStory</td><td>День, бюджет, формат, свидетель. Откат без штрафа</td></tr>
+        <tr><td>completion.ts</td><td>completeStory · deferStory</td><td>Максимум 3 вопроса. Перенос — не провал</td></tr>
+        <tr><td>rescue.ts</td><td>startRescue · applyRescue · deferWeek</td><td>Барьер → альтернативы меньшего масштаба → спасённая неделя</td></tr>
+        <tr><td>discover.ts</td><td>reactToExperience</td><td>«Интересно» помечает карточку и заводит желание в вишлист</td></tr>
+        <tr><td>invites.ts</td><td>claimInvite · respondInvite</td><td>Первый открывший забирает приглашение; приём пишет имя в companionName/witnessName</td></tr>
+        <tr><td>profile.ts</td><td>updateProfile · deletePreference · deleteAccount</td><td>Владение данными: правка, удаление памяти поштучно, реальное стирание</td></tr>
+        <tr><td>locale.ts</td><td>switchLocale</td><td>Пишет в оба места: cookie (текущий рендер) и <code>users.locale</code> (крон)</td></tr>
+        <tr><td>memoryPhoto.ts</td><td>attachMemoryPhoto · removeMemoryPhoto</td><td>Одно фото на воспоминание; замена удаляет прежний файл из бакета</td></tr>
+        <tr><td>concierge.ts</td><td>signIn · signOut · createExperience · setExperienceArchived</td><td>Инструмент куратора; каждое действие проверяет доступ само</td></tr>
+        <tr><td>analytics.ts</td><td>trackCandidatesViewed · trackCalendarAdded · trackInviteInitiated</td><td>События экрана, которых нет в мутациях</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ══════════ 08 ══════════ -->
+  <section id="http">
+    <div class="sec-head"><span class="sec-num">08</span><h2>HTTP-поверхность</h2></div>
+
+    <div class="tw"><table>
+      <thead><tr><th>Маршрут</th><th>Метод</th><th>Защита</th><th>Назначение</th></tr></thead>
+      <tbody>
+        <tr><td>/</td><td>GET</td><td>cookie-сессия</td><td>Mini App целиком: bootstrap / онбординг / AppShell</td></tr>
+        <tr><td>/concierge</td><td>GET</td><td>CONCIERGE_TOKEN</td><td>Ведение каталога впечатлений</td></tr>
+        <tr><td>/design</td><td>GET</td><td>—</td><td>Витрина дизайн-системы (проверяется смоуком)</td></tr>
+        <tr><td>/api/auth</td><td>POST</td><td>HMAC initData</td><td>Вход; 401 при плохой подписи, 500 при отсутствии токена бота</td></tr>
+        <tr><td>/api/telegram/webhook</td><td>POST</td><td>secret_token</td><td><code>inline_query</code> → создаёт приглашение и отдаёт карточку со ссылкой <code>startapp=&lt;id&gt;</code></td></tr>
+        <tr><td>/api/cron/nudge</td><td>GET</td><td>Bearer CRON_SECRET</td><td>Единственное место, где бот пишет первым</td></tr>
+        <tr><td>/api/calendar/ics</td><td>GET</td><td>сессия</td><td>.ics файлом через Content-Disposition — в Telegram WebView надёжнее Blob</td></tr>
+        <tr><td>/api/profile/export</td><td>GET</td><td>сессия</td><td>Выгрузка всего, что храним, одним JSON</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- ══════════ 09 ══════════ -->
+  <section id="i18n">
+    <div class="sec-head"><span class="sec-num">09</span><h2>Язык: три представления, один источник</h2></div>
+
+    <div class="grid g3">
+      <div class="box"><div class="bt">Locale</div><div class="bn">RU · EN · ES</div><div class="bd">как в БД (Prisma enum)</div></div>
+      <div class="box"><div class="bt">AppLocale</div><div class="bn">ru · en · es</div><div class="bd">next-intl и <code>&lt;html lang&gt;</code></div></div>
+      <div class="box"><div class="bt">BCP-47</div><div class="bn">ru-RU · en-GB · es-ES</div><div class="bd">Intl для чисел и дат; en-GB, потому что пилот европейский</div></div>
+    </div>
+
+    <div class="flow" style="margin-top:14px">
+      <div class="node"><div class="n1">источник запроса</div><div class="n2">cookie ryk_locale</div><div class="n3">читает <code>i18n/request.ts</code>; роутинга по языку нет — URL один</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">интерфейс</div><div class="n2">messages/{ru,en,es}.json</div><div class="n3">тексты и тон (14-brand-and-copy)</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">контент</div><div class="n2">experiences.translations</div><div class="n3">Json; нет перевода поля → откат на русский, а не пустота</div></div>
+    </div>
+
+    <div class="note">
+      Язык живёт <b>в двух местах, и писать надо в оба</b>: cookie определяет текущий рендер,
+      <code>users.locale</code> нужен там, где запроса нет вовсе — крону. Отсюда отдельное действие
+      <code>switchLocale</code> вместо <code>updateProfile</code>: переключатель в шапке не должен требовать весь профиль.
+    </div>
+  </section>
+
+  <!-- ══════════ 10 ══════════ -->
+  <section id="bg">
+    <div class="sec-head"><span class="sec-num">10</span><h2>Фоновые процессы</h2></div>
+
+    <div class="ticket"><div class="t-top">
+      <div class="t-title">Ежедневный крон <span class="path">vercel.json · 0 8 * * *</span></div>
+      <p style="margin:0">Собирает контекст (история недели + прогноз + отправленное на этой неделе),
+      строит <code>buildNudge</code>, спрашивает разрешение у <code>decideDelivery</code>, шлёт через Bot API
+      и записывает в <code>interventions</code>. Повторный запуск в тот же день ничего не отправит второй раз —
+      идемпотентность обеспечена журналом, а не таймером.</p>
+    </div><div class="t-stub">
+      до этого связь была односторонней: подсказку видел только тот, кто и так зашёл — то есть тот, кому она не нужна
+    </div></div>
+
+    <div class="ticket"><div class="t-top">
+      <div class="t-title">Вебхук приглашений <span class="path">switchInlineQuery</span></div>
+      <p style="margin:0">Человек жмёт «позвать» → Telegram открывает пикер чатов → <code>inline_query</code>
+      прилетает на вебхук → создаётся (или переиспользуется) приглашение → в чат уходит карточка со ссылкой.
+      Mini App не может читать контакты — получателя всегда выбирает сам человек.</p>
+    </div><div class="t-stub">
+      роль в query: <code>witness</code> → свидетель (видит только обещание и итог), иначе спутник
+    </div></div>
+  </section>
+
+  <!-- ══════════ 11 ══════════ -->
+  <section id="ui">
+    <div class="sec-head"><span class="sec-num">11</span><h2>UI: пять секций и один каркас</h2></div>
+
+    <div class="grid g4">
+      <div class="box"><div class="bt">Неделя</div><div class="bd">WeekSection · CheckinView · RescueView — полный цикл оверлеем поверх главного</div></div>
+      <div class="box"><div class="bt">Память</div><div class="bd">MemorySection · FilmFrame · PhotoButton — один кадр на воспоминание, не галерея</div></div>
+      <div class="box"><div class="bt">◉ Лента</div><div class="bd">DiscoverSection · SwipeCard — центральная круглая кнопка dock'а</div></div>
+      <div class="box"><div class="bt">Желания</div><div class="bd">Wishlist — «Ryk понял так» перед сохранением</div></div>
+      <div class="box"><div class="bt">Год</div><div class="bd">YearSection — только прожитое, без процентов и целей</div></div>
+      <div class="box"><div class="bt">Главное</div><div class="bd">HomeSection · WeekBlock · StoriesCarousel · EventFeed · EventSheet</div></div>
+      <div class="box"><div class="bt">Профиль</div><div class="bd">ProfileEntry · ProfileSheet — правка, память, экспорт, удаление</div></div>
+      <div class="box"><div class="bt">Приглашения</div><div class="bd">InviteBadge · InviteSheet · InviteClaimer — открываются сразу при заходе по ссылке</div></div>
+    </div>
+
+    <h3>Дизайн-система</h3>
+    <dl class="kv">
+      <dt>палитра</dt><dd>бумага <code>#EBEAE7</code>, розовый <code>#F387C8</code>, плоско, прямые углы — только светлая тема (ADR-007)</dd>
+      <dt>шрифты</dt><dd>Prata (интерфейс и билет) · PT Serif · IBM Plex Mono · Caveat — все с кириллицей</dd>
+      <dt>токены</dt><dd><code>app/tokens.css</code>; hex-литералов в компонентах нет, оверрайдов примитивов на call-site нет</dd>
+      <dt>тень</dt><dd>два слоя: контактный <code>0 1px 3px .24</code> рисует край, широкий <code>0 12px 30px .18</code> даёт объём — одной размытой на бумаге не видно</dd>
+      <dt>запрещено</dt><dd>streak'и, счётчики стыда, обратный отсчёт-давление</dd>
+    </dl>
+  </section>
+
+  <!-- ══════════ 12 ══════════ -->
+  <section id="ops">
+    <div class="sec-head"><span class="sec-num">12</span><h2>Сборка, проверка, деплой</h2></div>
+
+    <div class="flow">
+      <div class="node"><div class="n1">PR / push</div><div class="n2">ci.yml</div><div class="n3">format:check → lint → typecheck → test → build</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">Vercel</div><div class="n2">deploy</div><div class="n3">preview = staging, main = prod</div></div>
+      <div class="arr">→</div>
+      <div class="node"><div class="n1">deployment_status</div><div class="n2">smoke.yml</div><div class="n3">curl по алиасу: / 200 · /api/auth 405 · /concierge 200 · /design 200</div></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="box">
+        <div class="bt">Тесты</div>
+        <div class="bn">vitest · 167 тестов в 25 файлах</div>
+        <div class="bd">Покрыто ровно то, что чистое и опасное: подпись initData, правила отправки подсказок,
+        пропорция ленты, локализация каталога, действия онбординга/профиля/приглашений, вебхук.</div>
+      </div>
+      <div class="box">
+        <div class="bt">Секреты (17 ключей)</div>
+        <div class="bn">.env.example → Vercel / .env.local</div>
+        <div class="bd">Обязательны: <code>DATABASE_URL</code>, <code>TELEGRAM_BOT_TOKEN</code>, <code>SESSION_SECRET</code>.
+        Остальные включают функции: Storage, AI, PostHog, concierge, cron, вебхук, Mapbox, Ticketmaster.</div>
+      </div>
+    </div>
+
+    <h3>Миграции (9)</h3>
+    <p class="m" style="font-family:var(--mono); font-size:12.5px">
+      init → enable_rls → experience_archived_at → invites → user_display_name → experience_reactions →
+      experience_kind_and_image → onboarding_barrier_and_windows → experience_translations
+    </p>
+  </section>
+
+  <!-- ══════════ 13 ══════════ -->
+  <section id="inv">
+    <div class="sec-head"><span class="sec-num">13</span><h2>Инварианты — что нельзя сломать незаметно</h2></div>
+
+    <div class="grid g2">
+      <div class="box hi"><div class="bt">Данные</div><ul>
+        <li>Одна история на <code>(userId, weekStart)</code> — уникальный индекс, не проверка в коде</li>
+        <li>Впечатления не удаляются, а архивируются: на них ссылаются прошлые истории</li>
+        <li>Удаление аккаунта стирает зависимые записи явно, строка User остаётся</li>
+      </ul></div>
+      <div class="box hi"><div class="bt">Тон и давление</div><ul>
+        <li>Не больше 2 сообщений в неделю, три кода из шести молчат всегда</li>
+        <li>Тексты подсказок — в <code>messages/*</code>, движок отдаёт только коды</li>
+        <li>DEFERRED — валидный исход недели, нигде не считается провалом</li>
+      </ul></div>
+      <div class="box hi"><div class="bt">Приватность</div><ul>
+        <li>В свойствах аналитики нет текстов желаний, имён и заметок</li>
+        <li>Бакет фото приватный: наружу только подписанная ссылка на час</li>
+        <li>RLS без политик — anon-ключ Supabase не видит таблиц</li>
+      </ul></div>
+      <div class="box hi"><div class="bt">Деградация</div><ul>
+        <li>AI → Gemini → Claude → эвристика; пользователь всегда получает результат</li>
+        <li>Погода, аналитика, Storage — тихо выключаются, а не бросают</li>
+        <li>Server action проверяет сессию сам, независимо от рендера страницы</li>
+      </ul></div>
+    </div>
+
+    <div class="note">
+      Из журнала уроков проекта, оба про верстку, но оба — про архитектурную привычку:
+      <b>флекс с <code>overflow:auto</code> требует <code>min-height:0</code> у себя же</b> (иначе dock уезжает за экран
+      на длинном контенте), и <b>принадлежность действия к карточке держится структурой, а не отступом</b>
+      (кнопки реакций — третья полоса билета, а не блок под ним).
+    </div>
+  </section>
+
+  <footer>
+    Ryk · Telegram Mini App · собрано из кода репозитория: schema.prisma, app/, lib/, .github/, vercel.json
+  </footer>
+
+</main>
+</body>
+</html>
