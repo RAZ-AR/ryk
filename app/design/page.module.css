@@ -190,3 +190,23 @@
   gap: var(--ryk-space-4);
   min-height: 44px;
 }
+
+/* Знаки дока: крупный просмотр и статичный макет пилюль. */
+.dockIconRow {
+  display: flex;
+  gap: var(--ryk-space-6);
+  margin-bottom: var(--ryk-space-5);
+}
+
+.dockIconCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ryk-space-2);
+}
+
+.dockIconBig svg {
+  width: 72px;
+  height: 72px;
+  color: var(--ryk-ink);
+}

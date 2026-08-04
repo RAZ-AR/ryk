@@ -5,6 +5,7 @@ import type { LifeCategory } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { Dock, type DockSection } from "@/components/Dock";
+import { DockIcon } from "@/components/DockIcon";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { EmptyMark } from "@/components/EmptyMark";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
@@ -313,6 +314,27 @@ export default function DesignSystemPage() {
 
       <section className={styles.section}>
         <SvcLabel tone="pink">11</SvcLabel>
+        <h2 className={styles.sectionTitle}>Знаки дока</h2>
+        <p className={styles.body}>
+          Крупно — как нарисовано. В размере 16px они стоят в самом доке (раздел 08).
+        </p>
+
+        <div className={styles.dockIconRow}>
+          {(["now", "wish", "past"] as const).map((section) => (
+            <figure key={section} className={styles.dockIconCell}>
+              <span className={styles.dockIconBig}>
+                <DockIcon section={section} />
+              </span>
+              <figcaption className={styles.patternCaption}>
+                {section === "now" ? "Сейчас" : section === "wish" ? "Хочу" : "Было"}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">12</SvcLabel>
         <h2 className={styles.sectionTitle}>Пусто</h2>
         <p className={styles.body}>
           Один знак на все пустые экраны: билет, которого ещё нет. Стоит над фразой, тише её.
@@ -322,7 +344,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">12</SvcLabel>
+        <SvcLabel tone="pink">13</SvcLabel>
         <h2 className={styles.sectionTitle}>Год</h2>
         <YearSummary year={YEAR_DEMO} />
       </section>
