@@ -79,7 +79,7 @@ export function Ticket({
       className={[styles.ticket, size === "compact" && styles.compact].filter(Boolean).join(" ")}
     >
       <div className={styles.face}>
-        <div className={styles.top}>
+        <div className={[styles.top, styles.cutBottom].join(" ")}>
           <div className={styles.photo}>
             <div className={styles.photoInner}>{photo ?? photoPlaceholder}</div>
           </div>
@@ -97,10 +97,15 @@ export function Ticket({
           {note ? <p className={styles.note}>«{note}»</p> : null}
         </div>
 
-        <div className={[styles.stub, styles[stubTone]].join(" ")}>
-          <span className={[styles.notch, styles.notchLeft].join(" ")} aria-hidden="true" />
-          <span className={[styles.notch, styles.notchRight].join(" ")} aria-hidden="true" />
-
+        <div
+          className={[
+            styles.stub,
+            styles[stubTone],
+            /* Корешок вырезан сверху всегда, снизу — только если под ним
+               пришита полоса действий со своей перфорацией. */
+            actions ? styles.cutBoth : styles.cutTop,
+          ].join(" ")}
+        >
           <SvcLabel tone="ink">● {stubLabel}</SvcLabel>
           <div className={styles.stubBody}>
             <div className={styles.stubContent}>{children}</div>
@@ -121,13 +126,7 @@ export function Ticket({
         ) : null}
       </div>
 
-      {actions ? (
-        <div className={styles.tear}>
-          <span className={[styles.notch, styles.notchLeft].join(" ")} aria-hidden="true" />
-          <span className={[styles.notch, styles.notchRight].join(" ")} aria-hidden="true" />
-          {actions}
-        </div>
-      ) : null}
+      {actions ? <div className={[styles.tear, styles.cutTop].join(" ")}>{actions}</div> : null}
     </article>
   );
 }
