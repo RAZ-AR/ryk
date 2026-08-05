@@ -30,8 +30,67 @@
 }
 
 .row {
+  position: relative;
   padding: var(--ryk-space-4) 2px;
   border-bottom: 1px solid var(--ryk-border-row);
+}
+
+/*
+ * Зона нажатия на всю строку. Кнопка «Сделано» лежит выше по слою
+ * (`position: relative` + `z-index`), поэтому накладка её не съедает.
+ */
+.rowOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.rowOverlay:focus-visible {
+  outline: 2px solid var(--ryk-ink);
+  outline-offset: -2px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * Прожитое остаётся в списке, а не исчезает: «сделано» — это радость, и
+ * прятать её значило бы приравнять к удалению. Просто тише остальных.
+ */
+.rowDone .rowTitle {
+  color: var(--ryk-text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--ryk-border-card);
+}
+
+/*
+ * Отрыв корешка. Строка уходит вправо-вниз и гаснет — как оторванная
+ * половина билета. Единственная «богатая» анимация в списке, и она
+ * отмечает то единственное, ради чего список существует.
+ */
+.rowTearing {
+  transform: translate(12px, 8px) rotate(1.2deg);
+  opacity: 0;
+  transition:
+    transform 320ms var(--ryk-ease),
+    opacity 320ms var(--ryk-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rowTearing {
+    transform: none;
+    transition: opacity 120ms var(--ryk-ease);
+  }
 }
 
 .rowTop {
@@ -57,7 +116,39 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--ryk-space-3);
   margin-top: 4px;
+}
+
+/* Поверх накладки — иначе нажатие уйдёт в шторку «Когда». */
+.doneBtn {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ryk-pink-text);
+  background: none;
+  border: 0;
+  padding: 10px 0 10px var(--ryk-space-3);
+  cursor: pointer;
+}
+
+.doneBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Шторка «Когда» — поверх списка, как остальные шторы продукта. */
+.sheetLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  overflow-y: auto;
+  background: var(--ryk-paper);
 }
 
 .meta {

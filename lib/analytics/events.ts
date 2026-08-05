@@ -38,6 +38,17 @@ export type RykEvent =
   | { name: "memory_saved"; props: { deferred: boolean } }
   // ── Wishlist ─────────────────────────────────────────────────
   | { name: "wish_added"; props: { category: LifeCategory; source: "ai" | "heuristic" } }
+  /**
+   * Назначен срок. `horizon` показывает, на каком расстоянии человек готов
+   * держать желание: если `thisWeek` почти не встречается, список копится,
+   * но в прожитое не превращается — а это и есть провал продукта.
+   */
+  | {
+      name: "wish_scheduled";
+      props: { horizon: "someday" | "thisMonth" | "thisWeek"; hasDay: boolean };
+    }
+  /** Прожито мимо недельного цикла — сам факт того, что так бывает. */
+  | { name: "wish_realized"; props: Record<string, never> }
   // ── Guardrail-метрики: сигналы трения и давления ─────────────
   | { name: "barrier_named"; props: { barrier: BarrierType } }
   | { name: "rescue_applied"; props: { barrier: BarrierType | null } }

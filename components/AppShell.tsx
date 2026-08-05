@@ -100,7 +100,7 @@ export function AppShell({
             onOpenDeck={() => setDeckOpen(true)}
           />
         ) : section === "wish" ? (
-          <Wishlist wishes={wishes} />
+          <Wishlist wishes={wishes} onOpenWeek={() => setWeekOpen(true)} />
         ) : (
           <MemorySection memories={memories} year={year} canAttachPhoto={canAttachPhoto} />
         )}

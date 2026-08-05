@@ -200,7 +200,29 @@
     "timingSOON": "Soon",
     "timingTHIS_MONTH": "This month",
     "timingSOMEDAY": "Someday",
-    "goodMomentNote": "Ryk will find you a good moment ✓"
+    "goodMomentNote": "Ryk will find you a good moment ✓",
+    "heading": "Wishes",
+    "whenTitle": "When",
+    "whenAria": "Set a time for: {wish}",
+    "thisWeekLabel": "This week",
+    "makeWeekStory": "Make it my week's story",
+    "pickDayFirst": "Pick a day",
+    "weekTaken": "This week is already: {title}.",
+    "weekTakenNote": "One story a week — that's the point.",
+    "replace": "Replace",
+    "keep": "Keep it",
+    "markDone": "Done",
+    "happened": "it happened",
+    "actionFailed": "didn't work — try again",
+    "weekday": {
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat",
+      "7": "Sun"
+    }
   },
   "categories": {
     "NATURE": "Nature",

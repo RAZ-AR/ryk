@@ -200,7 +200,29 @@
     "timingSOON": "Pronto",
     "timingTHIS_MONTH": "Este mes",
     "timingSOMEDAY": "Algún día",
-    "goodMomentNote": "Ryk te dirá cuándo es buen momento ✓"
+    "goodMomentNote": "Ryk te dirá cuándo es buen momento ✓",
+    "heading": "Deseos",
+    "whenTitle": "Cuándo",
+    "whenAria": "Poner fecha a: {wish}",
+    "thisWeekLabel": "Esta semana",
+    "makeWeekStory": "Hacerla mi historia de la semana",
+    "pickDayFirst": "Elige un día",
+    "weekTaken": "Esta semana ya es: {title}.",
+    "weekTakenNote": "Una historia por semana — así está pensado.",
+    "replace": "Reemplazar",
+    "keep": "Dejarla",
+    "markDone": "Hecho",
+    "happened": "pasó",
+    "actionFailed": "no funcionó — inténtalo de nuevo",
+    "weekday": {
+      "1": "lun",
+      "2": "mar",
+      "3": "mié",
+      "4": "jue",
+      "5": "vie",
+      "6": "sáb",
+      "7": "dom"
+    }
   },
   "categories": {
     "NATURE": "Naturaleza",
