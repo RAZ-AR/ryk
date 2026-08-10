@@ -8,13 +8,15 @@ import { Chip } from "@/components/Chip";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { Input } from "@/components/Input";
+import { RykNote } from "@/components/RykNote";
 import { SvcLabel } from "@/components/SvcLabel";
 import { Textarea } from "@/components/Textarea";
 import { Ticket } from "@/components/Ticket";
 import styles from "./page.module.css";
 
 /**
- * Прототип двух сцен из ryk_docs/21-onboarding-and-reward-concept.md.
+ * Прототип сцен из ryk_docs/21-onboarding-and-reward-concept.md и Flow J
+ * (ryk_docs/05-user-flows.md).
  *
  * Внутренняя страница, как и /design: не часть продуктового флоу, в док её
  * не ведёт. Смысл — проверить метафору на настоящих токенах и шрифтах и на
@@ -27,7 +29,14 @@ import styles from "./page.module.css";
 
 /** Два направления арт-дирекшена: чем значение ложится на бланк. */
 type Direction = "blank" | "stamp";
-type Scene = "onboarding" | "redeem";
+type Scene = "onboarding" | "redeem" | "travel";
+
+/**
+ * Город, «определённый по сети». В продукте приедет из заголовка
+ * `x-vercel-ip-city` через `findCity()` из lib/cities.ts; здесь зашит, чтобы
+ * было видно, как читается заполненная графа МЕСТО.
+ */
+const DETECTED_CITY = "Белград";
 
 type FieldKey = "place" | "kind" | "time" | "price" | "who" | "what";
 
@@ -93,7 +102,7 @@ export default function ProtoPage() {
         <SvcLabel tone="pink">Прототип · концепт 21</SvcLabel>
         <h1 className={styles.headTitle}>Бланк и погашение</h1>
         <p className={styles.headBody}>
-          Две сцены из{" "}
+          Сцены из{" "}
           <a href="https://github.com/RAZ-AR/ryk/blob/main/ryk_docs/21-onboarding-and-reward-concept.md">
             концепта
           </a>{" "}
@@ -112,6 +121,9 @@ export default function ProtoPage() {
             </Chip>
             <Chip selected={scene === "redeem"} onClick={() => setScene("redeem")}>
               Билет гасится
+            </Chip>
+            <Chip selected={scene === "travel"} onClick={() => setScene("travel")}>
+              Другой город
             </Chip>
           </div>
         </div>
@@ -138,7 +150,9 @@ export default function ProtoPage() {
       </div>
 
       <div className={styles.column}>
-        {scene === "onboarding" ? <OnboardingScene /> : <RedeemScene />}
+        {scene === "onboarding" ? <OnboardingScene /> : null}
+        {scene === "redeem" ? <RedeemScene /> : null}
+        {scene === "travel" ? <TravelScene /> : null}
       </div>
     </main>
   );
@@ -149,7 +163,8 @@ export default function ProtoPage() {
 function OnboardingScene() {
   const reduced = useReducedMotion();
   const [step, setStep] = useState<Step>("place");
-  const [city, setCity] = useState("Белград");
+  const detected = DETECTED_CITY;
+  const [city, setCity] = useState(detected);
   const [kinds, setKinds] = useState<string[]>([]);
   const [windows, setWindows] = useState<string[]>([]);
   const [price, setPrice] = useState<string | null>(null);
@@ -278,11 +293,29 @@ function OnboardingScene() {
       <div className={styles.ask}>
         {step === "place" && (
           <>
-            <h2 className={styles.question}>Где сейчас твоя жизнь?</h2>
+            {/*
+             * Город приходит определённым (по IP), но остаётся полем ввода:
+             * догадка, а не факт. Не угадали — стираешь и пишешь своё, как
+             * раньше; угадали — работы ноль. Не определился — заголовок
+             * прежний, «Где сейчас твоя жизнь?», и поле пустое.
+             */}
+            {/*
+             * Название города — отдельным предложением, а не внутри фразы.
+             * «Ты в {город}?» требует предложного падежа, а в базе и в
+             * lib/i18n/city.ts город лежит в именительном. Склонять пришлось
+             * бы по-русски вручную и по-своему в каждом из трёх языков —
+             * дешевле построить фразу так, чтобы падеж был не нужен.
+             */}
+            <h2 className={styles.question}>
+              {detected ? `Твой город — ${detected}?` : "Где сейчас твоя жизнь?"}
+            </h2>
+            {detected ? (
+              <p className={styles.hint}>Определили по сети — если не угадали, поправь.</p>
+            ) : null}
             <Input value={city} onChange={(e) => setCity(e.target.value)} maxLength={60} />
             <div className={styles.footer}>
               <Button variant="grey" disabled={!city.trim()} onClick={() => setStep("kind")}>
-                Дальше
+                {detected && city.trim() === detected ? "Да, я здесь" : "Дальше"}
               </Button>
             </div>
           </>
@@ -608,6 +641,114 @@ function RedeemScene() {
         Задание («на корешок: программка») выдано вместе с историей, а не после события — иначе
         программку уже не взять. Кнопка «Ничего не осталось» равноправна и не серая: неделя
         закрывается фактом события.
+      </p>
+    </div>
+  );
+}
+
+/* ─────────────────────── Сцена 3: другой город ─────────────────────── */
+
+/*
+ * Flow J. Две развилки, и они принципиально разные: город пилота — это
+ * предложение сменить подбор, город вне пилота — признание, что нам нечего
+ * предложить из каталога. Смешивать их в один экран нельзя: во втором
+ * случае вопрос «показывать ли Барселону?» был бы враньём.
+ */
+type Place = "pilot" | "outside";
+
+function TravelScene() {
+  const [place, setPlace] = useState<Place>("pilot");
+  const [answer, setAnswer] = useState<"here" | "home" | null>(null);
+
+  return (
+    <div className={styles.redeem}>
+      <div className={styles.switch}>
+        <SvcLabel tone="muted">Где определился человек</SvcLabel>
+        <div className={styles.switchRow}>
+          <Chip
+            selected={place === "pilot"}
+            onClick={() => {
+              setPlace("pilot");
+              setAnswer(null);
+            }}
+          >
+            Нови-Сад · пилот
+          </Chip>
+          <Chip
+            selected={place === "outside"}
+            onClick={() => {
+              setPlace("outside");
+              setAnswer(null);
+            }}
+          >
+            Барселона · вне пилота
+          </Chip>
+        </div>
+      </div>
+
+      {place === "pilot" ? (
+        answer === null ? (
+          <>
+            <RykNote>Похоже, ты в другом городе. Нови-Сад — показывать его?</RykNote>
+            <div className={styles.switchRow}>
+              <Button variant="grey" onClick={() => setAnswer("here")}>
+                Да, показывай его
+              </Button>
+              <Button variant="secondary" onClick={() => setAnswer("home")}>
+                Нет, оставить Белград
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <RykNote>
+              {answer === "here" ? "Хорошо, показываю Нови-Сад." : "Понял, оставляю Белград."}
+            </RykNote>
+            <div className={styles.note}>
+              <HandNote>
+                {answer === "here" ? "город профиля сменился" : "про Нови-Сад больше не спрошу"}
+              </HandNote>
+            </div>
+            <Button variant="ghost" onClick={() => setAnswer(null)}>
+              Ещё раз
+            </Button>
+          </>
+        )
+      ) : (
+        <>
+          <RykNote>Меня здесь пока нет. Но неделя не отменяется.</RykNote>
+          <p className={styles.hint}>Вот то, что не зависит от города.</p>
+
+          <Ticket
+            photo={<ExperiencePattern seed="proto-call" category="CONNECTION" />}
+            metaLeft="ВЫЗОВ"
+            metaRight="20 мин"
+            title="Позвонить тому, с кем не говорил год"
+            stubTone="neutral"
+            stubLabel="Близость"
+            stubIcon={<CategoryIcon category="CONNECTION" />}
+          >
+            <b>Почему:</b> работает в любом городе и не стоит ничего.
+          </Ticket>
+
+          <Ticket
+            photo={<ExperiencePattern seed="proto-lost" category="DISCOVERY" />}
+            metaLeft="РИТУАЛ"
+            metaRight="час"
+            title="Уйти без карты в новый район"
+            stubTone="neutral"
+            stubLabel="Открытие"
+            stubIcon={<CategoryIcon category="DISCOVERY" />}
+          >
+            <b>Почему:</b> чужой город для этого даже лучше своего.
+          </Ticket>
+        </>
+      )}
+
+      <p className={styles.gloss}>
+        Дорожный режим — фильтр, а не миграция: `Experience.city IS NULL` и `kind IN (CHALLENGE,
+        RITUAL)`. В схеме эти два вида уже описаны как «живёт вечно» и «ноль логистики». Домашний
+        город при этом сохраняется: поездка не стирает то, куда человек вернётся.
       </p>
     </div>
   );
