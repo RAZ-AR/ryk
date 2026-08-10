@@ -8,6 +8,7 @@ import type {
 import { prisma } from "@/lib/prisma";
 import { buildNudge, type Nudge } from "@/lib/engine/nudges";
 import { liveExperienceWhere } from "@/lib/engine/liveExperiences";
+import { travelModeWhere } from "@/lib/engine/travel";
 import { localizeExperience } from "@/lib/i18n/experience";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { signedPhotoUrl } from "@/lib/storage/memoryPhotos";
@@ -189,6 +190,8 @@ function buildDayOptions(byDate: Map<string, DayWeather>): DayOption[] {
 export async function getWeeklyView(
   userId: string,
   locale: string = DEFAULT_LOCALE,
+  /** Человек не в своём городе и не в городе пилота (Flow J). */
+  travelMode = false,
 ): Promise<WeeklyView> {
   const weekStart = weekStartUTC();
   const weekStartIso = weekStart.toISOString().slice(0, 10);
@@ -300,6 +303,11 @@ export async function getWeeklyView(
     prisma.experience.findMany({
       where: {
         ...liveExperienceWhere(),
+        // В дороге каталога этого города у нас нет — остаётся то, что от
+        // города не зависит вовсе. Здесь это жёсткий фильтр, а не понижающий
+        // множитель: предложить концерт в Белграде человеку в Барселоне
+        // нельзя ни с каким весом.
+        ...travelModeWhere(travelMode),
         // «Не интересно» в ленте — значит не предлагать и как историю недели,
         // иначе свайп влево ничего не менял бы.
         reactions: { none: { userId, liked: false } },

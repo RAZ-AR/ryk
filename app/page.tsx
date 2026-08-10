@@ -7,6 +7,9 @@ import { getDiscoverDeck } from "@/lib/engine/discover";
 import { getMemories } from "@/lib/engine/memories";
 import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
 import { localizeCity } from "@/lib/i18n/city";
+import { detectPlace } from "@/lib/geo/detectedCity";
+import { isTravelMode, isVerifiedHome, travelState } from "@/lib/engine/travel";
+import { DEFAULT_LOCALE, isAppLocale } from "@/lib/i18n/locale";
 import { localizeExperience } from "@/lib/i18n/experience";
 import { isPhotoStorageConfigured } from "@/lib/storage/memoryPhotos";
 import { getUpcoming } from "@/lib/engine/upcoming";
@@ -23,7 +26,6 @@ import { prisma } from "@/lib/prisma";
 export default async function Home() {
   const user = await getCurrentUser();
   if (!user) return <TelegramBootstrap />;
-  if (user.onboardingState !== "DONE") return <OnboardingFlow initialCity={user.city} />;
 
   /*
    * Язык берём у next-intl, а не из user.locale: cookie — единственный
@@ -32,6 +34,44 @@ export default async function Home() {
    * карточки на старом языке ровно до следующей перезагрузки.
    */
   const locale = await getLocale();
+  const appLocale = isAppLocale(locale) ? locale : DEFAULT_LOCALE;
+
+  // Где человек прямо сейчас — по IP запроса (Flow J). Промах остаётся
+  // промахом: столицу пилота молча не подставляем.
+  const place = await detectPlace();
+
+  if (user.onboardingState !== "DONE") {
+    /*
+     * Графа «город» приходит заполненной — догадкой, которую можно поправить,
+     * а не фактом. Уже сохранённый город приоритетнее: человек мог вернуться
+     * в незаконченный онбординг из поездки, и перебивать введённое им
+     * определением по сети было бы наглостью.
+     */
+    const guess = place.city?.names[appLocale] ?? null;
+    return (
+      <OnboardingFlow
+        initialCity={user.city ?? guess}
+        cityGuessed={user.city == null && guess != null}
+      />
+    );
+  }
+
+  const travel = travelState(user.city, user.travelDismissedCity, place, appLocale);
+
+  /*
+   * Вернулся домой — забываем прошлый отказ, чтобы следующая поездка снова
+   * спросила. Запись одна на возвращение, не на рендер: после неё поле уже
+   * пустое. Только на доказанном совпадении — молчащая сеть тоже даёт
+   * «home», и на ней сбрасывать нечего.
+   */
+  if (user.travelDismissedCity && isVerifiedHome(user.city, place)) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { travelDismissedCity: null },
+    });
+  }
+
+  const travelMode = isTravelMode(travel);
 
   const [wishes, weekly, memories, profile, preferences, invites, deck, upcoming, year] =
     await Promise.all([
@@ -56,7 +96,7 @@ export default async function Home() {
           },
         },
       }),
-      getWeeklyView(user.id, locale),
+      getWeeklyView(user.id, locale, travelMode),
       getMemories(user.id, locale),
       prisma.user.findUniqueOrThrow({
         where: { id: user.id },
@@ -92,7 +132,7 @@ export default async function Home() {
           },
         },
       }),
-      getDiscoverDeck(user.id, locale),
+      getDiscoverDeck(user.id, locale, travelMode),
       getUpcoming(user.id, locale),
       getYear(user.id),
     ]);
@@ -141,6 +181,7 @@ export default async function Home() {
       canAttachPhoto={isPhotoStorageConfigured()}
       locale={locale}
       city={localizeCity(profile.city, locale)}
+      travel={travel}
     />
   );
 }

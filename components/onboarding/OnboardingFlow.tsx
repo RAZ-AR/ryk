@@ -35,7 +35,18 @@ const SOCIAL_VALUE: Record<"solo" | "close" | "new", SocialMode> = {
   new: "NEW_PEOPLE",
 };
 
-export function OnboardingFlow({ initialCity }: { initialCity: string | null }) {
+export function OnboardingFlow({
+  initialCity,
+  cityGuessed = false,
+}: {
+  initialCity: string | null;
+  /**
+   * Город не введён человеком, а определён по сети (Flow J). Меняет только
+   * подпись под полем: догадку надо назвать догадкой, иначе заполненная
+   * графа читается как то, что мы про человека уже знаем.
+   */
+  cityGuessed?: boolean;
+}) {
   const router = useRouter();
   const tWelcome = useTranslations("onboarding.welcome");
   const tCat = useTranslations("onboarding.categories");
@@ -398,6 +409,11 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
             placeholder={tParams("cityPlaceholder")}
             maxLength={120}
           />
+          {/* Подпись держится, пока значение не тронули: поправил — догадки
+              больше нет, и объяснять нечего. */}
+          {cityGuessed && city === initialCity ? (
+            <SvcLabel tone="faint">{tParams("cityGuessed")}</SvcLabel>
+          ) : null}
         </div>
 
         <div className={styles.row}>

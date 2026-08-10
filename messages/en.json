@@ -398,7 +398,8 @@
       "noveltyBold": "Bolder",
       "note": "you can change all of this later",
       "finish": "Show my first stories →",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "cityGuessed": "Guessed from your connection — fix it if we got it wrong."
     },
     "moment": {
       "step": "Onboarding 4/7",
@@ -526,5 +527,13 @@
     "tickets": "tickets ↗",
     "restore": "Restore",
     "archive": "Take down"
+  },
+  "travel": {
+    "askTitle": "Looks like you're in another city.",
+    "askQuestion": "Look for stories here?",
+    "accept": "Yes, I'm here",
+    "decline": "No, I'm home",
+    "awayTitle": "I'm not here yet.",
+    "awayBody": "But the week still stands — here's what doesn't depend on the city."
   }
 }

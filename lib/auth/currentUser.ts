@@ -8,6 +8,8 @@ export type CurrentUser = {
   locale: Locale;
   onboardingState: OnboardingState;
   city: string | null;
+  /// Город, про который уже спрашивали при поездке и получили «нет» (Flow J).
+  travelDismissedCity: string | null;
 };
 
 /**
@@ -20,7 +22,14 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
   const user = await prisma.user.findFirst({
     where: { id: session.userId, deletedAt: null },
-    select: { id: true, telegramId: true, locale: true, onboardingState: true, city: true },
+    select: {
+      id: true,
+      telegramId: true,
+      locale: true,
+      onboardingState: true,
+      city: true,
+      travelDismissedCity: true,
+    },
   });
 
   return user;
