@@ -1,0 +1,561 @@
+/*
+ * Прототип двух сцен из ryk_docs/21-onboarding-and-reward-concept.md.
+ * Токены — из app/tokens.css, hex-литералов здесь нет (CLAUDE.md §8).
+ */
+
+.page {
+  padding: var(--ryk-space-6) var(--ryk-screen-x) 96px;
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.head {
+  margin-bottom: var(--ryk-space-6);
+}
+
+.headTitle {
+  font-size: 26px;
+  line-height: 1.15;
+  margin: var(--ryk-space-2) 0 var(--ryk-space-3);
+}
+
+.headBody {
+  font-family: var(--ryk-font-serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ryk-text-secondary);
+  max-width: 62ch;
+}
+
+.headBody a {
+  color: var(--ryk-ink);
+}
+
+.switches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ryk-space-5);
+  margin: var(--ryk-space-5) 0 var(--ryk-space-6);
+  padding-bottom: var(--ryk-space-5);
+  border-bottom: 1px solid var(--ryk-border-row);
+}
+
+.switch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}
+
+.switchRow {
+  display: flex;
+  gap: var(--ryk-space-2);
+  flex-wrap: wrap;
+}
+
+/*
+ * Сцена живёт в колонке шириной с телефон: приложение — Telegram Mini App,
+ * и проверять композицию на ширине десктопа значило бы проверять не то.
+ * На 1280 это колонка по центру, на 375 — весь экран.
+ */
+.column {
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ─────────────── Сцена 1: бланк ─────────────── */
+
+/*
+ * Бланк липнет к верху: он и есть индикатор прогресса вместо счётчика
+ * «шаг 3 из 7». Человек видит, как заполняется предмет, а не как растёт
+ * полоска.
+ */
+.blankWrap {
+  position: sticky;
+  top: var(--ryk-space-4);
+  z-index: 1;
+  /* Бумага под бланком непрозрачная: под ним проезжает вопрос. */
+  background: var(--ryk-paper);
+  padding-bottom: var(--ryk-space-3);
+  /* Без перспективы поворот на оборот читается как схлопывание по ширине. */
+  perspective: 1200px;
+}
+
+/* Опора для переворота на оборот. */
+.flip {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform var(--ryk-duration-standard) var(--ryk-ease);
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.blank,
+.blankBack {
+  background: var(--ryk-white);
+  border: 1px solid var(--ryk-border-card);
+  padding: var(--ryk-space-3) var(--ryk-space-4) var(--ryk-space-4);
+  box-shadow: var(--ryk-shadow-card);
+  backface-visibility: hidden;
+}
+
+.blankBack {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  background: var(--ryk-surface-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--ryk-space-2);
+}
+
+.blankHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: var(--ryk-space-2);
+  border-bottom: 1px solid var(--ryk-border-row);
+  margin-bottom: var(--ryk-space-2);
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ryk-space-2);
+  min-height: 22px;
+}
+
+.rowLabel {
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ryk-text-muted);
+  width: 6.5ch;
+  flex: none;
+}
+
+/*
+ * Точечная линейка бухгалтерского бланка. Не бордюр: линия должна тянуться
+ * ровно по остатку строки и обрываться под значением.
+ */
+.leader {
+  flex: 1;
+  min-width: var(--ryk-space-4);
+  border-bottom: 1px dotted var(--ryk-border-muted-dash);
+  transform: translateY(-3px);
+}
+
+.rowValue {
+  font-family: var(--ryk-font-ui);
+  font-size: 14px;
+  color: var(--ryk-ink);
+  text-align: right;
+  max-width: 60%;
+  overflow-wrap: break-word;
+}
+
+.rowEmpty .rowValue {
+  color: var(--ryk-text-disabled);
+}
+
+/* Текущая строка — единственный розовый акцент на экране (§11.1). */
+.rowCurrent .rowLabel {
+  color: var(--ryk-pink-text);
+}
+
+.rowCurrent .leader {
+  border-bottom-color: var(--ryk-pink);
+}
+
+/* --- Направление A: значение печатается машинкой --- */
+.dirBlank .rowValue {
+  font-family: var(--ryk-font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+
+.dirBlank .rowFilled .rowValue {
+  animation: typeIn var(--ryk-duration-standard) var(--ryk-ease) both;
+}
+
+/* --- Направление B: значение прикладывается штемпелем --- */
+.dirStamp .rowFilled .rowValue {
+  display: inline-block;
+  /* Повёрнутый угол оттиска иначе целует край бланка. */
+  margin-right: var(--ryk-space-1);
+  padding: 1px var(--ryk-space-2);
+  border: 1.5px solid var(--ryk-pink-deep);
+  color: var(--ryk-pink-text);
+  transform: rotate(-2deg);
+  animation: stampIn var(--ryk-duration-standard) var(--ryk-ease) both;
+}
+
+@keyframes typeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes stampIn {
+  from {
+    opacity: 0;
+    transform: rotate(-2deg) scale(1.14);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-2deg) scale(1);
+  }
+}
+
+/* Курсор Ryk, когда он вписывает последнюю строку сам. */
+.caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-left: 2px;
+  background: var(--ryk-pink-deep);
+  vertical-align: -0.12em;
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* --- Вопрос и ответы --- */
+
+.ask {
+  padding-top: var(--ryk-space-6);
+}
+
+.question {
+  font-family: var(--ryk-font-ui);
+  font-size: 27px;
+  line-height: 1.2;
+  color: var(--ryk-ink);
+  margin: 0 0 var(--ryk-space-5);
+}
+
+.hint {
+  font-family: var(--ryk-font-serif);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ryk-text-secondary);
+  margin: calc(-1 * var(--ryk-space-3)) 0 var(--ryk-space-5);
+}
+
+/* Та же ремарка, но внутри блока, который сам держит вертикальный ритм. */
+.hintTight {
+  margin: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ryk-space-2);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-4);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+  margin-top: var(--ryk-space-7);
+}
+
+.note {
+  margin-top: var(--ryk-space-5);
+  text-align: center;
+}
+
+.issued {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-5);
+  align-items: center;
+  text-align: center;
+}
+
+.issuedLead {
+  font-family: var(--ryk-font-ui);
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+/* ─────────────── Сцена 2: погашение ─────────────── */
+
+.redeem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-5);
+}
+
+.ticketStage {
+  position: relative;
+}
+
+/* Верх билета уходит вверх и гаснет — корешок остаётся. */
+.leaving {
+  animation: topAway 420ms var(--ryk-ease) both;
+}
+
+@keyframes topAway {
+  to {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+
+/*
+ * Компостер: след пробивки поверх билета. В направлении A — просечка
+ * (вырубленные точки и рамка), в B — чернильный штемпель.
+ */
+.punch {
+  position: absolute;
+  top: 26%;
+  right: 8%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--ryk-space-2) var(--ryk-space-3);
+  transform: rotate(-8deg);
+  animation: punchIn var(--ryk-duration-standard) var(--ryk-ease) both;
+  pointer-events: none;
+}
+
+.dirBlank .punch {
+  border: 1.5px dashed var(--ryk-pink-deep);
+  background: var(--ryk-white);
+}
+
+.dirStamp .punch {
+  border: 2px solid var(--ryk-pink-deep);
+  outline: 1px solid var(--ryk-pink-deep);
+  outline-offset: 2px;
+}
+
+.punchWord {
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ryk-pink-text);
+}
+
+.punchDate {
+  font-family: var(--ryk-font-mono);
+  font-size: 13px;
+  color: var(--ryk-ink);
+}
+
+/* Дырки компостера — только в направлении A. */
+.punchHoles {
+  display: flex;
+  gap: 3px;
+}
+
+.punchHoles span {
+  width: 4px;
+  height: 4px;
+  background: var(--ryk-paper);
+  border: 1px solid var(--ryk-border-muted-dash);
+  border-radius: 50%;
+}
+
+@keyframes punchIn {
+  from {
+    opacity: 0;
+    transform: rotate(-8deg) scale(1.3);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+  }
+}
+
+/*
+ * Корешок, оставшийся один. Прототип будущего варианта Ticket: когда
+ * механика примется, это переезжает в сам примитив, а не живёт здесь.
+ *
+ * Тень — на обёртке, вырубка — на самом корешке. На одном элементе не
+ * выходит: фильтр считается до маски, поэтому drop-shadow нарисовался бы
+ * по прямоугольнику и был бы срезан вместе с вырезами (та же причина, по
+ * которой в Ticket тень висит на .ticket, а маски — на полосах).
+ */
+.stubAloneWrap {
+  filter: var(--ryk-drop-ticket);
+  animation: stubSettle var(--ryk-duration-standard) var(--ryk-ease) both;
+}
+
+.stubAlone {
+  background: var(--ryk-pink);
+  padding: var(--ryk-space-4) var(--ryk-space-5) var(--ryk-space-5);
+  /* Линия отрыва и полукруглые вырезы — след того, что верх ушёл. Без них
+     корешок читается как розовая плашка, а не как оторванная половина. */
+  border-top: var(--ryk-perforation);
+  --notch-r: calc(var(--ryk-notch-size) / 2);
+  --notch-hole: transparent calc(var(--notch-r) - 0.5px), black var(--notch-r);
+  mask-image:
+    radial-gradient(circle var(--notch-r) at left top, var(--notch-hole)),
+    radial-gradient(circle var(--notch-r) at right top, var(--notch-hole));
+  mask-size: 51% 100%;
+  mask-repeat: no-repeat;
+  mask-position:
+    left top,
+    right top;
+}
+
+@keyframes stubSettle {
+  from {
+    transform: translateY(-10px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.stubTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--ryk-space-3);
+}
+
+/* Знак и подпись на одной оптической линии — иначе svg сидит на базовой
+   линии текста и заваливается ниже строчных (как в Ticket). */
+.stubTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stubBody {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: var(--ryk-space-3);
+}
+
+/* На розовой заливке — ink, никогда не белый (§9.1). */
+.stubText {
+  font-family: var(--ryk-font-serif);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--ryk-ink);
+}
+
+.stubText b {
+  font-weight: 700;
+}
+
+.barcode {
+  width: 50px;
+  align-self: stretch;
+  min-height: 44px;
+  background: var(--ryk-barcode);
+  flex: none;
+}
+
+/* Привезённый след на корешке. */
+.souvenir {
+  margin-top: var(--ryk-space-3);
+  padding-top: var(--ryk-space-3);
+  border-top: 1px dashed var(--ryk-ink);
+  display: flex;
+  align-items: center;
+  gap: var(--ryk-space-3);
+}
+
+.souvenirPhoto {
+  width: 46px;
+  height: 46px;
+  flex: none;
+  background: var(--ryk-surface-card);
+  border: 1px solid var(--ryk-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ryk-font-mono);
+  font-size: 9px;
+  color: var(--ryk-text-muted);
+  text-align: center;
+}
+
+.souvenirWord {
+  font-family: var(--ryk-font-serif);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--ryk-ink);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-3);
+}
+
+.closing {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-4);
+  align-items: center;
+}
+
+.closingLead {
+  font-family: var(--ryk-font-ui);
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+/* Пояснение к сцене — для нас, не для пользователя. */
+.gloss {
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ryk-text-muted);
+  border-left: 2px solid var(--ryk-border-row);
+  padding-left: var(--ryk-space-3);
+  margin-top: var(--ryk-space-7);
+}
+
+/*
+ * Без движения — сразу конечное состояние. Ни одна сцена не зависит от
+ * анимации: она сообщает, что произошло, но не является тем, что произошло.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .flip,
+  .dirBlank .rowFilled .rowValue,
+  .dirStamp .rowFilled .rowValue,
+  .punch,
+  .leaving,
+  .stubAloneWrap,
+  .caret {
+    animation: none;
+    transition: none;
+  }
+
+  .leaving {
+    opacity: 0;
+  }
+}

@@ -14,10 +14,12 @@ import {
   type PreferenceRow,
   type ProfileView,
 } from "@/components/profile/ProfileSheet";
+import { TravelNote } from "@/components/travel/TravelNote";
 import { WeekSection } from "@/components/week/WeekSection";
 import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
 import type { DeckCard } from "@/lib/engine/discover";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
+import type { TravelState } from "@/lib/engine/travel";
 import type { MemoryView, WeeklyView } from "@/lib/engine/weekly";
 import type { YearView } from "@/lib/engine/year";
 import { isAppLocale, DEFAULT_LOCALE } from "@/lib/i18n/locale";
@@ -46,6 +48,7 @@ export function AppShell({
   canAttachPhoto,
   locale,
   city,
+  travel,
 }: {
   wishes: WishView[];
   weekly: WeeklyView;
@@ -61,6 +64,7 @@ export function AppShell({
   locale: string;
   /** Город на языке интерфейса; сырое значение живёт в profile.city. */
   city: string | null;
+  travel: TravelState;
 }) {
   const nav = useTranslations("nav");
   const app = useTranslations("app");
@@ -91,6 +95,13 @@ export function AppShell({
   return (
     <div className={styles.shell}>
       <div className={styles.content}>
+        {/*
+         * Реплика о другом городе — над любым разделом, а не только над
+         * «Сейчас»: она про то, где человек находится, и одинаково меняет
+         * смысл и ленты, и желаний, и архива.
+         */}
+        <TravelNote travel={travel} />
+
         {section === "now" ? (
           <HomeSection
             upcoming={upcoming}

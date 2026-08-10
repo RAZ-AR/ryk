@@ -190,6 +190,13 @@ model User {
   locale          Locale          @default(RU)
   city            String?
   radiusKm        Int             @default(30)
+
+  /// Город, про который уже спросили при поездке и получили «нет» (Flow J).
+  /// Гасит повторный вопрос, пока человек не окажется где-то ещё; сбрасывается,
+  /// когда он снова дома. Спрашивать на каждом открытии — то же давление,
+  /// только про географию.
+  travelDismissedCity String?
+
   timezone        String          @default("Europe/Belgrade")
   onboardingState OnboardingState @default(NOT_STARTED)
 

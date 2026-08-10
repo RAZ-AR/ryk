@@ -398,7 +398,8 @@
       "noveltyBold": "Más audaz",
       "note": "puedes cambiar todo esto después",
       "finish": "Mostrar mis primeras historias →",
-      "saving": "Guardando…"
+      "saving": "Guardando…",
+      "cityGuessed": "Lo dedujimos por tu conexión: corrígelo si no acertamos."
     },
     "moment": {
       "step": "Onboarding 4/7",
@@ -526,5 +527,13 @@
     "tickets": "entradas ↗",
     "restore": "Recuperar",
     "archive": "Retirar"
+  },
+  "travel": {
+    "askTitle": "Parece que estás en otra ciudad.",
+    "askQuestion": "¿Busco historias aquí?",
+    "accept": "Sí, estoy aquí",
+    "decline": "No, estoy en casa",
+    "awayTitle": "Aquí todavía no estoy.",
+    "awayBody": "Pero la semana sigue en pie: esto es lo que no depende de la ciudad."
   }
 }

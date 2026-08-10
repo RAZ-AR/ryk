@@ -1,6 +1,7 @@
 import type { ExperienceKind, LifeCategory } from "@/generated/prisma/enums";
 import { liveExperienceWhere } from "@/lib/engine/liveExperiences";
 import { dailySeed, mixByKind } from "@/lib/engine/mix";
+import { travelModeWhere } from "@/lib/engine/travel";
 import { localizeExperience } from "@/lib/i18n/experience";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { prisma } from "@/lib/prisma";
@@ -36,10 +37,15 @@ const DECK_LIMIT = 30;
 export async function getDiscoverDeck(
   userId: string,
   locale: string = DEFAULT_LOCALE,
+  /** Человек не в своём городе и не в городе пилота (Flow J). */
+  travelMode = false,
 ): Promise<DeckCard[]> {
   const experiences = await prisma.experience.findMany({
     where: {
       ...liveExperienceWhere(),
+      // Лента подчиняется тому же правилу, что и выбор недели: иначе Ryk
+      // говорил бы «меня здесь пока нет» и тут же показывал афишу Белграда.
+      ...travelModeWhere(travelMode),
       // Уже отреагировал — карточка не возвращается.
       reactions: { none: { userId } },
     },

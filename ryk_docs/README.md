@@ -50,6 +50,7 @@ Ryk не пытается сделать человека более проду�
 | [18-decisions-adr.md](18-decisions-adr.md) | Решения по архитектуре (ADR) |
 | [19-build-plan.md](19-build-plan.md) | План разработки MVP (пофазно, для Claude Code) |
 | [20-interview-guide.md](20-interview-guide.md) | Разговор с пользователем после недели (гайд куратора) |
+| [21-onboarding-and-reward-concept.md](21-onboarding-and-reward-concept.md) | Концепт: онбординг «билет выписывается» и награда — корешок с сувениром |
 
 > Правила работы агента и «конституция» проекта — в [`../CLAUDE.md`](../CLAUDE.md) (корень репозитория).
 
