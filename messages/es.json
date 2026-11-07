@@ -530,5 +530,81 @@
     "tickets": "entradas ↗",
     "restore": "Recuperar",
     "archive": "Retirar"
+  },
+  "moments": {
+    "rs": {
+      "newYear": "Año Nuevo",
+      "christmas": "Navidad ortodoxa",
+      "statehood": "Sretenje — Día del Estado",
+      "labour": "Día del Trabajo",
+      "armistice": "Día del Armisticio",
+      "goodFriday": "Viernes Santo",
+      "holySaturday": "Sábado Santo",
+      "easter": "Pascua",
+      "easterMonday": "Lunes de Pascua"
+    },
+    "am": {
+      "newYear": "Año Nuevo",
+      "christmas": "Navidad",
+      "army": "Día del Ejército",
+      "womensDay": "Día de la Mujer",
+      "remembrance": "Día de Recuerdo del Genocidio",
+      "labour": "Día del Trabajo",
+      "victory": "Día de la Victoria y la Paz",
+      "republic": "Día de la Primera República",
+      "constitution": "Día de la Constitución",
+      "independence": "Día de la Independencia",
+      "newYearsEve": "Nochevieja"
+    },
+    "season": {
+      "springStart": "Primer día de primavera",
+      "springEquinox": "Equinoccio de primavera",
+      "summerStart": "Primer día de verano",
+      "summerSolstice": "El día más largo del año",
+      "autumnStart": "Primer día de otoño",
+      "autumnEquinox": "Equinoccio de otoño",
+      "winterStart": "Primer día de invierno",
+      "winterSolstice": "La noche más larga del año"
+    },
+    "moon": {
+      "full": "Luna llena"
+    }
+  },
+  "joy": {
+    "sunsetToEnd": "Mira hoy el atardecer hasta el final: es a las {time}",
+    "seasonalMarket": "Compra algo de temporada en el mercado",
+    "coffeeOutside": "Tómate el café de la mañana al aire libre, no dentro",
+    "newWayHome": "Vuelve a casa por un camino nuevo",
+    "fewLinesToFriend": "Escríbele a un amigo un par de líneas, porque sí",
+    "listenToRain": "Entreabre la ventana y escucha la lluvia cinco minutos",
+    "untouchedSnow": "Deja huellas en la nieve sin pisar",
+    "childhoodDish": "Cocina algo de tu infancia",
+    "newBakery": "Entra en una panadería donde nunca has estado",
+    "lookUp": "Levanta la vista y mira los últimos pisos de tu calle",
+    "songFromSixteen": "Pon una canción que te encantaba a los dieciséis",
+    "waitingBook": "Lee un par de páginas del libro que lleva tiempo esperando en la estantería",
+    "flowersForNoReason": "Cómprate flores sin motivo",
+    "parkBench": "Siéntate en un banco del parque, con el móvil en el bolsillo",
+    "slowTea": "Prepara un té y bébelo despacio, sin hacer nada más",
+    "photoOfLight": "Haz una foto de cómo cae la luz en tu habitación",
+    "callSomeone": "Llama a alguien que hace tiempo no oye tu voz",
+    "slowBreakfast": "Desayuna sin prisa, en un plato bonito",
+    "walkOneStop": "Camina una parada en vez de ir en transporte",
+    "favouriteMug": "Sírvete el café de la mañana en tu taza favorita",
+    "fruitAtStall": "Cómete unas cerezas o un melocotón junto al puesto",
+    "prettiestLeaf": "Busca la hoja más bonita y llévatela a casa",
+    "warmMug": "Prepara un cacao y abraza la taza con las dos manos",
+    "bloomingTree": "Busca un árbol en flor y quédate un minuto debajo",
+    "oneStar": "Sal por la noche y encuentra al menos una estrella",
+    "moveOneThing": "Cambia una cosa de sitio en casa: que la habitación se vea nueva",
+    "localWord": "Aprende una palabra nueva en el idioma de la ciudad",
+    "handwrittenNote": "Déjale a alguien una nota escrita a mano",
+    "cloudAnimal": "Busca una nube con forma de animal",
+    "rainyEvening": "Una manta, calcetines calentitos y una tarde con el sonido de fuera",
+    "morningAir": "Abre la ventana por la mañana y respira el aire de hoy",
+    "kitchenDance": "Baila una canción en la cocina",
+    "kindWord": "Dile algo amable a un dependiente o a un conductor",
+    "smallGallery": "Entra de paso en una pequeña galería o librería",
+    "feetInWater": "Mete los pies en el agua: un río, un lago, una fuente"
   }
 }

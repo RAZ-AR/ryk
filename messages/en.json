@@ -530,5 +530,81 @@
     "tickets": "tickets ↗",
     "restore": "Restore",
     "archive": "Take down"
+  },
+  "moments": {
+    "rs": {
+      "newYear": "New Year",
+      "christmas": "Orthodox Christmas",
+      "statehood": "Sretenje — Statehood Day",
+      "labour": "Labour Day",
+      "armistice": "Armistice Day",
+      "goodFriday": "Good Friday",
+      "holySaturday": "Holy Saturday",
+      "easter": "Easter",
+      "easterMonday": "Easter Monday"
+    },
+    "am": {
+      "newYear": "New Year",
+      "christmas": "Christmas",
+      "army": "Army Day",
+      "womensDay": "Women's Day",
+      "remembrance": "Genocide Remembrance Day",
+      "labour": "Labour Day",
+      "victory": "Victory and Peace Day",
+      "republic": "First Republic Day",
+      "constitution": "Constitution Day",
+      "independence": "Independence Day",
+      "newYearsEve": "New Year's Eve"
+    },
+    "season": {
+      "springStart": "First day of spring",
+      "springEquinox": "Spring equinox",
+      "summerStart": "First day of summer",
+      "summerSolstice": "The longest day of the year",
+      "autumnStart": "First day of autumn",
+      "autumnEquinox": "Autumn equinox",
+      "winterStart": "First day of winter",
+      "winterSolstice": "The longest night of the year"
+    },
+    "moon": {
+      "full": "Full moon"
+    }
+  },
+  "joy": {
+    "sunsetToEnd": "Watch today's sunset all the way through — it's at {time}",
+    "seasonalMarket": "Buy something seasonal at the market",
+    "coffeeOutside": "Have your morning coffee outside instead of indoors",
+    "newWayHome": "Take a new way home",
+    "fewLinesToFriend": "Write a friend a few lines, just because",
+    "listenToRain": "Open the window a little and listen to the rain for five minutes",
+    "untouchedSnow": "Leave footprints in untouched snow",
+    "childhoodDish": "Cook something from your childhood",
+    "newBakery": "Step into a bakery you've never been to",
+    "lookUp": "Look up and notice the top floors of your street",
+    "songFromSixteen": "Put on a song you loved at sixteen",
+    "waitingBook": "Read a couple of pages of the book that's been waiting on the shelf",
+    "flowersForNoReason": "Buy yourself flowers for no reason",
+    "parkBench": "Sit on a park bench, phone in your pocket",
+    "slowTea": "Make tea and drink it slowly, doing nothing else",
+    "photoOfLight": "Take a photo of how the light falls in your room",
+    "callSomeone": "Call someone who hasn't heard your voice in a while",
+    "slowBreakfast": "Have an unhurried breakfast — on a nice plate",
+    "walkOneStop": "Walk one stop instead of riding",
+    "favouriteMug": "Pour your morning coffee into your favourite mug",
+    "fruitAtStall": "Eat cherries or a peach right at the stall",
+    "prettiestLeaf": "Find the prettiest leaf and bring it home",
+    "warmMug": "Make cocoa and hold the mug with both hands",
+    "bloomingTree": "Find a tree in bloom and stand under it for a minute",
+    "oneStar": "Step out in the evening and find at least one star",
+    "moveOneThing": "Move one thing at home — let the room look new",
+    "localWord": "Learn one new word in the city's language",
+    "handwrittenNote": "Leave someone a handwritten note",
+    "cloudAnimal": "Find a cloud that looks like an animal",
+    "rainyEvening": "A blanket, warm socks and an evening to the sound outside",
+    "morningAir": "Open the window in the morning and breathe in today's air",
+    "kitchenDance": "Dance in the kitchen to one song",
+    "kindWord": "Say something kind to a shop assistant or a driver",
+    "smallGallery": "Drop into a small gallery or bookshop on your way",
+    "feetInWater": "Dip your feet in water — a river, a lake, a fountain"
   }
 }
