@@ -1,6 +1,7 @@
 import type {
   Emotion,
   ExperienceKind,
+  FreeWindow,
   LifeBarrier,
   LifeCategory,
   SocialMode,
@@ -48,6 +49,91 @@ export function barrierBoost(barrier: LifeBarrier | null, e: ExperienceForScore)
     default:
       return 1;
   }
+}
+
+/**
+ * Вес по явному отношению к категории (онбординг: категории и свайпы).
+ * Раньше учитывались только LIKE, и «не моё» в онбординге ничего не меняло.
+ *
+ * 0.5, а не 0: это мягкое «реже», а не запрет. Дизлайк категории в онбординге —
+ * грубый сигнал по одному-двум свайпам, и вычёркивать целую категорию из жизни
+ * по нему было бы слишком сильным выводом. Жёсткий фильтр уже есть там, где
+ * сигнал точный, — «не интересно» на конкретном впечатлении в ленте.
+ * LIKE перевешивает DISLIKE — то же правило, что при сохранении онбординга.
+ */
+export function preferenceWeight(liked: boolean, disliked: boolean): number {
+  return disliked && !liked ? 0.5 : 1;
+}
+
+/** Сколько кандидатов показываем в выборе недели. */
+const CANDIDATES = 3;
+
+function clampRatio(noveltyRatio: number): number {
+  return Number.isFinite(noveltyRatio) ? Math.min(100, Math.max(0, noveltyRatio)) : 30;
+}
+
+/**
+ * Релевантность впечатления из НЕ любимой категории в зависимости от
+ * «новизны» (User.noveltyRatio, 0..100; онбординг: 20 / 40 / 70).
+ *
+ * Линейно 0.3 + ratio/100: при значении по умолчанию 30 получается прежняя
+ * константа 0.6 — у тех, кто ничего не выбирал, подборка не меняется.
+ * «Спокойно» (20) → 0.5, «баланс» (40) → 0.7, «смело» (70) → 1.0.
+ * Любимые категории остаются на 2: новизна поднимает незнакомое, а не
+ * опускает знакомое.
+ */
+export function unfamiliarRelevance(noveltyRatio: number): number {
+  return 0.3 + clampRatio(noveltyRatio) / 100;
+}
+
+/**
+ * Сколько мест из трёх держим за незнакомыми категориями: round(3 × ratio/100).
+ * 20/30/40 → 1, 70 → 2, 100 → 3. Одних весов мало: у человека с тремя и более
+ * любимыми категориями они всё равно забрали бы все места, и ответ «хочу
+ * нового» ничего бы не значил. Резерв действует, только если незнакомое
+ * в каталоге есть, — пустое место хуже знакомого.
+ */
+export function noveltySlots(noveltyRatio: number, total: number = CANDIDATES): number {
+  return Math.min(total, Math.round((total * clampRatio(noveltyRatio)) / 100));
+}
+
+/**
+ * Множитель по предпочитаемому формату (User.socialMode).
+ *
+ * Как и с барьерами, поднимаем только там, где у каталога есть честный
+ * признак. Отдельного поля «с кем это делают» у Experience нет, поэтому:
+ * - NEW_PEOPLE → EVENT (на событии вокруг всегда незнакомые люди) или
+ *   категория CONNECTION (она про людей по определению). 1.25 — скромно:
+ *   формат — пожелание, а не фильтр, и он не должен перебивать интерес.
+ * - SOLO → RITUAL: тихое домашнее делается без компании и без договорённостей.
+ *   1.2 — ещё скромнее: в одиночку можно и многое другое, ритуал лишь
+ *   самый надёжный случай.
+ * - CLOSE_ONES → 1: «с близкими» можно почти всё, признака, который отличал
+ *   бы такое впечатление от остальных, нет — выдумывать его не будем.
+ */
+export function socialBoost(
+  mode: SocialMode | null,
+  e: { kind: ExperienceKind; category: LifeCategory },
+): number {
+  switch (mode) {
+    case "NEW_PEOPLE":
+      return e.kind === "EVENT" || e.category === "CONNECTION" ? 1.25 : 1;
+    case "SOLO":
+      return e.kind === "RITUAL" ? 1.2 : 1;
+    default:
+      return 1;
+  }
+}
+
+/**
+ * Подходит ли день под свободные окна человека (User.freeWindows).
+ * Окна известны с точностью до «будни / выходные», поэтому и сравниваем
+ * так же: будний день подходит при любом WEEKDAY_*, сб/вс — при любом
+ * WEEKEND_*. Без окон — ничего не подсвечиваем: молчание не значит «никогда».
+ */
+export function dayFitsWindows(weekday: number, freeWindows: readonly FreeWindow[]): boolean {
+  const weekend = weekday === 6 || weekday === 7;
+  return freeWindows.some((w) => w.startsWith(weekend ? "WEEKEND_" : "WEEKDAY_"));
 }
 
 /** Поля впечатления, от которых зависит обход препятствия. */
@@ -103,6 +189,8 @@ export type DayOption = {
   /** 1=пн … 7=вс — для локализованной подписи. */
   weekday: number;
   weather: DayWeather | null;
+  /** День попадает в свободные окна человека — тихая подсказка, не ограничение. */
+  fits: boolean;
 };
 
 export type WeeklyView =
@@ -165,7 +253,10 @@ function pickWhy(
  * Дни для выбора: от сегодня до конца недели (вс), минимум 3 варианта —
  * чтобы в четверг-воскресенье выбор не схлопывался в один день.
  */
-function buildDayOptions(byDate: Map<string, DayWeather>): DayOption[] {
+function buildDayOptions(
+  byDate: Map<string, DayWeather>,
+  freeWindows: readonly FreeWindow[] = [],
+): DayOption[] {
   const today = new Date();
   const start = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
   const dow = start.getUTCDay() === 0 ? 7 : start.getUTCDay(); // 1=пн..7=вс
@@ -177,10 +268,12 @@ function buildDayOptions(byDate: Map<string, DayWeather>): DayOption[] {
     const d = new Date(start);
     d.setUTCDate(d.getUTCDate() + i);
     const date = d.toISOString().slice(0, 10);
+    const weekday = d.getUTCDay() === 0 ? 7 : d.getUTCDay();
     days.push({
       date,
-      weekday: d.getUTCDay() === 0 ? 7 : d.getUTCDay(),
+      weekday,
       weather: byDate.get(date) ?? null,
+      fits: dayFitsWindows(weekday, freeWindows),
     });
   }
   return days;
@@ -217,7 +310,7 @@ export async function getWeeklyView(
 
     const owner = await prisma.user.findUnique({
       where: { id: userId },
-      select: { city: true },
+      select: { city: true, freeWindows: true },
     });
     const forecast = await getWeekForecast(owner?.city ?? null, e.lat, e.lng);
     const byDate = new Map(forecast.map((d) => [d.date, d]));
@@ -284,18 +377,25 @@ export async function getWeeklyView(
     }
 
     // SELECTED или RESCUED — день ещё не выбран, показываем commitment.
-    const days: DayOption[] = buildDayOptions(byDate);
+    const days: DayOption[] = buildDayOptions(byDate, owner?.freeWindows ?? []);
     return { kind: "commit", weekStart: weekStartIso, story, days };
   }
 
   const [user, prefs, experiences, reactions] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
-      select: { budgetMax: true, city: true, radiusKm: true, mainBarrier: true },
+      select: {
+        budgetMax: true,
+        city: true,
+        radiusKm: true,
+        mainBarrier: true,
+        noveltyRatio: true,
+        socialMode: true,
+      },
     }),
     prisma.preference.findMany({
-      where: { userId, sentiment: "LIKE" },
-      select: { category: true },
+      where: { userId, sentiment: { in: ["LIKE", "DISLIKE"] } },
+      select: { category: true, sentiment: true },
     }),
     prisma.experience.findMany({
       where: {
@@ -316,7 +416,14 @@ export async function getWeeklyView(
 
   const likedExperiences = new Set(reactions.map((r) => r.experienceId));
 
-  const liked = new Set<LifeCategory>(prefs.map((p) => p.category));
+  const liked = new Set<LifeCategory>(
+    prefs.filter((p) => p.sentiment === "LIKE").map((p) => p.category),
+  );
+  const disliked = new Set<LifeCategory>(
+    prefs.filter((p) => p.sentiment === "DISLIKE").map((p) => p.category),
+  );
+  const noveltyRatio = user?.noveltyRatio ?? 30;
+  const socialMode = user?.socialMode ?? null;
   const budgetMax = user?.budgetMax ?? null;
   const radiusKm = user?.radiusKm ?? null;
   const userCity = user?.city ?? null;
@@ -325,12 +432,14 @@ export async function getWeeklyView(
   const scored = experiences
     .map((e) => {
       const isLiked = liked.has(e.category);
+      const isDisliked = disliked.has(e.category);
       const inBudget = budgetMax == null || e.price == null || e.price <= budgetMax;
       const nearby =
         (radiusKm == null || e.distanceKm == null || e.distanceKm <= radiusKm) &&
         (userCity == null || e.city == null || e.city === userCity);
 
-      const relevance = isLiked ? 2 : 0.6;
+      const relevance =
+        (isLiked ? 2 : unfamiliarRelevance(noveltyRatio)) * preferenceWeight(isLiked, isDisliked);
       const feasibility = inBudget ? 1 : 0.3;
       const proximity = nearby ? 1 : 0.6;
       // Прямой лайк в ленте — самый честный сигнал интереса, сильнее чем
@@ -338,11 +447,13 @@ export async function getWeeklyView(
       const swipedRight = likedExperiences.has(e.id) ? 1.8 : 1;
       // Человек сам назвал, что ему мешает — поднимаем то, что это обходит.
       const barrier = barrierBoost(mainBarrier, e);
+      // Предпочитаемый формат — скромно и только по честному признаку.
+      const social = socialBoost(socialMode, e);
       // Детерминированный джиттер по id — стабильный порядок в течение недели.
       const jitter = (parseInt(e.id.replace(/\D/g, "").slice(0, 4) || "0", 10) % 17) / 100;
-      const score = relevance * feasibility * proximity * swipedRight * barrier + jitter;
+      const score = relevance * feasibility * proximity * swipedRight * barrier * social + jitter;
 
-      return { e, score, ...pickWhy(isLiked, e.category, inBudget, nearby) };
+      return { e, score, isLiked, ...pickWhy(isLiked, e.category, inBudget, nearby) };
     })
     .sort((a, b) => b.score - a.score);
 
@@ -351,33 +462,48 @@ export async function getWeeklyView(
   // Отдельно ограничиваем события: три события в выборе недели означали бы,
   // что вся неделя упирается в билеты, погоду и деньги. Пусть максимум одно —
   // остальное вызовы и ритуалы, доступные в любую неделю.
+  //
+  // Новизна: часть мест держим за незнакомыми категориями (noveltySlots).
+  // Это ограничение только на первых двух проходах — если незнакомого
+  // в каталоге не хватает, места достаются любимому, а не пустуют.
+  // Пока любимых категорий нет, всё незнакомое и ограничение не действует.
   const picked: typeof scored = [];
   const usedCategories = new Set<LifeCategory>();
   let events = 0;
+  let familiar = 0;
+  const maxFamiliar = CANDIDATES - noveltySlots(noveltyRatio);
 
   const canTake = (s: (typeof scored)[number]) =>
     s.e.kind !== "EVENT" || events < MAX_EVENT_CANDIDATES;
+  const familiarRoom = (s: (typeof scored)[number]) => !s.isLiked || familiar < maxFamiliar;
   const take = (s: (typeof scored)[number]) => {
     picked.push(s);
     usedCategories.add(s.e.category);
     if (s.e.kind === "EVENT") events += 1;
+    if (s.isLiked) familiar += 1;
   };
 
   for (const s of scored) {
-    if (picked.length >= 3) break;
-    if (usedCategories.has(s.e.category) || !canTake(s)) continue;
+    if (picked.length >= CANDIDATES) break;
+    if (usedCategories.has(s.e.category) || !canTake(s) || !familiarRoom(s)) continue;
     take(s);
   }
-  // Добор без учёта категории, но лимит на события держим.
+  // Добор без учёта категории, но лимиты на события и знакомое держим.
   for (const s of scored) {
-    if (picked.length >= 3) break;
+    if (picked.length >= CANDIDATES) break;
+    if (picked.includes(s) || !canTake(s) || !familiarRoom(s)) continue;
+    take(s);
+  }
+  // Незнакомого не хватило — добираем знакомым, лимит на события держим.
+  for (const s of scored) {
+    if (picked.length >= CANDIDATES) break;
     if (picked.includes(s) || !canTake(s)) continue;
     take(s);
   }
   // Крайний случай: в каталоге не осталось ничего, кроме событий. Лучше
   // показать три события, чем пустой экран выбора.
   for (const s of scored) {
-    if (picked.length >= 3) break;
+    if (picked.length >= CANDIDATES) break;
     if (picked.includes(s)) continue;
     take(s);
   }

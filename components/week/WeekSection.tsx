@@ -361,6 +361,10 @@ export function WeekSection({ view }: { view: WeeklyView }) {
                   >
                     <SvcLabel tone="ink">{t(`days.${d.weekday}`)}</SvcLabel>
                     <span className={styles.dayWeather}>{weatherText(d.weather) ?? "—"}</span>
+                    {/* День в свободном окне из онбординга — тихая подсказка, а не
+                        фильтр: выбрать можно любой день, мы лишь напоминаем, что он
+                        сам назвал своим временем. */}
+                    {d.fits ? <SvcLabel tone="pink">{t("dayFits")}</SvcLabel> : null}
                   </button>
                 );
               })}
