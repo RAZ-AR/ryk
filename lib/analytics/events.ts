@@ -62,6 +62,13 @@ export type RykEvent =
   | { name: "invite_accepted"; props: { role: "companion" | "witness" } }
   | { name: "invite_declined"; props: { role: "companion" | "witness" } }
   // ── Лента впечатлений ─────────────────────────────────────
-  | { name: "experience_reacted"; props: { category: LifeCategory; liked: boolean } };
+  | { name: "experience_reacted"; props: { category: LifeCategory; liked: boolean } }
+  // ── «Лист дня» (22-daily-joy-plan, фаза 5) ────────────────
+  /**
+   * Лист показан. Только факты о полноте листа — была ли погода и сколько
+   * строк «Скоро»: по ним видно, часто ли лист выходит пустым. Ни города,
+   * ни текста радости, ни названий событий — это уже про человека.
+   */
+  | { name: "day_leaf_viewed"; props: { hasWeather: boolean; soonCount: number } };
 
 export type RykEventName = RykEvent["name"];

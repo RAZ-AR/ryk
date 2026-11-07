@@ -3,21 +3,6 @@
   flex-direction: column;
 }
 
-.greeting {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.promise {
-  font-family: var(--ryk-font-serif);
-  font-weight: 400;
-  font-size: 22px;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: var(--ryk-ink);
-}
-
 .section {
   margin-top: var(--ryk-space-7);
 }

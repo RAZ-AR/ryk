@@ -17,6 +17,7 @@ import {
 import { WeekSection } from "@/components/week/WeekSection";
 import { Wishlist, type WishView } from "@/components/wishlist/Wishlist";
 import type { DeckCard } from "@/lib/engine/discover";
+import type { Today } from "@/lib/engine/today";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
 import type { MemoryView, WeeklyView } from "@/lib/engine/weekly";
 import type { YearView } from "@/lib/engine/year";
@@ -42,6 +43,7 @@ export function AppShell({
   invites,
   deck,
   upcoming,
+  today,
   year,
   canAttachPhoto,
   locale,
@@ -55,6 +57,8 @@ export function AppShell({
   invites: InviteView[];
   deck: DeckCard[];
   upcoming: UpcomingItem[];
+  /** «Лист дня» для главной; getToday не бросает, поэтому всегда есть. */
+  today: Today;
   year: YearView;
   canAttachPhoto: boolean;
   /** Язык текущего рендера — из cookie, а не из профиля. */
@@ -93,6 +97,7 @@ export function AppShell({
       <div className={styles.content}>
         {section === "now" ? (
           <HomeSection
+            today={today}
             upcoming={upcoming}
             weekly={weekly}
             deck={deck}

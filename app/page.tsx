@@ -9,6 +9,7 @@ import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
 import { localizeCity } from "@/lib/i18n/city";
 import { localizeExperience } from "@/lib/i18n/experience";
 import { isPhotoStorageConfigured } from "@/lib/storage/memoryPhotos";
+import { getToday } from "@/lib/engine/today";
 import { getUpcoming } from "@/lib/engine/upcoming";
 import { getWeeklyView, weekStartUTC } from "@/lib/engine/weekly";
 import { getYear } from "@/lib/engine/year";
@@ -33,7 +34,7 @@ export default async function Home() {
    */
   const locale = await getLocale();
 
-  const [wishes, weekly, memories, profile, preferences, invites, deck, upcoming, year] =
+  const [wishes, weekly, memories, profile, preferences, invites, deck, upcoming, year, today] =
     await Promise.all([
       prisma.wish.findMany({
         where: { userId: user.id, status: { not: "HIDDEN" } },
@@ -95,6 +96,11 @@ export default async function Home() {
       getDiscoverDeck(user.id, locale),
       getUpcoming(user.id, locale),
       getYear(user.id),
+      // Город — из сессии, а не из profile: profile грузится в этом же
+      // Promise.all, и ждать его значило бы выстроить запросы в очередь.
+      // Это одно и то же поле users.city. getToday не бросает — лист
+      // украшение и не роняет главную.
+      getToday({ id: user.id, city: user.city, locale }),
     ]);
 
   /*
@@ -137,6 +143,7 @@ export default async function Home() {
       invites={inviteViews}
       deck={deck}
       upcoming={upcoming}
+      today={today}
       year={year}
       canAttachPhoto={isPhotoStorageConfigured()}
       locale={locale}

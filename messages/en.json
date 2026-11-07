@@ -40,7 +40,25 @@
     "kindLabel": "Kind",
     "durationLabel": "Duration",
     "pickAsWeek": "Make it my week's story",
-    "actionFailed": "didn't work — try again"
+    "actionFailed": "didn't work — try again",
+    "leaf": {
+      "aria": "Today's leaf",
+      "dayOfYear": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} day of the year",
+      "sunrise": "sunrise {time}",
+      "sunset": "sunset {time}",
+      "soon": "Soon",
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "on": {
+        "1": "on Monday",
+        "2": "on Tuesday",
+        "3": "on Wednesday",
+        "4": "on Thursday",
+        "5": "on Friday",
+        "6": "on Saturday",
+        "7": "on Sunday"
+      }
+    }
   },
   "discover": {
     "kicker": "What you like",

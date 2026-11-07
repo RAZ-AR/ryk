@@ -9,7 +9,9 @@ import { DockIcon } from "@/components/DockIcon";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { EmptyMark } from "@/components/EmptyMark";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
+import { DayLeaf } from "@/components/home/DayLeaf";
 import { YearSummary } from "@/components/year/YearSummary";
+import type { Today } from "@/lib/engine/today";
 import type { YearView } from "@/lib/engine/year";
 import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
@@ -70,6 +72,26 @@ const YEAR_DEMO: YearView = {
     { category: "REST", count: 1, share: 0.2 },
   ],
   top: "NATURE",
+};
+
+/**
+ * Лист дня со всеми строками сразу: погода, свет, «Скоро» из двух строк —
+ * праздник днём недели и событие датой. Так видно самый длинный лист, какой
+ * бывает: если он дышит, короткие тоже.
+ */
+const TODAY_DEMO: Today = {
+  dateIso: "2026-04-09",
+  weekday: 4,
+  dayOfYear: 99,
+  cityName: "Белград",
+  countryName: "Сербия",
+  weather: { kind: "CLEAR", tempMax: 19, sunrise: "06:24", sunset: "19:41" },
+  joyKey: "sunsetToEnd",
+  joyParams: { time: "19:41" },
+  soon: [
+    { type: "moment", date: "2026-04-12", kind: "holiday", key: "rs.easter" },
+    { type: "experience", date: "2026-04-18", id: "demo", title: "Ночной поход к маяку" },
+  ],
 };
 
 const EMOTIONS = ["Восторг", "Спокойствие", "Гордость", "Близость"];
@@ -379,6 +401,17 @@ export default function DesignSystemPage() {
         <SvcLabel tone="pink">14</SvcLabel>
         <h2 className={styles.sectionTitle}>Год</h2>
         <YearSummary year={YEAR_DEMO} />
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">15</SvcLabel>
+        <h2 className={styles.sectionTitle}>Лист дня</h2>
+        <p className={styles.body}>
+          Отрывной лист над главной: число, место, свет, одна радость и две строки «Скоро». Без
+          метрик и обратного отсчёта. Тексты — на языке интерфейса.
+        </p>
+        {/* Без аналитики: просмотр витрины — не просмотр листа человеком. */}
+        <DayLeaf today={TODAY_DEMO} trackView={false} />
       </section>
     </main>
   );
