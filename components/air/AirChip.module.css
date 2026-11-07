@@ -1,0 +1,41 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 var(--ryk-space-5);
+  border-radius: var(--air-radius-pill);
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 0 1px var(--air-ink);
+  font-family: var(--air-font);
+  font-size: 15px;
+  color: var(--air-ink);
+  transition: transform var(--air-duration) var(--air-ease);
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+/* Выбранный — перелив: выбор живой, а не просто закрашенный. */
+.on {
+  background: var(--shimmer);
+  background-size: 200% 100%;
+  animation: ryk-shimmer var(--shimmer-duration) linear infinite;
+  box-shadow: none;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--air-ink);
+  outline-offset: 3px;
+}
+
+.tick {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

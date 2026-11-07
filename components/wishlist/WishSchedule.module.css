@@ -5,6 +5,7 @@
   flex-direction: column;
   gap: var(--ryk-space-5);
   background: var(--ryk-paper);
+  box-shadow: inset 0 1px 0 var(--ryk-border-row);
   padding: var(--ryk-space-6) var(--ryk-screen-x) var(--ryk-screen-bottom-dock);
 }
 
@@ -43,6 +44,7 @@
 }
 
 .day {
+  composes: paper from "../surface.module.css";
   position: relative;
   display: flex;
   flex-direction: column;

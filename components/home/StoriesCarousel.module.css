@@ -34,6 +34,7 @@
    категории — но «Природа» и «Прогулка» начинаются одинаково, а в трёх
    языках инициалы у одной категории разные (П / N / N). */
 .circle {
+  composes: paper from "../surface.module.css";
   width: 64px;
   height: 64px;
   border-radius: 50%;

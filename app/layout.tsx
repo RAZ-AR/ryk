@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Caveat, IBM_Plex_Mono, PT_Serif, Prata } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
+import { TelegramChrome } from "@/components/TelegramChrome";
 import "./globals.css";
 
 /*
@@ -81,6 +82,7 @@ export default async function RootLayout({
          * живёт в components/TelegramBootstrap.tsx.
          */}
         <script async src="https://telegram.org/js/telegram-web-app.js" />
+        <TelegramChrome />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

@@ -1,3 +1,6 @@
+"use client";
+
+import { haptic } from "@/lib/telegram/webApp";
 import styles from "./TicketAction.module.css";
 
 /*
@@ -55,7 +58,11 @@ export function TicketAction({ tone, label, onClick, disabled }: TicketActionPro
     <button
       type="button"
       className={[styles.action, styles[tone]].join(" ")}
-      onClick={onClick}
+      onClick={() => {
+        // Короткий отклик пальцу: «интересно» чуть плотнее, чем «мимо».
+        haptic(tone === "yes" ? "medium" : "light");
+        onClick();
+      }}
       disabled={disabled}
     >
       <Mark tone={tone} />

@@ -1,0 +1,76 @@
+/*
+ * Кнопка v1.2: пилюля, шрифты исходного дизайна.
+ *  primary   — перелив: цветная лента медленно течёт, действие бренда;
+ *  grey      — тёмная: главное действие шага;
+ *  secondary — контур;
+ *  ghost / link — моно-подпись без подложки.
+ */
+.btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: var(--ryk-font-ui);
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  border-radius: var(--ryk-radius-dock);
+  padding: 17px var(--ryk-space-5);
+  min-height: 56px;
+  transition:
+    transform var(--ryk-duration-micro) var(--ryk-ease),
+    opacity var(--ryk-duration-micro) var(--ryk-ease);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ryk-ink);
+  outline-offset: 3px;
+}
+
+.pink {
+  background: var(--shimmer);
+  background-size: 200% 100%;
+  animation: ryk-shimmer var(--shimmer-duration) linear infinite;
+  color: var(--ryk-ink);
+  box-shadow: 0 14px 30px -14px rgba(200, 110, 210, 0.7);
+}
+
+.glass {
+  background: transparent;
+  color: var(--ryk-ink);
+  box-shadow: inset 0 0 0 1.5px var(--ryk-ink);
+}
+
+.ink {
+  background: var(--ryk-ink);
+  color: var(--ryk-white);
+  box-shadow: 0 14px 30px -14px rgba(36, 29, 54, 0.6);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--ryk-pink-text);
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 14px var(--ryk-space-2);
+  min-height: 44px;
+}
+
+.link {
+  composes: ghost;
+  display: inline-block;
+  width: auto;
+  padding: 12px 0;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  animation: none;
+}

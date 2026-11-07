@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ReededArt, type ArtTone } from "./ReededArt";
 import { SvcLabel } from "./SvcLabel";
 import styles from "./Ticket.module.css";
 
@@ -6,9 +7,13 @@ import styles from "./Ticket.module.css";
  * Отрывной билет — сигнатурный компонент (дизайн-система §6).
  * Применяется ТОЛЬКО к впечатлению: идея, кандидат, приглашение (§11.4).
  *
- * Тон корешка: pink — кандидат/история недели, neutral — идея, grey — приглашение.
+ * Тон билета — цвет фольги на верхней части: pink — кандидат/история недели
+ * (розовая), neutral — идея (солнечная), grey — приглашение (серебряная).
+ * Корешок всегда бумажный.
  */
 export type StubTone = "pink" | "neutral" | "grey";
+
+const ART_TONE: Record<StubTone, ArtTone> = { pink: "rose", neutral: "sun", grey: "silver" };
 
 /**
  * `default` — билет на весь экран (онбординг, история недели, свайпы).
@@ -46,6 +51,12 @@ type TicketProps = {
    * перечисления, ровно как не знает его слот фото.
    */
   stubIcon?: ReactNode;
+  /**
+   * Эмблема над заголовком — знак категории, как глобус над строкой серии
+   * на референсе. Если задана, она заменяет окно с узором/фото, а знак
+   * у строки серии убирается: два одинаковых знака подряд были бы шумом.
+   */
+  emblem?: ReactNode;
   size?: TicketSize;
   /**
    * Отрывная полоса действий под корешком — реакция на впечатление.
@@ -78,6 +89,7 @@ export function Ticket({
   stubTone = "pink",
   stubLabel,
   stubIcon,
+  emblem,
   size = "default",
   actions,
   onOpen,
@@ -86,42 +98,61 @@ export function Ticket({
 }: TicketProps) {
   return (
     <article
-      className={[styles.ticket, size === "compact" && styles.compact].filter(Boolean).join(" ")}
+      className={[styles.ticket, styles[stubTone], size === "compact" && styles.compact]
+        .filter(Boolean)
+        .join(" ")}
     >
       <div className={styles.face}>
+        {/*
+         * Анатомия как у референса (билет Tokyo 2020):
+         *   фольга — эмблема, строка серии, крупный заголовок с орбитой,
+         *            «+ подпись +» и черта;
+         *   корешок — текст слева, крупные цифры справа с пунктирными
+         *            разделителями, внизу шахматная лента и штрихкод.
+         */}
         <div className={[styles.top, styles.cutBottom].join(" ")}>
-          <div className={styles.photo}>
-            <div className={styles.photoInner}>{photo ?? photoPlaceholder}</div>
+          <ReededArt tone={ART_TONE[stubTone]} seed={title} />
+          {emblem ? (
+            <div className={[styles.emblem, styles.emblemSign].join(" ")}>{emblem}</div>
+          ) : (
+            <div className={styles.emblem}>{photo ?? photoPlaceholder}</div>
+          )}
+
+          <SvcLabel tone="ink" className={styles.kicker}>
+            {emblem ? null : (stubIcon ?? <span aria-hidden="true">●</span>)} {stubLabel}
+          </SvcLabel>
+
+          <div className={styles.titleWrap}>
+            <h2 className={styles.title}>{title}</h2>
           </div>
 
-          <div className={styles.meta}>
-            <span>{metaLeft}</span>
-            <span className={styles.rule} aria-hidden="true" />
-            <span className={styles.metaRight}>
-              {metaRight}
-              {metaRightSub ? <span className={styles.metaSub}>{metaRightSub}</span> : null}
-            </span>
-          </div>
-
-          <h2 className={styles.title}>{title}</h2>
+          {metaRightSub ? (
+            <p className={styles.sub}>
+              <span aria-hidden="true">+</span> {metaRightSub} <span aria-hidden="true">+</span>
+            </p>
+          ) : null}
           {note ? <p className={styles.note}>«{note}»</p> : null}
+          <span className={styles.bar} aria-hidden="true" />
         </div>
 
         <div
           className={[
             styles.stub,
-            styles[stubTone],
             /* Корешок вырезан сверху всегда, снизу — только если под ним
                пришита полоса действий со своей перфорацией. */
             actions ? styles.cutBoth : styles.cutTop,
           ].join(" ")}
         >
-          <SvcLabel tone="ink" className={styles.stubLabel}>
-            {stubIcon ?? <span aria-hidden="true">●</span>} {stubLabel}
-          </SvcLabel>
           <div className={styles.stubBody}>
             <div className={styles.stubContent}>{children}</div>
-            <div className={styles.barcode} aria-hidden="true" />
+            <div className={styles.nums}>
+              <span className={styles.num}>{metaLeft}</span>
+              <span className={styles.num}>{metaRight}</span>
+            </div>
+          </div>
+          <div className={styles.stubFoot} aria-hidden="true">
+            <span className={styles.checker} />
+            <span className={styles.barcode} />
           </div>
         </div>
 

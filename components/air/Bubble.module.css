@@ -1,0 +1,53 @@
+.bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  aspect-ratio: 1;
+  width: 100%;
+  padding: var(--ryk-space-4);
+  border-radius: 50%;
+  text-align: center;
+  font-family: var(--air-font);
+}
+
+/* Блик сферы — пузырь читается как объём, а не как кружок. */
+.bubble::before {
+  content: "";
+  position: absolute;
+  top: 7%;
+  left: 20%;
+  width: 42%;
+  height: 22%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.9), transparent);
+}
+
+.label {
+  font-family: var(--air-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: 72px;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.unit {
+  margin-left: 2px;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+.caption {
+  max-width: 14ch;
+  font-family: var(--air-font-text);
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.25;
+}

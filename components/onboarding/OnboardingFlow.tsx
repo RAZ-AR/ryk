@@ -21,6 +21,7 @@ import {
   ONBOARDING_PROBES,
   ONBOARDING_WINDOWS,
 } from "./constants";
+import { ReededArt } from "@/components/ReededArt";
 import styles from "./OnboardingFlow.module.css";
 
 type Step = "welcome" | "categories" | "swipe" | "moment" | "postponed" | "rhythm" | "params";
@@ -106,12 +107,14 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
   if (step === "welcome") {
     return (
       <main className={styles.welcome}>
+        {/* Обложка приложения — та же живая фольга, что у билетов. */}
+        <ReededArt tone="rose" seed="welcome" />
         <SvcLabel tone="ink" className={styles.welcomeKicker}>
           <span>{tWelcome("kicker")}</span>
           <span>MMXXVI</span>
         </SvcLabel>
         <Image
-          src="/ryk-logo-paper.svg"
+          src="/ryk-logo-ink.svg"
           alt="Ryk"
           width={406}
           height={271}
@@ -209,6 +212,7 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
             stubTone="neutral"
             stubLabel={tCatLabel(probe.category)}
             stubIcon={<CategoryIcon category={probe.category} />}
+            emblem={<CategoryIcon category={probe.category} />}
           >
             {tIdeas(`${probe.id}.note`)}
             <br />

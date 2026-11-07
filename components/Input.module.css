@@ -1,12 +1,14 @@
 /* Одна база на все поля ввода: расхождение input/select/textarea —
    самый частый способ развалить форму (дизайн-система §8). */
+/* Поле — полоска бумаги: тёмные чернила на любом фоне. */
 .input,
 .select,
 .textarea {
+  composes: paper from "./surface.module.css";
   width: 100%;
-  border: 1px solid var(--ryk-border-strong);
-  border-radius: var(--ryk-radius-none);
-  background: var(--ryk-white);
+  border: 1px solid transparent;
+  border-radius: var(--ryk-radius-field);
+  background: var(--tk-paper);
   color: var(--ryk-ink);
   font-family: var(--ryk-font-ui);
   font-size: 16px;

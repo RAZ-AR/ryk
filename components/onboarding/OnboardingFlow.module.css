@@ -53,13 +53,24 @@
 }
 
 /* --- Welcome --- */
+/* Первый экран — целиком лист фольги: обложка билета до всякого выбора. */
 .welcome {
+  composes: paper onFoil from "../surface.module.css";
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--art-base);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 30px var(--ryk-screen-x) var(--ryk-space-6);
   box-sizing: border-box;
-  background: var(--ryk-pink);
+}
+
+/* Контент обложки — поверх живой фольги (она первый ребёнок). */
+.welcome > :not(:first-child) {
+  position: relative;
+  z-index: 1;
 }
 
 .welcomeKicker {
@@ -85,10 +96,11 @@
 }
 
 .welcomeLead {
-  font-family: var(--ryk-font-serif);
-  font-size: 33px;
-  line-height: 1.32;
-  letter-spacing: -0.2px;
+  font-family: var(--ryk-font-display);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
   color: var(--ryk-ink);
 }
 
@@ -102,8 +114,8 @@
 }
 
 .welcomeStart {
-  background: var(--ryk-paper);
-  color: var(--ryk-pink-text);
+  background: var(--tk-ink);
+  color: var(--tk-paper);
   padding: 19px 0;
 }
 
@@ -134,9 +146,10 @@
   min-height: 44px;
 }
 
-/* Выбрано: заливка pink, текст ink (правило контраста §9). */
+/* Выбрано: ячейка становится фольгой, чернила — тёмные. */
 .cellOn {
-  background: var(--ryk-pink);
+  composes: paper onFoil from "../surface.module.css";
+  background: var(--foil-strip);
 }
 
 .cellLabel {

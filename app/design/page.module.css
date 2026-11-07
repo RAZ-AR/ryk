@@ -210,3 +210,25 @@
   height: 72px;
   color: var(--ryk-ink);
 }
+
+/* Живая фольга: три тона рядом, чтобы сравнить палитры. */
+.artRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--ryk-space-4);
+  margin-top: var(--ryk-space-4);
+}
+
+.artCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}
+
+.artBox {
+  position: relative;
+  height: 120px;
+  border-radius: var(--ryk-radius-card);
+  overflow: hidden;
+  box-shadow: var(--ryk-shadow-card);
+}

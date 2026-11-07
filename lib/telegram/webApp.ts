@@ -26,6 +26,28 @@ export type TelegramWebApp = {
    * сам выбирает получателя из своих чатов.
    */
   switchInlineQuery?: (query: string, chatTypes?: TelegramChatType[]) => void;
+  isVersionAtLeast?: (version: string) => boolean;
+  /** Цвета рамки Mini App: шапка (6.1+, свой hex — 6.9+), фон (6.1+), нижняя панель (7.10+). */
+  setHeaderColor?: (color: string) => void;
+  setBackgroundColor?: (color: string) => void;
+  setBottomBarColor?: (color: string) => void;
+  /** Тактильный отклик (6.1+). */
+  HapticFeedback?: {
+    impactOccurred: (style: "light" | "medium" | "heavy" | "rigid" | "soft") => void;
+  };
+  onEvent?: (event: string, handler: () => void) => void;
+  offEvent?: (event: string, handler: () => void) => void;
+  /**
+   * Датчик ориентации (Bot API 8.0). Углы — в радианах. В Telegram на iOS
+   * это единственный путь к наклону без системного запроса разрешения.
+   */
+  DeviceOrientation?: {
+    start: (params: { refresh_rate?: number; need_absolute?: boolean }) => void;
+    stop: () => void;
+    isStarted: boolean;
+    beta: number | null;
+    gamma: number | null;
+  };
 };
 
 export function getTelegramWebApp(): TelegramWebApp | undefined {
@@ -35,4 +57,14 @@ export function getTelegramWebApp(): TelegramWebApp | undefined {
 /** Параметр из ссылки-приглашения, если приложение открыли по ней. */
 export function getStartParam(): string | null {
   return getTelegramWebApp()?.initDataUnsafe?.start_param ?? null;
+}
+
+/**
+ * Лёгкий тактильный отклик на действие. Вне Telegram и в старых версиях
+ * молча ничего не делает: это подтверждение, а не обязательная часть.
+ */
+export function haptic(style: "light" | "medium" = "light"): void {
+  const tg = getTelegramWebApp();
+  if (!tg?.isVersionAtLeast?.("6.1")) return;
+  tg.HapticFeedback?.impactOccurred(style);
 }

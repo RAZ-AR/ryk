@@ -1,19 +1,25 @@
 /* Блок «твоя неделя» — единственный крупный акцент на главном.
    Не билет: билет закреплён за впечатлением (§11.4), а это состояние. */
+/* Живая фольга (ReededArt) — первым ребёнком, текст поверх неё. */
 .block {
+  composes: paper onFoil from "../surface.module.css";
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--art-base);
   display: block;
   width: 100%;
   text-align: left;
-  background: var(--ryk-pink);
   padding: var(--ryk-space-5);
   margin-top: var(--ryk-space-2);
-  /* Отрыв от бумаги: блок нажимается, а плоская заливка читалась как фон. */
+  border-radius: var(--ryk-radius-ticket);
+  /* Отрыв от поля: блок нажимается, а плоская заливка читалась бы как фон. */
   box-shadow: var(--ryk-shadow-ticket);
 }
 
-/* Нечего показывать (неделя перенесена) — тише, без розового призыва. */
-.quiet {
-  background: var(--ryk-surface-muted);
+.block > :not(:first-child) {
+  position: relative;
+  z-index: 1;
 }
 
 .head {
@@ -27,9 +33,11 @@
 .title {
   display: block;
   margin-top: var(--ryk-space-3);
-  font-family: var(--ryk-font-serif);
-  font-size: 22px;
-  line-height: 1.25;
+  font-family: var(--ryk-font-display);
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   color: var(--ryk-ink);
 }
 
@@ -39,7 +47,7 @@
   font-family: var(--ryk-font-ui);
   font-size: 14px;
   line-height: 1.5;
-  color: var(--ryk-text-on-pink);
+  color: var(--ryk-text-secondary);
 }
 
 .quiet .line {
@@ -54,6 +62,8 @@
 }
 
 .num {
+  font-family: var(--ryk-font-display);
+  font-weight: 400;
   font-size: 44px;
   letter-spacing: -2px;
   line-height: 1;
@@ -63,5 +73,5 @@
 .unit {
   font-family: var(--ryk-font-ui);
   font-size: 14px;
-  color: var(--ryk-text-on-pink);
+  color: var(--ryk-text-secondary);
 }

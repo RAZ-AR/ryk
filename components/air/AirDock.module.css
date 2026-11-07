@@ -1,0 +1,68 @@
+.dock {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: var(--air-radius-pill);
+  background: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow:
+    inset 0 0 0 1px rgba(36, 29, 54, 0.08),
+    0 18px 40px -18px rgba(90, 60, 170, 0.4);
+  font-family: var(--air-font-mono);
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 50px;
+  height: 50px;
+  padding: 0 15px;
+  border-radius: var(--air-radius-pill);
+  background: transparent;
+  color: var(--air-ink);
+  transition: padding var(--air-duration) var(--air-ease);
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--air-ink);
+  outline-offset: 2px;
+}
+
+.icon {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+}
+
+.icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Подпись раскрывается только у активного — как в v0.7, но пилюлей-тьмой. */
+.label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: max-width var(--air-duration) var(--air-ease);
+}
+
+.on {
+  padding: 0 20px;
+  background: var(--shimmer);
+  background-size: 200% 100%;
+  animation: ryk-shimmer var(--shimmer-duration) linear infinite;
+}
+
+.on .label {
+  max-width: 10ch;
+}
