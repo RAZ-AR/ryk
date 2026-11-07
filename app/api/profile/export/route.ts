@@ -20,6 +20,11 @@ export async function GET() {
       telegramId: true,
       firstName: true,
       username: true,
+      // Рассказанное в онбординге своими словами — человек должен видеть,
+      // что мы о нём запомнили, а не только вывод из этого.
+      displayName: true,
+      goodMoment: true,
+      joyTraits: true,
       locale: true,
       city: true,
       radiusKm: true,

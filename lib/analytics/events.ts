@@ -26,8 +26,14 @@ export type RykEvent =
         namedBarrier: boolean;
         windows: number;
         swipes: number;
+        /** Сколько черт сохранено — выбранных и найденных в рассказе. Сами черты не шлём. */
+        traits: number;
       };
     }
+  /** Экран-вдохновение показан: сравнивая с joy_traits_picked, видно, откликаются ли мини-билеты. */
+  | { name: "onboarding_inspiration_seen"; props: Record<string, never> }
+  /** Сколько мини-билетов человек отметил «про себя». Только число — черты про человека. */
+  | { name: "joy_traits_picked"; props: { count: number } }
   | { name: "candidates_viewed"; props: { count: number } }
   | { name: "story_selected"; props: { category: LifeCategory; whyCode: string } }
   | {

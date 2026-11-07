@@ -167,6 +167,79 @@ describe("completeOnboarding", () => {
     expect(rows.map((r: { category: string }) => r.category)).toContain("CONTRIBUTION");
   });
 
+  it("сохраняет хороший момент и имя, обрезая лишнее", async () => {
+    const { completeOnboarding } = await import("./onboarding");
+
+    await completeOnboarding(
+      input({ goodMoment: `  ${"а".repeat(600)}  `, displayName: "  Аня   К.  " }),
+    );
+
+    const data = updateUser.mock.calls[0][0].data;
+    expect(data.goodMoment).toHaveLength(500);
+    expect(data.displayName).toBe("Аня К.");
+  });
+
+  it("пропущенное вдохновение и имя — пустые черты и null, а не мусор", async () => {
+    const { completeOnboarding } = await import("./onboarding");
+
+    await completeOnboarding(input());
+
+    expect(updateUser.mock.calls[0][0].data).toMatchObject({
+      goodMoment: null,
+      displayName: null,
+      joyTraits: [],
+    });
+  });
+
+  it("черты: выбранные плюс честно найденные в рассказе, выдуманные — нет", async () => {
+    const { track } = await import("@/lib/analytics/track");
+    const { completeOnboarding } = await import("./onboarding");
+
+    await completeOnboarding(
+      input({
+        joyTraits: ["coffee", "hacking", "coffee"],
+        goodMoment: "Слушали музыку у моря",
+      }),
+    );
+
+    // Порядок — как в каталоге черт, дубли и неизвестное отброшены.
+    expect(updateUser.mock.calls[0][0].data.joyTraits).toEqual(["coffee", "nature", "music"]);
+    const events = vi.mocked(track).mock.calls.map((c) => c[1]);
+    // В воронку — только числа: выбрано руками одна, всего сохранено три.
+    expect(events).toContainEqual({ name: "joy_traits_picked", props: { count: 1 } });
+    expect(events.find((e) => e.name === "onboarding_completed")?.props).toMatchObject({
+      traits: 3,
+    });
+  });
+
+  it("ничего не выбрано — события выбора черт нет", async () => {
+    const { track } = await import("@/lib/analytics/track");
+    const { completeOnboarding } = await import("./onboarding");
+
+    await completeOnboarding(input());
+
+    const names = vi.mocked(track).mock.calls.map((c) => c[1].name);
+    expect(names).not.toContain("joy_traits_picked");
+  });
+
+  it("разбирает два текста параллельно, а не друг за другом", async () => {
+    // Первый разбор не завершится, пока не стартует второй: при
+    // последовательных await тест повис бы на таймауте.
+    let releaseFirst: () => void = () => {};
+    const firstStarted = new Promise<void>((r) => (releaseFirst = r));
+    structureWish.mockImplementation(async (text: string) => {
+      if (text === "Момент") await firstStarted;
+      else releaseFirst();
+      return { category: "NATURE", budget: null, timing: "SOMEDAY" };
+    });
+    const { completeOnboarding } = await import("./onboarding");
+
+    const res = await completeOnboarding(input({ goodMoment: "Момент", postponed: "Отложенное" }));
+
+    expect(res.ok).toBe(true);
+    expect(structureWish).toHaveBeenCalledTimes(2);
+  });
+
   it("без сессии ничего не пишет", async () => {
     getSession.mockResolvedValue(null);
     const { completeOnboarding } = await import("./onboarding");

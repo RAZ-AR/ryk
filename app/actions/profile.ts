@@ -135,9 +135,17 @@ export async function deleteAccount(): Promise<ProfileResult> {
       prisma.weeklyStory.deleteMany({ where: { userId: session.userId } }),
       prisma.wish.deleteMany({ where: { userId: session.userId } }),
       // Имя стираем вместе с остальным: «удалить» должно значить удалить.
+      // Рассказанный момент и маленькие радости — тоже про человека.
       prisma.user.update({
         where: { id: session.userId },
-        data: { deletedAt: new Date(), firstName: null, username: null },
+        data: {
+          deletedAt: new Date(),
+          firstName: null,
+          username: null,
+          displayName: null,
+          goodMoment: null,
+          joyTraits: [],
+        },
       }),
     ]);
   } catch {

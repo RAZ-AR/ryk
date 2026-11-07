@@ -20,6 +20,8 @@
     "upcomingTitle": "Por delante",
     "feedTitle": "Lo que podrías vivir",
     "oneByOne": "Una por una →",
+    "welcomeLine": "y la historia de la semana la elegimos juntos",
+    "welcomeAction": "A la historia de la semana →",
     "feedEmpty": "Por ahora lo has visto todo. Aparecerá más cuando el curador lo añada.",
     "noDate": "sin fecha",
     "open": "Abrir",
@@ -320,6 +322,14 @@
       "start": "Empieza a vivir un poco más",
       "skip": "Ya tengo un perfil"
     },
+    "inspire": {
+      "title": "La alegría no se mide por su tamaño",
+      "line": "Un día pleno no necesita un gran acontecimiento. Basta con notar una cosa pequeña.",
+      "question": "¿Cuáles de estas van contigo?",
+      "stub": "una pequeña alegría",
+      "next": "Siguiente →",
+      "skip": "Omitir"
+    },
     "categories": {
       "step": "Onboarding 2/7",
       "time": "≈ 6 min",
@@ -336,7 +346,8 @@
       "title": "¿Irías?",
       "no": "No es lo mío",
       "yes": "Lo quiero ✓",
-      "enough": "Suficiente — siguiente →"
+      "enough": "Suficiente — siguiente →",
+      "back": "Atrás"
     },
     "ideas": {
       "climb": {
@@ -420,7 +431,11 @@
       "noveltyBold": "Más audaz",
       "note": "puedes cambiar todo esto después",
       "finish": "Mostrar mis primeras historias →",
-      "saving": "Guardando…"
+      "saving": "Guardando…",
+      "back": "Atrás",
+      "nameLabel": "¿Cómo quieres que te llamemos?",
+      "namePlaceholder": "Nombre",
+      "error": "No se pudo guardar. Revisa la conexión e inténtalo de nuevo — todo lo que escribiste sigue aquí."
     },
     "moment": {
       "step": "Onboarding 4/7",

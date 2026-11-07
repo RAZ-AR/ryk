@@ -33,6 +33,16 @@ export async function trackInviteInitiated(role: "companion" | "witness"): Promi
 }
 
 /**
+ * Экран-вдохновение онбординга показан. Без аргументов — мерить нечего,
+ * кроме самого факта: доля дошедших до мини-билетов против выбравших их.
+ */
+export async function trackOnboardingInspirationSeen(): Promise<void> {
+  const session = await getSession();
+  if (!session) return;
+  await track(session.userId, { name: "onboarding_inspiration_seen", props: {} });
+}
+
+/**
  * «Лист дня» показан. Server action — открытая точка входа, поэтому
  * аргументы не берём на веру: флаг приводим к boolean, а число строк
  * зажимаем в 0–2 — больше на листе не бывает, и мусор не должен попасть

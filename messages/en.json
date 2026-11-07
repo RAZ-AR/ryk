@@ -20,6 +20,8 @@
     "upcomingTitle": "Ahead",
     "feedTitle": "What you could live",
     "oneByOne": "One by one →",
+    "welcomeLine": "and we'll pick the week's story together",
+    "welcomeAction": "To the week's story →",
     "feedEmpty": "You've seen everything for now. More shows up as the curator adds it.",
     "noDate": "no date",
     "open": "Open",
@@ -320,6 +322,14 @@
       "start": "Start living a little more",
       "skip": "I already have a profile"
     },
+    "inspire": {
+      "title": "Joy isn't measured by size",
+      "line": "A full day doesn't need a big event. It needs you to notice one small thing.",
+      "question": "Which of these sound like you?",
+      "stub": "a small joy",
+      "next": "Next →",
+      "skip": "Skip"
+    },
     "categories": {
       "step": "Onboarding 2/7",
       "time": "≈ 6 min",
@@ -336,7 +346,8 @@
       "title": "Would you go?",
       "no": "Not for me",
       "yes": "I want this ✓",
-      "enough": "Enough — next →"
+      "enough": "Enough — next →",
+      "back": "Back"
     },
     "ideas": {
       "climb": {
@@ -420,7 +431,11 @@
       "noveltyBold": "Bolder",
       "note": "you can change all of this later",
       "finish": "Show my first stories →",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "back": "Back",
+      "nameLabel": "What should we call you?",
+      "namePlaceholder": "Name",
+      "error": "Couldn't save. Check your connection and try again — everything you entered is still here."
     },
     "moment": {
       "step": "Onboarding 4/7",

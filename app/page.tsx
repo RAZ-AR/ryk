@@ -24,7 +24,11 @@ import { prisma } from "@/lib/prisma";
 export default async function Home() {
   const user = await getCurrentUser();
   if (!user) return <TelegramBootstrap />;
-  if (user.onboardingState !== "DONE") return <OnboardingFlow initialCity={user.city} />;
+  if (user.onboardingState !== "DONE") {
+    // Имя — подсказка для «Как к тебе обращаться?»: чаще всего имя из
+    // Telegram подходит, и печатать его заново заставлять незачем.
+    return <OnboardingFlow initialCity={user.city} initialName={user.name} />;
+  }
 
   /*
    * Язык берём у next-intl, а не из user.locale: cookie — единственный
@@ -100,7 +104,7 @@ export default async function Home() {
       // Promise.all, и ждать его значило бы выстроить запросы в очередь.
       // Это одно и то же поле users.city. getToday не бросает — лист
       // украшение и не роняет главную.
-      getToday({ id: user.id, city: user.city, locale }),
+      getToday({ id: user.id, city: user.city, locale, joyTraits: user.joyTraits }),
     ]);
 
   /*

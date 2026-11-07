@@ -47,6 +47,11 @@ const FRESH_ACCOUNT_FIELDS = {
   socialMode: null,
   noveltyRatio: 30,
   notificationPreferences: {},
+  // Удаление их уже стёрло, но сброс здесь — страховка для аккаунтов,
+  // удалённых до появления полей: чистый профиль не должен помнить прошлого.
+  displayName: null,
+  goodMoment: null,
+  joyTraits: [],
 } as const;
 
 /** Аутентификация по реальному initData из Telegram. */

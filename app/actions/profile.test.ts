@@ -95,10 +95,18 @@ describe("deleteAccount", () => {
     expect(deleteManyWeeklyStory).toHaveBeenCalledWith({ where: { userId: "user-1" } });
     expect(deleteManyWish).toHaveBeenCalledWith({ where: { userId: "user-1" } });
     expect(deleteManyInvite).toHaveBeenCalledWith({ where: { recipientId: "user-1" } });
-    // Имя стирается вместе с остальным — иначе «удалить» значило бы «спрятать».
+    // Имя, рассказанный момент и радости стираются вместе с остальным —
+    // иначе «удалить» значило бы «спрятать».
     expect(updateUser).toHaveBeenCalledWith({
       where: { id: "user-1" },
-      data: { deletedAt: expect.any(Date), firstName: null, username: null },
+      data: {
+        deletedAt: expect.any(Date),
+        firstName: null,
+        username: null,
+        displayName: null,
+        goodMoment: null,
+        joyTraits: [],
+      },
     });
     // Мягкая метка — не единственное действие: без явного удаления строк
     // это была бы деактивация, а не удаление (постулат «удаляема»).

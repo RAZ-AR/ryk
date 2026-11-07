@@ -6,6 +6,7 @@ import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
 import { structureWish } from "@/lib/ai/structureWish";
 import { canonicalCity } from "@/lib/cities";
+import { sanitizeJoyTraits, traitsFromText } from "@/lib/engine/joyTraits";
 import { prisma } from "@/lib/prisma";
 
 /*
@@ -55,6 +56,10 @@ export type OnboardingInput = {
   city: string | null;
   /** Свободный текст: когда последний раз было хорошо. Шаг пропускаем — null. */
   goodMoment?: string | null;
+  /** Мини-билеты «что из этого про тебя?» — id черт из JOY_TRAITS. */
+  joyTraits?: string[];
+  /** «Как к тебе обращаться?» — пусто или как в Telegram — null. */
+  displayName?: string | null;
   /** Свободный текст: что давно откладывается. Станет желанием. */
   postponed?: string | null;
   mainBarrier?: LifeBarrier | null;
@@ -83,6 +88,17 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Onboar
 
   const goodMoment = input.goodMoment?.trim().slice(0, 500) || null;
   const postponed = input.postponed?.trim().slice(0, 500) || null;
+  // Имя короткое и одной строкой: оно встанет в обращение, а не в абзац.
+  const displayName = input.displayName?.replace(/\s+/g, " ").trim().slice(0, 60) || null;
+
+  /*
+   * Черты: выбранные на мини-билетах плюс те, что честно читаются из
+   * хорошего момента. Разбор — простой проход по ключевым словам, а не
+   * модель: structureWish отдаёт категорию впечатления, а не черту, и
+   * переводить одно в другое значило бы гадать. Не узнали — не добавили.
+   */
+  const pickedTraits = sanitizeJoyTraits(input.joyTraits);
+  const joyTraits = sanitizeJoyTraits([...pickedTraits, ...traitsFromText(goodMoment)]);
 
   type PrefRow = {
     userId: string;
@@ -116,9 +132,13 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Onboar
    * Свободные тексты разбираем ДО транзакции: это сетевой вызов к модели,
    * держать на нём открытую транзакцию нельзя. Разбор может не удаться —
    * тогда просто не будет вывода, но онбординг всё равно завершится.
+   * Оба разбора независимы — параллельно: человек ждёт на кнопке «Готово»,
+   * и два последовательных похода к модели удваивали это ожидание.
    */
-  const momentStructured = goodMoment ? await structureWish(goodMoment).catch(() => null) : null;
-  const postponedStructured = postponed ? await structureWish(postponed).catch(() => null) : null;
+  const [momentStructured, postponedStructured] = await Promise.all([
+    goodMoment ? structureWish(goodMoment).catch(() => null) : null,
+    postponed ? structureWish(postponed).catch(() => null) : null,
+  ]);
 
   // Рассказанный хороший момент — самый честный сигнал вкуса из всего
   // онбординга: человек его вспомнил сам, а не выбрал из нашей сетки.
@@ -187,6 +207,9 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Onboar
           noveltyRatio,
           mainBarrier,
           freeWindows,
+          goodMoment,
+          joyTraits,
+          displayName,
           ...(city ? { city } : {}),
           onboardingState: "DONE",
         },
@@ -208,8 +231,20 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Onboar
       namedBarrier: mainBarrier != null,
       windows: freeWindows.length,
       swipes: input.swipes.length,
+      // Всего черт, включая найденные в рассказе: видно, узнаём ли мы
+      // человека, даже когда мини-билеты он пролистал.
+      traits: joyTraits.length,
     },
   });
+
+  // Только счётчик и только выбранное руками — сами черты про человека,
+  // а не про воронку. Ноль не шлём: «не выбрал» уже видно по traits.
+  if (pickedTraits.length > 0) {
+    await track(session.userId, {
+      name: "joy_traits_picked",
+      props: { count: pickedTraits.length },
+    });
+  }
 
   revalidatePath("/");
   return { ok: true };
