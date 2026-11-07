@@ -14,6 +14,13 @@ export type DayWeather = {
   date: string;
   kind: WeatherKind;
   tempMax: number;
+  /**
+   * Восход и закат, местное «HH:MM» — для строки света на «Листе дня».
+   * Необязательны: нет в ответе (полярный день, странный формат) — строки
+   * просто не будет, а погода останется.
+   */
+  sunrise?: string;
+  sunset?: string;
 };
 
 /** WMO weather code → наша укрупнённая категория. */
@@ -39,8 +46,72 @@ export function coordsForCity(city: string | null): { lat: number; lng: number }
 }
 
 /**
+ * Пояс для запроса. Знакомый город — его IANA-пояс: даты и восход придут
+ * в том же времени, в котором «Лист дня» считает «сегодня» (localDate). Иначе
+ * auto: Open-Meteo сам возьмёт пояс по координатам — лучше, чем подставить
+ * белградский незнакомому городу.
+ */
+function timeZoneParam(city: string | null): string {
+  return encodeURIComponent(findCity(city)?.timeZone ?? "auto");
+}
+
+/** «2026-07-31T05:41» → «05:41»; всё, что не похоже на время, — undefined. */
+function clockTime(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const m = /T(\d{2}:\d{2})/.exec(value);
+  return m?.[1];
+}
+
+/**
+ * Разбор ответа Open-Meteo отдельно от сети — чтобы его можно было
+ * проверить тестом. Не бросает: на любой непонятный ответ — [].
+ */
+export function parseForecast(json: unknown): DayWeather[] {
+  if (typeof json !== "object" || json === null) return [];
+  const daily = (json as { daily?: unknown }).daily;
+  if (typeof daily !== "object" || daily === null) return [];
+  const d = daily as {
+    time?: unknown;
+    weather_code?: unknown;
+    temperature_2m_max?: unknown;
+    sunrise?: unknown;
+    sunset?: unknown;
+  };
+
+  const time = d.time;
+  const codes = d.weather_code;
+  const temps = d.temperature_2m_max;
+  if (!Array.isArray(time) || !Array.isArray(codes) || !Array.isArray(temps)) return [];
+  const sunrise = Array.isArray(d.sunrise) ? d.sunrise : [];
+  const sunset = Array.isArray(d.sunset) ? d.sunset : [];
+
+  // flatMap по исходному индексу, а не filter+map: после filter индексы съехали
+  // бы, и кривая дата в середине присвоила бы чужую погоду всем следующим дням.
+  return time.flatMap((date: unknown, i): DayWeather[] => {
+    if (typeof date !== "string") return [];
+    const code = codes[i];
+    const temp = temps[i];
+    const day: DayWeather = {
+      date,
+      kind: kindFromCode(typeof code === "number" ? code : 0),
+      tempMax: Math.round(typeof temp === "number" ? temp : 0),
+    };
+    // Поля добавляем, только когда есть значение: undefined-ключи
+    // ломали бы toEqual в старых тестах и сериализацию в клиент.
+    const rise = clockTime(sunrise[i]);
+    const set = clockTime(sunset[i]);
+    if (rise) day.sunrise = rise;
+    if (set) day.sunset = set;
+    return [day];
+  });
+}
+
+/**
  * Дневной прогноз на ближайшие 7 дней. Возвращает [] при любой проблеме
  * (нет сети, лимит, странный ответ) — вызывающий просто не покажет погоду.
+ *
+ * Восход и закат берём тем же запросом: второй запрос ради двух чисел
+ * удвоил бы нагрузку на бесплатный лимит Open-Meteo.
  */
 export async function getWeekForecast(
   city: string | null,
@@ -52,27 +123,14 @@ export async function getWeekForecast(
 
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lng}` +
-    `&daily=weather_code,temperature_2m_max&forecast_days=7&timezone=auto`;
+    `&daily=weather_code,temperature_2m_max,sunrise,sunset&forecast_days=7` +
+    `&timezone=${timeZoneParam(city)}`;
 
   try {
     // Кэшируем на час: прогноз не меняется поминутно, а запросов будет много.
     const res = await fetch(url, { next: { revalidate: 3600 } });
     if (!res.ok) return [];
-
-    const data = (await res.json()) as {
-      daily?: { time?: string[]; weather_code?: number[]; temperature_2m_max?: number[] };
-    };
-
-    const time = data.daily?.time;
-    const codes = data.daily?.weather_code;
-    const temps = data.daily?.temperature_2m_max;
-    if (!time || !codes || !temps) return [];
-
-    return time.map((date, i) => ({
-      date,
-      kind: kindFromCode(codes[i] ?? 0),
-      tempMax: Math.round(temps[i] ?? 0),
-    }));
+    return parseForecast(await res.json());
   } catch {
     return [];
   }

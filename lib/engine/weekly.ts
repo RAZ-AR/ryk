@@ -13,6 +13,23 @@ import { localizeExperience } from "@/lib/i18n/experience";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { signedPhotoUrl } from "@/lib/storage/memoryPhotos";
 import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
+import { findCity, normalizeCity } from "@/lib/cities";
+
+/**
+ * Один ли это город. Раньше сравнивали строки буква в букву, и человек с
+ * «Belgrade» в профиле считался далеко от всего каталога (там «Белград»):
+ * feasibility падала, и подборка тихо портилась.
+ *
+ * Знакомые города сравниваем по id из lib/cities.ts. Если хоть одна сторона
+ * незнакома — хотя бы по нормализованной строке: два «Крагуевац» в разном
+ * регистре всё ещё один город.
+ */
+export function sameCity(a: string, b: string): boolean {
+  const ca = findCity(a);
+  const cb = findCity(b);
+  if (ca && cb) return ca.id === cb.id;
+  return normalizeCity(a) === normalizeCity(b);
+}
 
 /*
  * Experience Engine v0 (ryk_docs/06-experience-engine.md).
@@ -443,7 +460,7 @@ export async function getWeeklyView(
       const inBudget = budgetMax == null || e.price == null || e.price <= budgetMax;
       const nearby =
         (radiusKm == null || e.distanceKm == null || e.distanceKm <= radiusKm) &&
-        (userCity == null || e.city == null || e.city === userCity);
+        (userCity == null || e.city == null || sameCity(e.city, userCity));
 
       const relevance =
         (isLiked ? 2 : unfamiliarRelevance(noveltyRatio)) * preferenceWeight(isLiked, isDisliked);

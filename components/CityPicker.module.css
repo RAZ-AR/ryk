@@ -1,0 +1,11 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-3);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ryk-space-2);
+}

@@ -5,6 +5,7 @@ import type { FreeWindow, LifeBarrier, LifeCategory, SocialMode } from "@/genera
 import { track } from "@/lib/analytics/track";
 import { getSession } from "@/lib/auth/session";
 import { structureWish } from "@/lib/ai/structureWish";
+import { canonicalCity } from "@/lib/cities";
 import { prisma } from "@/lib/prisma";
 
 /*
@@ -73,7 +74,8 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Onboar
   const noveltyRatio = Math.min(100, Math.max(0, Math.round(input.noveltyRatio)));
   const budgetMax =
     typeof input.budgetMax === "number" && input.budgetMax > 0 ? Math.round(input.budgetMax) : null;
-  const city = input.city?.trim() ? input.city.trim().slice(0, 120) : null;
+  // Знакомый город — каноническим именем, как в каталоге; незнакомый — как ввели.
+  const city = canonicalCity(input.city, 120);
 
   const mainBarrier =
     input.mainBarrier && BARRIERS.includes(input.mainBarrier) ? input.mainBarrier : null;

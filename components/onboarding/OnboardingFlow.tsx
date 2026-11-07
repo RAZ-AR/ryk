@@ -11,7 +11,6 @@ import { Chip } from "@/components/Chip";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ExperiencePattern } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
-import { Input } from "@/components/Input";
 import { SvcLabel } from "@/components/SvcLabel";
 import { Textarea } from "@/components/Textarea";
 import { Ticket } from "@/components/Ticket";
@@ -23,6 +22,7 @@ import {
 } from "./constants";
 import { ReededArt } from "@/components/ReededArt";
 import styles from "./OnboardingFlow.module.css";
+import { CityPicker } from "@/components/CityPicker";
 
 type Step = "welcome" | "categories" | "swipe" | "moment" | "postponed" | "rhythm" | "params";
 type BudgetKey = "low" | "mid" | "any";
@@ -396,9 +396,10 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
           <SvcLabel tone="muted" className={styles.rowLabel}>
             {tParams("cityLabel")}
           </SvcLabel>
-          <Input
+          <CityPicker
             value={city}
-            onChange={(e) => setCity(e.target.value)}
+            onChange={setCity}
+            otherLabel={tParams("cityOther")}
             placeholder={tParams("cityPlaceholder")}
             maxLength={120}
           />

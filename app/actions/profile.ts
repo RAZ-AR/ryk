@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { Locale, SocialMode } from "@/generated/prisma/enums";
 import { track } from "@/lib/analytics/track";
+import { canonicalCity } from "@/lib/cities";
 import { clearSession, getSession } from "@/lib/auth/session";
 import { setLocaleCookie } from "@/lib/i18n/localeCookie";
 import { prisma } from "@/lib/prisma";
@@ -52,7 +53,9 @@ export async function updateProfile(input: ProfileInput): Promise<ProfileResult>
     await prisma.user.update({
       where: { id: session.userId },
       data: {
-        city: input.city?.trim() ? input.city.trim().slice(0, 80) : null,
+        // Та же нормализация, что в онбординге: «Belgrade» из профиля не должен
+        // стать другим городом, чем «Белград» в каталоге.
+        city: canonicalCity(input.city, 80),
         radiusKm: Math.round(input.radiusKm),
         budgetMax: input.budgetMax != null ? Math.round(input.budgetMax) : null,
         socialMode: input.socialMode,
