@@ -17,6 +17,13 @@
   align-items: center;
   gap: var(--ryk-space-3);
   min-width: 0;
+  /* Капсула жидкого стекла: шапка лежит поверх ленты. */
+  padding: 0 var(--ryk-space-2) 0 var(--ryk-space-4);
+  border-radius: var(--ryk-radius-dock-pill);
+  background: var(--tk-paper);
+  box-shadow:
+    inset 0 0 0 1px var(--ryk-border-row),
+    var(--ryk-shadow-card);
 }
 
 /* Приглашения пришли — уступаем место значку. */

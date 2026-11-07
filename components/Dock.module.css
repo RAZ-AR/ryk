@@ -4,7 +4,9 @@
    dock уезжал вместе с ним за пределы видимой области.
    Отступ учитывает safe-area (домашний индикатор iOS / жест-зона Android),
    которую Telegram Mini App пишет в --tg-safe-area-inset-bottom. */
+/* Бумажный корешок: непрозрачный, поэтому стекло и блюр не нужны. */
 .dock {
+  composes: paper from "./surface.module.css";
   position: fixed;
   left: 50%;
   bottom: calc(18px + var(--tg-safe-area-inset-bottom, 0px));
@@ -12,12 +14,9 @@
   display: flex;
   align-items: center;
   gap: var(--ryk-space-1);
-  background: var(--ryk-glass);
-  -webkit-backdrop-filter: var(--ryk-glass-blur);
-  backdrop-filter: var(--ryk-glass-blur);
-  border: 1px solid var(--ryk-glass-border);
-  padding: 7px;
-  border-radius: var(--ryk-radius-dock);
+  background: var(--tk-paper);
+  padding: 6px;
+  border-radius: var(--ryk-radius-dock-pill);
   box-shadow: var(--ryk-shadow-dock);
   max-width: calc(100% - 40px);
   z-index: 6;
@@ -27,11 +26,6 @@
  * Без размытия стекло стало бы мутным пятном, сквозь которое читается
  * контент под доком. Тогда честнее непрозрачная подложка.
  */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .dock {
-    background: var(--ryk-surface-card);
-  }
-}
 
 .item {
   display: flex;
@@ -48,7 +42,7 @@
   padding: 0 var(--ryk-space-3);
   border-radius: var(--ryk-radius-dock-pill);
   background: transparent;
-  /* Не muted: на светлом стекле он даёт 3.3:1 — см. --ryk-glass в токенах. */
+  /* Не muted, а secondary: подпись мелкая (10px), ей нужен запас контраста. */
   color: var(--ryk-text-secondary);
   white-space: nowrap;
   transition:
@@ -58,7 +52,7 @@
 
 /* Активный: розовая пилюля с ink-текстом (контраст ≈8:1). */
 .active {
-  background: var(--ryk-pink);
+  background: var(--foil-strip);
   color: var(--ryk-ink);
 }
 

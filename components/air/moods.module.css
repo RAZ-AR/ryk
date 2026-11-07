@@ -1,0 +1,43 @@
+/* Настроения тумана: четыре цвета на класс. Общие для Fog и Orb. */
+.dawn {
+  --fog-1: var(--fog-dawn-1);
+  --fog-2: var(--fog-dawn-2);
+  --fog-3: var(--fog-dawn-3);
+  --fog-4: var(--fog-dawn-4);
+}
+.sky {
+  --fog-1: var(--fog-sky-1);
+  --fog-2: var(--fog-sky-2);
+  --fog-3: var(--fog-sky-3);
+  --fog-4: var(--fog-sky-4);
+}
+.rose {
+  --fog-1: var(--fog-rose-1);
+  --fog-2: var(--fog-rose-2);
+  --fog-3: var(--fog-rose-3);
+  --fog-4: var(--fog-rose-4);
+}
+.mint {
+  --fog-1: var(--fog-mint-1);
+  --fog-2: var(--fog-mint-2);
+  --fog-3: var(--fog-mint-3);
+  --fog-4: var(--fog-mint-4);
+}
+.dusk {
+  --fog-1: var(--fog-dusk-1);
+  --fog-2: var(--fog-dusk-2);
+  --fog-3: var(--fog-dusk-3);
+  --fog-4: var(--fog-dusk-4);
+}
+.holo {
+  --fog-1: var(--fog-holo-1);
+  --fog-2: var(--fog-holo-2);
+  --fog-3: var(--fog-holo-3);
+  --fog-4: var(--fog-holo-4);
+}
+.ocean {
+  --fog-1: var(--fog-ocean-1);
+  --fog-2: var(--fog-ocean-2);
+  --fog-3: var(--fog-ocean-3);
+  --fog-4: var(--fog-ocean-4);
+}

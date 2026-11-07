@@ -77,6 +77,7 @@ export function EventFeed({
             // У спонсорского корешка подпись не категория, а пометка —
             // знак категории рядом с ней сообщал бы неправду.
             stubIcon={card.sponsored ? undefined : <CategoryIcon category={card.category} />}
+            emblem={<CategoryIcon category={card.category} />}
             onOpen={() => onOpen(card)}
             openLabel={t("open")}
             actions={

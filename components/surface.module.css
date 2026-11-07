@@ -1,0 +1,73 @@
+/*
+ * Материалы «Билета» (дизайн-система §3, ADR-014).
+ *
+ * По умолчанию всё лежит на ночи, и роли --ryk-* дают светлые чернила.
+ * Предмет из бумаги или фольги подключает здесь свой материал через
+ * `composes: paper from "../surface.module.css"` — и все его потомки
+ * получают тёмные чернила, тёмные линии и бумажный розовый, не зная
+ * об этом. Так одна кнопка `color: var(--ryk-ink)` правильна и на поле,
+ * и внутри корешка.
+ *
+ * Фон здесь не задаём: заливку выбирает сам компонент (бумага, фольга,
+ * подложка), а материал отвечает только за чернила.
+ */
+
+.paper {
+  --ryk-ink: var(--tk-ink);
+  --ryk-on-ink: var(--tk-paper);
+  --ryk-text-secondary: var(--tk-ink-2);
+  --ryk-text-muted: var(--tk-ink-muted);
+  --ryk-text-faint: var(--tk-ink-faint);
+  --ryk-text-disabled: var(--tk-ink-disabled);
+  --ryk-pink-text: var(--tk-pink-on-paper);
+  --ryk-pink-deep: var(--tk-pink-deep-on-paper);
+  --ryk-success: var(--tk-success-on-paper);
+
+  --ryk-surface-card: var(--tk-paper-2);
+  --ryk-surface-stub: var(--tk-paper-2);
+  --ryk-surface-muted: var(--tk-paper-2);
+  --ryk-grey: var(--tk-paper-3);
+
+  --ryk-border-strong: var(--tk-ink);
+  --ryk-border-card: rgba(13, 13, 15, 0.22);
+  --ryk-border-row: var(--tk-ink-line);
+  --ryk-border-dashed: rgba(13, 13, 15, 0.32);
+  --ryk-border-muted-dash: rgba(13, 13, 15, 0.3);
+
+  color: var(--ryk-ink);
+}
+
+/*
+ * Чернила на фольге. Перелив местами темнеет до 3.8:1 против серого
+ * подписи, поэтому на фольге вторичный и приглушённый текст — почти
+ * чёрные: иерархию держат кегль и капс, а не серость.
+ *
+ * Подключается только вместе с бумагой: `composes: paper onFoil`.
+ * Цепочку из трёх composes сборка не разворачивает — поэтому плоско.
+ */
+.onFoil {
+  --ryk-text-secondary: var(--tk-ink);
+  --ryk-text-muted: var(--tk-ink-2);
+  --ryk-text-faint: var(--tk-ink-2);
+}
+
+/* Фольга — бумага по чернилам, но с переливом вместо заливки. */
+.foil {
+  composes: paper onFoil;
+  background: var(--foil-rose);
+}
+
+.foilSun {
+  composes: paper onFoil;
+  background: var(--foil-sun);
+}
+
+.foilSilver {
+  composes: paper onFoil;
+  background: var(--foil-silver);
+}
+
+.foilStrip {
+  composes: paper onFoil;
+  background: var(--foil-strip);
+}

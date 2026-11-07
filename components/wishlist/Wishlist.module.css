@@ -11,15 +11,23 @@
 }
 
 .heading {
-  font-size: 44px;
-  letter-spacing: -2px;
+  font-family: var(--ryk-font-display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
   color: var(--ryk-ink);
   margin-top: 6px;
 }
 
 .count {
-  font-size: 44px;
-  letter-spacing: -2px;
+  font-family: var(--ryk-font-display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
   color: var(--ryk-pink);
 }
 
@@ -149,6 +157,7 @@
   z-index: 8;
   overflow-y: auto;
   background: var(--ryk-paper);
+  box-shadow: inset 0 1px 0 var(--ryk-border-row);
 }
 
 .meta {
@@ -185,16 +194,16 @@
 }
 
 .textarea {
+  composes: paper from "../surface.module.css";
   width: 100%;
   min-height: 100px;
   margin-top: 18px;
-  border: 1px solid var(--ryk-border-strong);
-  border-radius: var(--ryk-radius-none);
-  background: var(--ryk-white);
-  color: var(--ryk-text-secondary);
+  border: 1px solid transparent;
+  border-radius: var(--ryk-radius-card);
+  background: var(--tk-paper);
+  color: var(--ryk-ink);
   font-family: var(--ryk-font-serif);
   font-size: 19px;
-  font-style: italic;
   line-height: 1.45;
   padding: 18px;
   resize: none;
@@ -228,7 +237,9 @@
 }
 
 .valuePink {
-  background: var(--ryk-pink);
+  composes: paper onFoil from "../surface.module.css";
+  background: var(--foil-strip);
+  border-radius: var(--ryk-radius-field);
   color: var(--ryk-ink);
   padding: 4px 10px;
   font-size: 14px;

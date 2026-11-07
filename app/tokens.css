@@ -1,47 +1,153 @@
 /*
  * Ryk design tokens — единственный источник значений в коде.
- * Соответствует ryk_docs/17-design-system.md (v0.2, хендофф «бумага + билет»).
+ * Соответствует ryk_docs/17-design-system.md v2.0 «Билет» (ADR-014).
+ *
+ * Направление: светлая бумага, на ней — билеты из двух материалов:
+ * голографическая фольга с зерном (верх билета, главное действие) и
+ * матовая бумага (корешок, карточки, поля). Всё остальное — типографика
+ * и тонкие линии, как на спецификации билета.
+ *
  * Правило: hex-литералов в компонентах нет. Новый оттенок — сначала в док, потом сюда.
  */
 
+/* ═══ 1. Материалы: сырые значения. В компонентах напрямую не используются. ═══ */
+:root {
+  /* Бумага. Поле экрана — тёплая серая бумага, предметы — светлее неё. */
+  --tk-page: #e8e7e3;
+  --tk-paper: #f7f7f4;
+  --tk-paper-2: #ebebe7;
+  --tk-paper-3: #deded9;
+  --tk-ink: #0d0d0f;
+  --tk-ink-2: #2c2c2e;
+  --tk-ink-muted: #5a5a57;
+  --tk-ink-faint: #66665f;
+  --tk-ink-disabled: #9a9a94;
+  --tk-ink-line: rgba(13, 13, 15, 0.16);
+
+  /*
+   * Фольга. Не линейный градиент, а пять мягких пятен поверх подложки —
+   * так переливается настоящая голограмма: цвет «плывёт» пятнами, а не
+   * полосами. Две основные фольги — как на референсе: розовая (бренд) и
+   * солнечная. Серебряная — для нейтрального (приглашение).
+   */
+  /*
+   * Фольга — те же светлые размытые пятна, что в живой фольге карточек
+   * (палитра --art-*), только неподвижные. Каждое пятно — эллипс,
+   * растворяющийся к краю: так заливка читается как размытый свет,
+   * а не как радужная полоса. Пятна заданы в процентах, поэтому одинаково
+   * ложатся и на широкую кнопку, и на маленькую пилюлю.
+   */
+  --foil-rose:
+    var(--grain), radial-gradient(48% 110% at 14% 40%, var(--art-rose-1), transparent),
+    radial-gradient(45% 110% at 52% 70%, var(--art-silver-2), transparent),
+    radial-gradient(42% 110% at 88% 30%, var(--art-rose-2), transparent),
+    radial-gradient(36% 90% at 70% 100%, var(--art-rose-3), transparent), var(--art-base);
+  --foil-sun:
+    var(--grain), radial-gradient(48% 110% at 12% 35%, var(--art-sun-3), transparent),
+    radial-gradient(45% 110% at 50% 70%, var(--art-sun-1), transparent),
+    radial-gradient(44% 110% at 90% 35%, var(--art-sun-2), transparent), var(--art-base);
+  --foil-silver:
+    var(--grain), radial-gradient(50% 110% at 15% 40%, var(--art-silver-1), transparent),
+    radial-gradient(48% 110% at 85% 45%, var(--art-silver-2), transparent),
+    radial-gradient(40% 90% at 50% 100%, var(--art-silver-3), transparent), var(--art-base);
+  /*
+   * Рифлёное стекло над размытыми цветными пятнами — «живая» фольга
+   * карточек. Три светлых пятна медленно плывут под вертикальными рёбрами
+   * стекла. Тона светлые, пастельные: карточка — свет, а не заливка.
+   * Палитра пятен — по тону карточки.
+   */
+  --art-base: #f3f1f7;
+  --art-rose-1: #ffa3cf;
+  --art-rose-2: #a9c6ff;
+  --art-rose-3: #ffe08c;
+  --art-sun-1: #ffaa9d;
+  --art-sun-2: #9fcbff;
+  --art-sun-3: #ffdd84;
+  --art-silver-1: #f8dbe9;
+  --art-silver-2: #dbe6ff;
+  --art-silver-3: #fdf1c8;
+  /* Квадрат светится от жёлтого к оранжевому, как на референсе. */
+  --art-glow: #ffc683;
+  /* Рёбра стекла: блик, мягкая тень, снова блик — период 9px. */
+  --reeded:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.85) 0 1px,
+      rgba(255, 255, 255, 0.3) 2px,
+      rgba(255, 255, 255, 0) 4.5px,
+      rgba(30, 20, 60, 0.06) 7px,
+      rgba(255, 255, 255, 0.5) 9px
+    ),
+    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18));
+  --reeded-edge: rgba(255, 255, 255, 0.9);
+
+  /* Фольга для пилюль и кнопок: розовое, сиреневое, голубое и тёплое пятна. */
+  --foil-strip:
+    radial-gradient(40% 130% at 8% 50%, var(--art-rose-1), transparent),
+    radial-gradient(38% 130% at 38% 40%, var(--art-silver-2), transparent),
+    radial-gradient(38% 130% at 66% 60%, var(--art-rose-2), transparent),
+    radial-gradient(34% 130% at 96% 45%, var(--art-rose-3), transparent), var(--art-base);
+
+  /*
+   * Зерно. Чёрная крупка с переменной прозрачностью — печать по фольге.
+   * Кладётся одним фиксированным слоем на весь экран (globals.css):
+   * на ночи невидима, на фольге и бумаге даёт фактуру риографа.
+   */
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.32 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+
+  /* Бренд. Розовый живёт в фольге и в точечных акцентах. */
+  --tk-pink: #f387c8;
+  --tk-pink-on-paper: #a23c7c;
+  --tk-pink-deep-on-paper: #a92d75;
+  --tk-on-pink: #3a1530;
+  --tk-success-on-paper: #3d6a21;
+}
+
+/*
+ * ═══ 2. Роли. Тема одна — светлая (бумага). ═══
+ *
+ * Фольга переопределяет вторичный текст через
+ * components/surface.module.css (.onFoil): на переливе серый не держит контраст.
+ */
 :root {
   /* --- Бренд и действие --- */
-  --ryk-pink: #f387c8;
-  --ryk-pink-deep: #d65aa6;
-  --ryk-pink-text: #b0468a; /* мелкий розовый текст на бумаге (контраст, §9) */
-  --ryk-grey: #919597;
-  --ryk-grey-surface: #949598;
+  --ryk-pink: var(--tk-pink);
+  --ryk-pink-deep: var(--tk-pink-deep-on-paper);
+  --ryk-pink-text: var(--tk-pink-on-paper);
+  --ryk-grey: var(--tk-paper-3);
+  --ryk-grey-surface: var(--tk-paper-2);
 
   /* --- Бумага и поверхности --- */
-  --ryk-paper: #ebeae7;
-  --ryk-white: #ffffff;
-  --ryk-surface-card: #f3f2ef;
-  --ryk-surface-stub: #dad9d6;
-  --ryk-surface-muted: #e0dfdc;
+  --ryk-paper: var(--tk-page); /* фон экрана */
+  --ryk-white: var(--tk-paper); /* корешок билета, поля, карточки */
+  --ryk-surface-card: var(--tk-paper);
+  --ryk-surface-stub: var(--tk-paper-2);
+  --ryk-surface-muted: var(--tk-paper-2);
 
   /* --- Текст --- */
-  --ryk-ink: #111111;
-  --ryk-text-secondary: #2b2b2b;
-  --ryk-text-muted: #8a8a8a;
-  --ryk-text-faint: #9a9a9a;
-  --ryk-text-disabled: #b5b4b1;
-  --ryk-text-on-pink: #7a4265;
+  --ryk-ink: var(--tk-ink);
+  --ryk-on-ink: var(--tk-paper); /* текст на заливке цвета ink */
+  --ryk-text-secondary: var(--tk-ink-2);
+  --ryk-text-muted: var(--tk-ink-muted);
+  --ryk-text-faint: var(--tk-ink-faint);
+  --ryk-text-disabled: var(--tk-ink-disabled);
+  --ryk-text-on-pink: var(--tk-on-pink);
 
-  /* --- Границы --- */
-  --ryk-border-strong: #111111;
-  --ryk-border-card: #c6c5c2;
-  --ryk-border-row: #d5d4d1;
-  --ryk-border-dashed: #bfbebb;
-  --ryk-border-muted-dash: #a6a5a2;
+  /* --- Линии: тонкие, как сетка на корешке --- */
+  --ryk-border-strong: var(--tk-ink);
+  --ryk-border-card: rgba(13, 13, 15, 0.2);
+  --ryk-border-row: var(--tk-ink-line);
+  --ryk-border-dashed: rgba(13, 13, 15, 0.32);
+  --ryk-border-muted-dash: rgba(13, 13, 15, 0.3);
 
   /* --- Семантика и акценты --- */
-  --ryk-success: #5a8036;
-  --ryk-dot-pink: #f387c8;
+  --ryk-success: var(--tk-success-on-paper);
+  --ryk-dot-pink: var(--tk-pink);
   --ryk-dot-rose: #c99bb0;
   --ryk-dot-gold: #d9c55a;
-  --ryk-task-todo: #f387c8;
+  --ryk-task-todo: var(--tk-pink);
   --ryk-task-plan: #b9bcbe;
-  --ryk-task-done: #111111;
+  --ryk-task-done: var(--tk-ink);
 
   /* --- Отступы --- */
   --ryk-space-1: 4px;
@@ -52,90 +158,212 @@
   --ryk-space-6: 24px;
   --ryk-space-7: 28px;
   --ryk-space-8: 32px;
-  --ryk-screen-x: 26px;
-  --ryk-screen-top: 28px;
-  --ryk-screen-bottom-dock: 92px; /* CTA не уходят под dock */
+  --ryk-screen-x: 20px;
+  --ryk-screen-top: 24px;
+  --ryk-screen-bottom-dock: 104px; /* CTA не уходят под dock */
 
-  /* --- Радиусы: по умолчанию 0, исключения точечные --- */
-  --ryk-radius-none: 0;
+  /*
+   * --- Радиусы: система, а не одно число ---
+   * 6 — поля и чипы-ячейки, 12 — кнопки и карточки, 18 — билет,
+   * пилюля — только док. Билет на референсе скруглён скромно (~6% ширины):
+   * это вырубка картона, а не «мягкий» UI.
+   */
+  --ryk-radius-none: 6px; /* имя историческое */
+  --ryk-radius-field: 6px;
+  --ryk-radius-card: 12px;
   --ryk-radius-photo: 10px;
-  --ryk-radius-ticket: 16px;
-  --ryk-radius-dock: 22px;
-  --ryk-radius-dock-pill: 16px;
+  --ryk-radius-ticket: 18px;
+  --ryk-radius-dock: 12px;
+  --ryk-radius-dock-pill: 999px;
 
   /*
-   * --- Тени: всего четыре ---
-   *
-   * У теней на бумаге два слоя, и это не украшательство. Палитра светлая и
-   * тесная: белый верх билета к бумаге даёт контраст 1.20, серый корешок —
-   * 1.17. Одна широкая тень (было `0 8px 24px` при 12%) размазывается на
-   * 24px, до самого края доходят единицы процентов, и карточка сливается
-   * с фоном — что и было видно на телефоне.
-   *
-   * Поэтому: короткий плотный слой рисует край, широкий даёт объём.
+   * --- Тени ---
+   * На ночи тень не видна, поэтому она работает как отрыв от поля:
+   * короткий тёмный слой по краю + широкий выход. Цветной каустики нет.
    */
-  --ryk-shadow-ticket: 0 1px 3px rgba(0, 0, 0, 0.24), 0 12px 30px rgba(0, 0, 0, 0.18);
-  /*
-   * Та же тень для вырубленной формы. У билета вырезы перфорации сделаны
-   * маской, а `box-shadow` рисуется по прямоугольнику элемента и маской
-   * срезается — тень бы обрывалась по краю и не заходила в вырез. Поэтому
-   * билету тень даёт `filter: drop-shadow`, который считает силуэт после
-   * маски. Слои и плотности — те же, что у `--ryk-shadow-ticket`.
-   */
-  --ryk-drop-ticket: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.24))
-    drop-shadow(0 12px 30px rgba(0, 0, 0, 0.18));
-  /*
-   * Мелкие объекты: кружок карусели, афиша внутри шторы. Широкий вынос
-   * билета на предмете в 64px превращается в пятно шире самого предмета.
-   */
-  --ryk-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 5px 14px rgba(0, 0, 0, 0.14);
-  /*
-   * Матовый dock лежит НА контенте, а не на бумаге, поэтому тень у него
-   * мягче карточной: плотный слой сообщал бы вес, которого у стекла нет.
-   */
-  --ryk-shadow-dock: 0 1px 2px rgba(17, 17, 17, 0.1), 0 10px 30px rgba(17, 17, 17, 0.14);
-  --ryk-shadow-toast: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --ryk-shadow-ticket: 0 1px 2px rgba(13, 13, 15, 0.08), 0 22px 40px -22px rgba(13, 13, 15, 0.45);
+  --ryk-drop-ticket: drop-shadow(0 1px 1px rgba(13, 13, 15, 0.14))
+    drop-shadow(0 14px 22px rgba(13, 13, 15, 0.16));
+  --ryk-shadow-card: 0 1px 2px rgba(13, 13, 15, 0.06), 0 12px 26px -16px rgba(13, 13, 15, 0.4);
+  --ryk-shadow-dock: 0 1px 2px rgba(13, 13, 15, 0.08), 0 16px 34px -14px rgba(13, 13, 15, 0.45);
+  --ryk-shadow-toast: 0 18px 40px -16px rgba(13, 13, 15, 0.45);
 
-  /*
-   * --- Матовое стекло дока ---
-   *
-   * 0.72, а не меньше: под доком проезжает контент, и прозрачность решает,
-   * насколько сильно он утащит фон. При 0.72 худший случай (ink-контент
-   * под стеклом) даёт #BCBCBC, на котором ink-текст держит 9.4:1,
-   * а text-secondary — 6.9:1. При 0.5 было бы уже 4.4 и 3.2 — провал.
-   * Поэтому неактивные пилюли живут на text-secondary, а не на muted:
-   * muted (#8A8A8A) не проходит даже над бумагой (3.3:1).
-   */
-  --ryk-glass: rgba(255, 255, 255, 0.72);
-  --ryk-glass-border: rgba(17, 17, 17, 0.08);
-  --ryk-glass-blur: saturate(1.4) blur(20px);
-
-  /* --- Motion --- */
-  --ryk-duration-micro: 120ms;
-  --ryk-duration-standard: 200ms;
+  /* --- Motion: коротко и по делу. Фольга не течёт сама по себе. --- */
+  --ryk-duration-micro: 140ms;
+  --ryk-duration-standard: 240ms;
   --ryk-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 
-  /* --- Гарнитуры (переменные приходят из next/font в layout.tsx) ---
-     Prata держит и интерфейс, и билет. Вес у неё один — 400, курсива нет,
-     поэтому насыщенностью в системе не различаем ничего: иерархию задают
-     кегль, регистр и трекинг. Жирный остаётся только там, где под ним
-     реальное начертание, — PT Serif (700) и IBM Plex Mono (500). */
+  /*
+   * --- Гарнитуры (переменные приходят из next/font в layout.tsx) ---
+   * Исходные шрифты продукта: Prata — интерфейс и заголовок билета
+   * (один вес 400: иерархию держат кегль, регистр и трекинг), PT Serif —
+   * текст, IBM Plex Mono — служебные строки билета, Caveat — рукописная ремарка.
+   */
   --ryk-font-ui: var(--font-prata), Georgia, serif;
+  --ryk-font-display: var(--font-prata), Georgia, serif;
   --ryk-font-serif: var(--font-pt-serif), Georgia, serif;
   --ryk-font-ticket: var(--font-prata), Georgia, serif;
   --ryk-font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --ryk-font-hand: var(--font-caveat), cursive;
 
   /* --- Детали билета --- */
-  --ryk-perforation: 2px dashed rgba(17, 17, 17, 0.4);
-  --ryk-notch-size: 22px;
+  --ryk-perforation: 1.5px dashed var(--ryk-border-dashed);
+  --ryk-notch-size: 20px;
   --ryk-barcode: repeating-linear-gradient(
     90deg,
-    #111 0 2px,
+    var(--tk-ink) 0 2px,
     transparent 2px 4px,
-    #111 4px 7px,
+    var(--tk-ink) 4px 7px,
     transparent 7px 9px,
-    #111 9px 10px,
+    var(--tk-ink) 9px 10px,
     transparent 10px 13px
   );
+  /* Шахматная лента — как полоса под сеткой на корешке референса. */
+  --ryk-checker: conic-gradient(
+      var(--tk-ink) 25%,
+      transparent 0 50%,
+      var(--tk-ink) 0 75%,
+      transparent 0
+    )
+    0 0 / 8px 8px;
+  --giant: clamp(72px, 24vw, 132px);
+}
+
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * v1.0 «Воздух» — ЧЕРНОВИК (ADR-013, Proposed).
+ *
+ * Пока живёт только на витрине /design/air: продукт по-прежнему рисуется
+ * токенами v0.2 выше. Когда направление примут, v0.2 уйдёт целиком,
+ * а не будет жить рядом, — две палитры в одном экране это и есть разъезд.
+ *
+ * Основа светлая. Цвет — не заливка, а «туман»: размытые пятна,
+ * которые задают настроение карточке. Сверху — матовое стекло.
+ * ═══════════════════════════════════════════════════════════════════
+ */
+:root {
+  /* --- Основа --- */
+  --air-bg: #f7f5fb;
+  --air-surface: #ffffff;
+  --air-ink: #241d36;
+  --air-text-secondary: #463d57;
+  /* 5.0:1 на --air-bg и 5.4:1 на белом — мельче подписей не опускаемся. */
+  --air-text-muted: #6b5f78;
+  --air-line: rgba(22, 21, 27, 0.1);
+  --air-on-deep: #ffffff;
+  --air-pink: #f387c8;
+  --air-pink-text: #b0468a;
+
+  /* --- Стекло --- */
+  --air-glass: rgba(255, 255, 255, 0.5);
+  --air-glass-strong: rgba(255, 255, 255, 0.78);
+  --air-glass-border: rgba(255, 255, 255, 0.8);
+  --air-glass-blur: saturate(1.6) blur(24px);
+  --air-glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  /* --- Тени: мягкие и холодные, с лиловым подтоном тумана --- */
+  --air-shadow-soft: 0 1px 3px rgba(38, 30, 72, 0.06), 0 8px 24px rgba(38, 30, 72, 0.08);
+  --air-shadow-float: 0 2px 6px rgba(38, 30, 72, 0.06), 0 18px 48px rgba(38, 30, 72, 0.14);
+  --air-drop-ticket: drop-shadow(0 2px 4px rgba(38, 30, 72, 0.08))
+    drop-shadow(0 16px 32px rgba(38, 30, 72, 0.14));
+
+  /*
+   * --- Туманы: по четыре цвета ---
+   * 1–3 — пятна, 4 — подложка между ними. Настроение задаёт контекст:
+   * время суток, категория, погода. Новое настроение — четыре токена здесь.
+   */
+  --fog-dawn-1: #ffcfb4;
+  --fog-dawn-2: #fbe6a0;
+  --fog-dawn-3: #cbb7f4;
+  --fog-dawn-4: #f3eefb;
+
+  --fog-sky-1: #a8dcff;
+  --fog-sky-2: #7fb6ff;
+  --fog-sky-3: #c9c4ff;
+  --fog-sky-4: #eaf4ff;
+
+  --fog-rose-1: #f387c8;
+  --fog-rose-2: #ffa587;
+  --fog-rose-3: #b9a0f6;
+  --fog-rose-4: #fff0e8;
+
+  --fog-mint-1: #b5efd4;
+  --fog-mint-2: #e7f59c;
+  --fog-mint-3: #8fd3e0;
+  --fog-mint-4: #eefaf4;
+
+  --fog-dusk-1: #c6a6ff;
+  --fog-dusk-2: #f6a3c9;
+  --fog-dusk-3: #8f9cf0;
+  --fog-dusk-4: #fbeef5;
+
+  --fog-holo-1: #fff38c;
+  --fog-holo-2: #ff9ad2;
+  --fog-holo-3: #8a96ff;
+  --fog-holo-4: #c8f6ff;
+
+  /* Глубокий туман — единственный, на котором текст белый. */
+  --fog-ocean-1: #8fd8ff;
+  --fog-ocean-2: #2f7bff;
+  --fog-ocean-3: #1a2fa8;
+  --fog-ocean-4: #1c3fb8;
+
+  /* --- Радиусы: скругление — норма, прямой угол — исключение --- */
+  --air-radius-sheet: 40px;
+  --air-radius-card: 32px;
+  --air-radius-ticket: 24px;
+  --air-radius-field: 20px;
+  --air-radius-pill: 999px;
+
+  /* --- Гарнитуры: один гротеск + моно для служебных строк билета --- */
+  --air-font: var(--ryk-font-ui);
+  --air-font-mono: var(--ryk-font-mono);
+
+  /* --- Движение: туман дышит медленно, остальное — коротко --- */
+  --air-duration-fog: 18s;
+  --air-duration: 240ms;
+  --air-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  --air-tear: 2px dashed rgba(22, 21, 27, 0.18);
+
+  /* --- v1.2: перелив — нужен только витрине /design/air --- */
+  --shimmer: linear-gradient(
+    100deg,
+    #ffc4e6 0%,
+    #c9b8ff 18%,
+    #bfe6ff 36%,
+    #d2f4ea 52%,
+    #ffe3c7 68%,
+    #ffb6de 84%,
+    #ffc4e6 100%
+  );
+  --shimmer-duration: 9s;
+
+  /*
+   * --- v1.1 «Облако» (совет дизайнеров) ---
+   * Объём делают не backdrop-filter, а стопка внутренних теней и молочная
+   * вуаль: цвет светится изнутри плиты и уходит в белое к краям.
+   * backdrop-filter — только у дока; filter — только на неподвижных слоях.
+   */
+  --air-milk: rgba(255, 255, 255, 0.92);
+  --air-rim: rgba(255, 248, 252, 0.95);
+  --air-cloud-pink: #ffd6ec;
+  --air-cloud-blue: #d3e3ff;
+  --air-cloud-lilac: #e4d9ff;
+  --air-cloud-mint: #d2f4ea;
+  --air-cloud-peach: #ffe4cf;
+  /* Иридесцентный веер: стопы сжаты в видимый сектор, центр за краем. */
+  --air-iris: conic-gradient(
+    from 0deg at 30% -15%,
+    #ffc4e6 125deg,
+    #c9b8ff 155deg,
+    #bfe6ff 185deg,
+    #ffd9c2 215deg,
+    #ffc4e6 235deg
+  );
+  --air-iris-orb: conic-gradient(from 0deg, #ffc2dd, #c9d4ff, #c8f3e8, #ffe3c7, #ffc2dd);
+  --air-lens: linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.5));
+  --air-lens-shadow:
+    inset 0 1px 0 #fff, inset 0 -8px 16px rgba(255, 255, 255, 0.55),
+    0 8px 20px -6px rgba(110, 80, 190, 0.28);
 }

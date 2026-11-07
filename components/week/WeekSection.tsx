@@ -23,6 +23,7 @@ import { HandNote } from "@/components/HandNote";
 import { Input } from "@/components/Input";
 import { RykNote } from "@/components/RykNote";
 import { SvcLabel } from "@/components/SvcLabel";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { Ticket } from "@/components/Ticket";
 import { CheckinView } from "./CheckinView";
 import { RescueView } from "./RescueView";
@@ -93,6 +94,7 @@ export function WeekSection({ view }: { view: WeeklyView }) {
       metaLeft={durationLabel(null)}
       metaRight={priceLabel(story.price, story.currency)}
       metaRightSub={tCat(story.category)}
+      emblem={<CategoryIcon category={story.category} />}
       title={story.title}
       stubTone="pink"
       stubLabel={stubLabel}
@@ -456,6 +458,7 @@ export function WeekSection({ view }: { view: WeeklyView }) {
           metaLeft={durationLabel(c.durationMin)}
           metaRight={priceLabel(c.price, c.currency)}
           metaRightSub={tCat(c.category)}
+          emblem={<CategoryIcon category={c.category} />}
           title={c.title}
           stubTone="pink"
           stubLabel={c.sponsored ? `${t("stubLabel")} · ${t("sponsored")}` : t("stubLabel")}

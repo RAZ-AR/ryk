@@ -1,0 +1,62 @@
+/*
+ * Стекло-линза без backdrop-filter: на молочной плите имитация
+ * неотличима от размытия, а WebView не платит за пересчёт фона.
+ */
+.glass {
+  position: relative;
+  background: var(--air-lens);
+  border: 1px solid var(--air-rim);
+  box-shadow: var(--air-lens-shadow);
+  color: inherit;
+}
+
+.strong {
+  background: linear-gradient(160deg, #fff, rgba(255, 255, 255, 0.78));
+}
+
+.capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ryk-space-2);
+  min-height: 40px;
+  padding: 0 var(--ryk-space-4);
+  border-radius: var(--air-radius-pill);
+  font-family: var(--air-font);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.round {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  transition: transform var(--air-duration) var(--air-ease);
+}
+
+/* Блик линзы. */
+.round::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(40% 30% at 32% 22%, rgba(255, 255, 255, 0.95), transparent);
+}
+
+.round:active {
+  transform: scale(0.94);
+}
+
+.round:focus-visible {
+  outline: 2px solid var(--air-ink);
+  outline-offset: 3px;
+}
+
+.round svg {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+}

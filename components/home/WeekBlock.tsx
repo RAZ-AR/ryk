@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { WeeklyView } from "@/lib/engine/weekly";
 import { SvcLabel } from "@/components/SvcLabel";
+import { ReededArt } from "@/components/ReededArt";
 import styles from "./WeekBlock.module.css";
 
 /*
@@ -96,6 +97,7 @@ export function WeekBlock({ view, onOpen }: { view: WeeklyView; onOpen: () => vo
       className={[styles.block, c.quiet && styles.quiet].filter(Boolean).join(" ")}
       onClick={onOpen}
     >
+      <ReededArt tone={c.quiet ? "silver" : "rose"} seed={c.title} />
       <span className={styles.head}>
         <SvcLabel tone="ink">{c.kicker}</SvcLabel>
         <SvcLabel tone={c.quiet ? "muted" : "ink"}>{t("open")}</SvcLabel>

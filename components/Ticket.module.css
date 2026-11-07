@@ -23,127 +23,241 @@
   flex-direction: column;
 }
 
-/* --- Верх: белая часть с фото и заголовком --- */
+/* --- Верх: фольга. Как у референса — всё по центру, сверху вниз:
+       эмблема → строка серии → заголовок с орбитой → «+ подпись +» → черта. --- */
 .top {
-  background: var(--ryk-white);
+  composes: paper onFoil from "./surface.module.css";
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 18px 22px 20px;
+  /* Кегль заголовка считается от ширины билета (cqi), а не экрана. */
+  container-type: inline-size;
+  /* Сама заливка — в ReededArt (фигуры под рифлёным стеклом, цвет по тону). */
+  background: var(--art-base);
   border-radius: var(--ryk-radius-ticket) var(--ryk-radius-ticket) 0 0;
 }
 
-.photo {
-  padding: var(--ryk-space-3) var(--ryk-space-3) 0;
+/* Контент и отверстия — поверх живой фольги. */
+.top > :not(:first-child) {
+  position: relative;
+  z-index: 1;
 }
 
-.photoInner {
-  /* Опора для узора и афиши: они позиционируются абсолютно, чтобы размер
-     задавал слот, а не пропорция SVG (иначе компактный билет растягивается). */
+/* Пробитые отверстия в верхних углах — кольцо чернил, фольга видна насквозь. */
+.top::before,
+.top::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ryk-ink);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.top::before {
+  left: 14px;
+}
+
+.top::after {
+  right: 14px;
+}
+
+/*
+ * Эмблема — маленькое окно с узором впечатления (как глобус над
+ * «2020 TOKYO OLYMPICS»). Узор позиционируется абсолютно, поэтому
+ * размер задаёт окно; подложку узора делаем прозрачной — видна фольга.
+ */
+.emblem {
   position: relative;
-  border-radius: var(--ryk-radius-photo);
+  width: 92px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1.5px solid var(--ryk-ink);
   overflow: hidden;
-  background: var(--ryk-surface-card);
-  border: 1px dashed var(--ryk-border-dashed);
+  --ryk-surface-muted: transparent;
+  color: var(--ryk-text-faint);
+  font-size: 9px;
+}
+
+/* Эмблема-знак: тонкий знак категории в кольце, без узора за ним. */
+.emblemSign {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 180px;
-  color: var(--ryk-text-faint);
-  font-size: 12px;
-}
-
-/* Строка «день ——— час» */
-.meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: var(--ryk-space-4) 18px 0;
-  font-family: var(--ryk-font-mono);
-  font-size: 14px;
   color: var(--ryk-ink);
 }
 
-.rule {
-  flex: 1;
-  border-top: 1px solid var(--ryk-border-strong);
-  margin: 0 var(--ryk-space-3);
-  transform: translateY(-4px);
+.emblemSign svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.1;
 }
 
-.metaRight {
-  text-align: right;
+.compact .emblemSign svg {
+  width: 18px;
+  height: 18px;
 }
 
-.metaSub {
-  display: block;
-  font-size: 9px;
-  color: var(--ryk-text-faint);
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
 }
 
+/* Заголовок с орбитой: эллипс проходит сквозь буквы, как кольцо вокруг «野球». */
+.titleWrap {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  margin-top: 22px;
+  padding: 14px 4px;
+}
+
+/*
+ * У Prata тонкие штрихи: кольцо, проходящее сквозь строку, читалось бы
+ * как зачёркивание. Поэтому орбита шире и выше блока текста — она
+ * обходит заголовок и пересекает его только по краям, и она тоньше.
+ */
+.titleWrap::before {
+  content: "";
+  position: absolute;
+  left: -7%;
+  right: -7%;
+  top: 50%;
+  height: 118%;
+  border: 1px solid var(--ryk-ink);
+  opacity: 0.55;
+  border-radius: 50%;
+  transform: translateY(-50%) rotate(-6deg);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/*
+ * Заголовок должен помещаться целиком:
+ *  - кегль от ширины билета: 30px на обычном, меньше на узком;
+ *  - строки выровнены (`balance`), без одинокого слова внизу;
+ *  - длинное слово переносится с дефисом по правилам языка страницы —
+ *    но только слово от 10 букв и не ближе 4 букв к краю, поэтому
+ *    обычные заголовки не покрываются дефисами;
+ *  - `break-word` — последняя страховка, если словаря переносов нет.
+ */
 .title {
   font-family: var(--ryk-font-ticket);
-  font-size: 34px;
-  line-height: 1.06;
-  text-align: center;
-  padding: 6px 18px 18px;
-  letter-spacing: 0.04em;
-  color: var(--ryk-ink);
+  font-size: clamp(22px, 9.5cqi, 30px);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
-  /*
-   * Длинное слово рвём, а не выпускаем за край билета: на 375px
-   * «ПЕТРОВАРАДИНСКОЙ» кеглем 34 не влезает ни при каком переносе по
-   * пробелам и вылезала за белую часть. Не `hyphens: auto` — та расставила
-   * бы переносы во всех заголовках подряд и поменяла бы вид каждого билета;
-   * `break-word` срабатывает только тогда, когда слово правда не влезает.
-   */
+  color: var(--ryk-ink);
+  text-wrap: balance;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 10 4 4;
   overflow-wrap: break-word;
 }
 
+/* «+ BASEBALL +» — подпись под заголовком. */
+.sub {
+  margin-top: 14px;
+  font-family: var(--ryk-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ryk-ink);
+}
+
 .note {
+  margin-top: 10px;
   font-family: var(--ryk-font-serif);
   font-size: 14px;
   font-style: italic;
   line-height: 1.45;
   color: var(--ryk-text-secondary);
-  text-align: center;
-  padding: 0 22px var(--ryk-space-4);
 }
 
-/* Компактный билет — для ленты на главном: та же анатомия и та же
-   метафора, просто ниже, чтобы в поток помещалось несколько подряд.
-   Меняем только размеры, ничего не выключаем. */
-.compact .photoInner {
-  min-height: 104px;
+/* Черта внизу фольги — как подчёркивание «東京オリンピック». */
+.bar {
+  display: block;
+  width: 64px;
+  height: 0;
+  margin-top: 16px;
+  border-top: 1.5px solid var(--ryk-ink);
 }
 
-.compact .meta {
-  padding: var(--ryk-space-3) var(--ryk-space-4) 0;
-  font-size: 12px;
+/* Компактный билет — для ленты: та же анатомия, просто ниже. */
+.compact .top {
+  padding: 14px 18px 14px;
+}
+
+.compact .emblem {
+  width: 72px;
+  height: 30px;
+}
+
+.compact .kicker {
+  margin-top: 10px;
+}
+
+.compact .titleWrap {
+  margin-top: 16px;
+  padding: 10px 4px;
 }
 
 .compact .title {
-  font-size: 22px;
-  padding: 4px var(--ryk-space-4) var(--ryk-space-3);
+  font-size: clamp(18px, 7cqi, 22px);
+}
+
+.compact .sub {
+  margin-top: 8px;
+  font-size: 10px;
+}
+
+.compact .bar {
+  margin-top: 12px;
 }
 
 .compact .stub {
-  padding: 12px var(--ryk-space-4) 13px;
+  padding: 12px var(--ryk-space-4) 12px;
 }
 
-/* --- Корешок: перфорация, вырезы, штрихкод --- */
+.compact .num {
+  font-size: clamp(15px, 5.2cqi, 19px);
+}
+
+/* --- Корешок: бумага-спецификация --- */
 .stub {
+  composes: paper from "./surface.module.css";
   position: relative;
-  padding: 15px var(--ryk-space-5) 17px;
+  container-type: inline-size;
+  background: var(--ryk-white);
+  border-radius: 0 0 var(--ryk-radius-ticket) var(--ryk-radius-ticket);
+  padding: 16px var(--ryk-space-5) 16px;
   border-top: var(--ryk-perforation);
 }
 
-.pink {
-  background: var(--ryk-pink);
+/* Под корешком пришита полоса действий — низ у него прямой, билет продолжается. */
+.stub.cutBoth {
+  border-radius: 0;
 }
 
-.neutral {
-  background: var(--ryk-surface-stub);
-}
-
-.grey {
-  background: var(--ryk-grey);
+/* Чёрная метка на левой кромке корешка — как указатель ряда на спецификации. */
+.stub::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 22px;
+  width: 7px;
+  height: 18px;
+  background: var(--ryk-ink);
 }
 
 /* --- Вырубка: полукруглые вырезы по краям перфорации ---
@@ -213,20 +327,20 @@
 .stubBody {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 14px;
-  margin-top: 9px;
 }
 
 /*
- * Мелкий текст корешка — на PT Serif, а не на Prata. Две причины: дисплейная
- * антиква на 11.5px теряет тонкие штрихи, и у неё нет жирного, а подписи
- * полей («Почему:», «Погода:») различаются именно им. У PT Serif 700
- * настоящий, поэтому `<b>` здесь снова работает.
+ * Мелкий текст корешка — PT Serif: у неё настоящий жирный, а подписи
+ * полей («Почему:», «Погода:») различаются именно им.
  */
 .stubContent {
+  flex: 1;
+  min-width: 0;
   font-family: var(--ryk-font-serif);
-  font-size: 11.5px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.55;
   color: var(--ryk-ink);
 }
 
@@ -236,10 +350,60 @@
   letter-spacing: normal;
 }
 
+/* Крупные значения справа, каждое — с колонкой точек, как «02 ⁝ / 8月 ⁝». */
+/* Значения не шире половины корешка; кегль — от его ширины. */
+.nums {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 52%;
+}
+
+.num {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ryk-font-ticket);
+  font-size: clamp(16px, 6.4cqi, 22px);
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--ryk-ink);
+}
+
+.num::after {
+  content: "";
+  flex: none;
+  width: 3px;
+  height: 0.9em;
+  background: radial-gradient(circle, var(--ryk-ink) 1.2px, transparent 1.6px) 0 0 / 3px 6px
+    repeat-y;
+}
+
+/* Низ корешка: шахматная лента и штрихкод, как на референсе. */
+.stubFoot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ryk-border-row);
+}
+
+.checker {
+  flex: 1;
+  max-width: 120px;
+  height: 16px;
+  background: var(--ryk-checker);
+}
+
 .barcode {
-  width: 50px;
-  align-self: stretch;
-  min-height: 44px;
+  width: 96px;
+  height: 22px;
   background: var(--ryk-barcode);
 }
 
@@ -282,9 +446,12 @@
  * читается как «оторви в свою сторону», а не как две кнопки рядом.
  */
 .tear {
+  composes: paper from "./surface.module.css";
   position: relative;
   display: flex;
   border-top: var(--ryk-perforation);
+  border-radius: 0 0 var(--ryk-radius-ticket) var(--ryk-radius-ticket);
+  overflow: hidden;
 }
 
 .tear > * {
@@ -310,13 +477,4 @@
   left: 50%;
   border-left: var(--ryk-perforation);
   pointer-events: none;
-}
-
-/* Подпись корешка со знаком: знак и текст на одной оптической линии.
-   `inline-flex`, а не пробел между инлайнами, — иначе svg сидит на базовой
-   линии текста и заваливается ниже строчных. */
-.stubLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }

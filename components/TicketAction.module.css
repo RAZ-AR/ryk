@@ -21,7 +21,7 @@
 
 /* Прямые углы: у билета скруглён только верх, низ оторван. */
 .no {
-  background: var(--ryk-surface-stub);
+  background: var(--tk-paper-2);
   color: var(--ryk-ink);
 }
 
@@ -32,7 +32,7 @@
  * 3.26:1. На ink выходит ≈8:1 — то же правило, что у Button.primary (§9).
  */
 .yes {
-  background: var(--ryk-pink);
+  background: var(--foil-strip);
   color: var(--ryk-ink);
 }
 
@@ -63,7 +63,7 @@
   }
 
   .yes:hover:not(:disabled) {
-    background: var(--ryk-pink-deep);
+    background: var(--foil-rose);
   }
 }
 

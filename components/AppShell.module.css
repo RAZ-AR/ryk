@@ -11,6 +11,33 @@
   flex-direction: column;
 }
 
+/*
+ * Растушёвка под плавающей шапкой и доком. Без неё билеты уезжали
+ * прямо под плашку с логотипом и обрезались её краем. Слой — между
+ * контентом и шапкой (z 5 < 6), нажатий не перехватывает.
+ */
+.shell::before,
+.shell::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.shell::before {
+  top: 0;
+  height: calc(78px + var(--tg-safe-area-inset-top, 0px));
+  background: linear-gradient(var(--ryk-paper) 58%, transparent);
+}
+
+.shell::after {
+  bottom: 0;
+  height: calc(64px + var(--tg-safe-area-inset-bottom, 0px));
+  background: linear-gradient(transparent, var(--ryk-paper) 85%);
+}
+
 .content {
   flex: 1;
   /* Без min-height:0 флекс-элемент с overflow не сжимается своим контентом —

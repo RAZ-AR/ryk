@@ -1,0 +1,99 @@
+.leaf {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-3);
+  font-family: var(--air-font);
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  padding: var(--ryk-space-5) var(--ryk-space-6) var(--ryk-space-8);
+  border-radius: var(--air-radius-sheet);
+  min-height: 480px;
+}
+
+/* Текст над орбом; слои тумана (absolute) не трогаем. */
+.top,
+.weekday,
+.day,
+.dateLine,
+.joy {
+  position: relative;
+  z-index: 1;
+}
+
+/* Орб светит из-под фразы дня — как голос в звонке. */
+.sheet > .orb {
+  position: absolute;
+  z-index: 0;
+  right: -40px;
+  top: 96px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ryk-space-2);
+  margin-bottom: var(--ryk-space-8);
+}
+
+.pin {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.weekday {
+  font-size: 30px;
+  letter-spacing: -0.01em;
+}
+
+/* Число дня — единственная «большая цифра» экрана, тонким начертанием. */
+.day {
+  font-size: var(--giant);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  margin: 18px 0 0 -8px;
+}
+
+.dateLine {
+  margin-top: var(--ryk-space-3);
+  font-family: var(--air-font-text);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--air-text-secondary);
+}
+
+.joy {
+  margin-top: auto;
+  padding-top: var(--ryk-space-8);
+  text-align: center;
+}
+
+.joyKicker {
+  font-family: var(--air-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--air-text-secondary);
+}
+
+.joyText {
+  margin: var(--ryk-space-3) auto 0;
+  max-width: 20ch;
+  font-size: 30px;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.bubbles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ryk-space-3);
+}

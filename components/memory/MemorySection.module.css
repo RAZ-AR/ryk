@@ -11,15 +11,23 @@
 }
 
 .heading {
-  font-size: 44px;
-  letter-spacing: -2px;
+  font-family: var(--ryk-font-display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
   color: var(--ryk-ink);
   margin-top: 6px;
 }
 
 .count {
-  font-size: 44px;
-  letter-spacing: -2px;
+  font-family: var(--ryk-font-display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
   color: var(--ryk-pink);
 }
 

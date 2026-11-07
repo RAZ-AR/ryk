@@ -98,6 +98,7 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
                 stubTone="neutral"
                 stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
                 stubIcon={card.sponsored ? undefined : <CategoryIcon category={card.category} />}
+                emblem={<CategoryIcon category={card.category} />}
                 /*
                  * Та же отрывная полоса, что в ленте на главном. Она внутри
                  * карточки, а значит едет вместе с ней при свайпе — жест

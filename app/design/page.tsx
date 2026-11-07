@@ -15,27 +15,35 @@ import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
 import { RykNote } from "@/components/RykNote";
 import { SvcLabel } from "@/components/SvcLabel";
+import { ReededArt, type ArtTone } from "@/components/ReededArt";
 import { Ticket } from "@/components/Ticket";
 import styles from "./page.module.css";
 
 /**
- * Витрина дизайн-системы (ryk_docs/17-design-system.md v0.2).
+ * Витрина дизайн-системы (ryk_docs/17-design-system.md v2.0 «Билет»).
  * Внутренняя страница для проверки примитивов — не часть продуктового флоу.
  */
 
+/** Материалы v2.0: поле, бумага, чернила, бренд и четыре фольги. */
 const SWATCHES: ReadonlyArray<{ token: string; varName: string }> = [
-  { token: "pink", varName: "--ryk-pink" },
-  { token: "pink-deep", varName: "--ryk-pink-deep" },
-  { token: "pink-text", varName: "--ryk-pink-text" },
-  { token: "grey", varName: "--ryk-grey" },
-  { token: "paper", varName: "--ryk-paper" },
-  { token: "white", varName: "--ryk-white" },
-  { token: "surface-card", varName: "--ryk-surface-card" },
-  { token: "surface-stub", varName: "--ryk-surface-stub" },
-  { token: "surface-muted", varName: "--ryk-surface-muted" },
+  { token: "поле", varName: "--ryk-paper" },
+  { token: "бумага", varName: "--ryk-white" },
+  { token: "бумага-2", varName: "--ryk-surface-muted" },
   { token: "ink", varName: "--ryk-ink" },
   { token: "text-muted", varName: "--ryk-text-muted" },
+  { token: "pink", varName: "--ryk-pink" },
+  { token: "pink-text", varName: "--ryk-pink-text" },
   { token: "success", varName: "--ryk-success" },
+  { token: "фольга · роза", varName: "--foil-rose" },
+  { token: "фольга · солнце", varName: "--foil-sun" },
+  { token: "фольга · серебро", varName: "--foil-silver" },
+  { token: "фольга · лента", varName: "--foil-strip" },
+];
+
+const ART_TONES: ReadonlyArray<{ tone: ArtTone; label: string }> = [
+  { tone: "rose", label: "роза — история недели" },
+  { tone: "sun", label: "солнце — идея" },
+  { tone: "silver", label: "серебро — приглашение, тихое" },
 ];
 
 /** Все девять мотивов на одном экране — так видно, что они не похожи друг на друга. */
@@ -75,10 +83,11 @@ export default function DesignSystemPage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <SvcLabel tone="pink">Design system · v0.2</SvcLabel>
+        <SvcLabel tone="pink">Design system · v2.0 «Билет»</SvcLabel>
         <div className={styles.logo}>RYK</div>
         <p className={styles.body}>
-          Бумага и билет. Источник — хендофф <code>design_handoff_ryk/</code>.
+          Светлая бумага и билеты из фольги. Референс — голографические билеты Tokyo 2020 и рифлёное
+          стекло (ADR-014).
         </p>
       </header>
 
@@ -162,12 +171,32 @@ export default function DesignSystemPage() {
 
       <section className={styles.section}>
         <SvcLabel tone="pink">05</SvcLabel>
+        <h2 className={styles.sectionTitle}>Живая фольга</h2>
+        <p className={styles.body}>
+          Светлые размытые пятна медленно плывут под рифлёным стеклом и сдвигаются при наклоне
+          телефона. Вне экрана — пауза.
+        </p>
+        <div className={styles.artRow}>
+          {ART_TONES.map(({ tone, label }) => (
+            <div key={tone} className={styles.artCell}>
+              <div className={styles.artBox}>
+                <ReededArt tone={tone} seed={tone} />
+              </div>
+              <SvcLabel tone="muted">{label}</SvcLabel>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <SvcLabel tone="pink">06</SvcLabel>
         <h2 className={styles.sectionTitle}>Билет</h2>
         <div className={styles.tickets}>
           <Ticket
             metaLeft="СБ"
             metaRight="19:30"
             metaRightSub="Природа"
+            emblem={<CategoryIcon category="NATURE" />}
             title="Ночной поход к маяку"
             stubTone="pink"
             stubLabel="История недели · кандидат"
@@ -183,6 +212,8 @@ export default function DesignSystemPage() {
             photoPlaceholder="Фото идеи"
             metaLeft="07"
             metaRight="15"
+            metaRightSub="Вызов"
+            emblem={<CategoryIcon category="CHALLENGE" />}
             title="Скалодром для новичков"
             stubTone="neutral"
             stubLabel="VII · Вызов"
@@ -196,6 +227,7 @@ export default function DesignSystemPage() {
             photoPlaceholder="Фото маяка"
             metaLeft="СБ"
             metaRight="19:30"
+            emblem={<CategoryIcon category="CONNECTION" />}
             title="Ночной поход к маяку"
             note="В субботу иду смотреть на звёзды к маяку. Пойдёшь со мной?"
             stubTone="grey"
@@ -207,7 +239,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">06</SvcLabel>
+        <SvcLabel tone="pink">07</SvcLabel>
         <h2 className={styles.sectionTitle}>Реплика Ryk</h2>
         <div className={styles.stack}>
           <RykNote label="Ryk напоминает">
@@ -221,7 +253,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">07</SvcLabel>
+        <SvcLabel tone="pink">08</SvcLabel>
         <h2 className={styles.sectionTitle}>Память</h2>
         <div className={styles.memories}>
           <MemoryCard
@@ -256,7 +288,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">08</SvcLabel>
+        <SvcLabel tone="pink">09</SvcLabel>
         <h2 className={styles.sectionTitle}>Dock</h2>
         <div className={styles.phone}>
           <div className={styles.phoneBody}>
@@ -277,7 +309,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">09</SvcLabel>
+        <SvcLabel tone="pink">10</SvcLabel>
         <h2 className={styles.sectionTitle}>Узоры впечатлений</h2>
         <div className={styles.patterns}>
           {PATTERN_CATEGORIES.map((category) => (
@@ -292,7 +324,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">10</SvcLabel>
+        <SvcLabel tone="pink">11</SvcLabel>
         <h2 className={styles.sectionTitle}>Знаки категорий</h2>
         <p className={styles.body}>
           Тот же мотив, что у узора выше, сжатый до 16px. Слева — как стоит рядом с подписью корешка
@@ -313,7 +345,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">11</SvcLabel>
+        <SvcLabel tone="pink">12</SvcLabel>
         <h2 className={styles.sectionTitle}>Знаки дока</h2>
         <p className={styles.body}>
           Крупно — как нарисовано. В размере 16px они стоят в самом доке (раздел 08).
@@ -334,7 +366,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">12</SvcLabel>
+        <SvcLabel tone="pink">13</SvcLabel>
         <h2 className={styles.sectionTitle}>Пусто</h2>
         <p className={styles.body}>
           Один знак на все пустые экраны: билет, которого ещё нет. Стоит над фразой, тише её.
@@ -344,7 +376,7 @@ export default function DesignSystemPage() {
       </section>
 
       <section className={styles.section}>
-        <SvcLabel tone="pink">13</SvcLabel>
+        <SvcLabel tone="pink">14</SvcLabel>
         <h2 className={styles.sectionTitle}>Год</h2>
         <YearSummary year={YEAR_DEMO} />
       </section>
