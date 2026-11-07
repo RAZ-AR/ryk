@@ -37,9 +37,15 @@ export function CityPicker({
   const rawLocale = useLocale();
   const locale = isAppLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
   const known = findCity(value);
-  // Незнакомый уже введённый город сразу открывает поле: иначе человек
-  // не увидел бы своего значения и решил, что оно потерялось.
-  const [other, setOther] = useState(() => value.trim() !== "" && known == null);
+  const [otherChosen, setOtherChosen] = useState(false);
+  // Незнакомый введённый город открывает поле всегда, а не только на первом
+  // рендере: значение может прийти позже (профиль подгрузился), и человек
+  // не должен решить, что его город потерялся. Поэтому режим вычисляем, а не
+  // фиксируем в useState.
+  const other = otherChosen || (value.trim() !== "" && known == null);
+  // Собственный текст поля: если показывать value напрямую, набранный вручную
+  // «Belgrade» стал бы известным городом и исчез из поля посреди ввода.
+  const [draft, setDraft] = useState("");
 
   return (
     <div className={styles.picker}>
@@ -49,7 +55,7 @@ export function CityPicker({
             key={c.id}
             selected={!other && known?.id === c.id}
             onClick={() => {
-              setOther(false);
+              setOtherChosen(false);
               onChange(c.names.ru);
             }}
           >
@@ -59,9 +65,11 @@ export function CityPicker({
         <Chip
           selected={other}
           onClick={() => {
-            setOther(true);
-            // Пилотный город из чипа в поле не переносим: «другой» значит другой.
-            if (known) onChange("");
+            // Значение не трогаем: если человек нажал «другой город» и сохранил,
+            // ничего не набрав, пустая строка стёрла бы город в профиле
+            // (canonicalCity → null). Прежний город живёт, пока не введут новый.
+            setDraft(known ? "" : value);
+            setOtherChosen(true);
           }}
         >
           {otherLabel}
@@ -69,8 +77,14 @@ export function CityPicker({
       </div>
       {other && (
         <Input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          // Пилотный город из чипа в поле не показываем: «другой» значит другой,
+          // поле начинается пустым, а первая же буква заменит прежний город.
+          value={otherChosen ? draft : value}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            setOtherChosen(true);
+            onChange(e.target.value);
+          }}
           placeholder={placeholder}
           maxLength={maxLength}
           autoFocus
