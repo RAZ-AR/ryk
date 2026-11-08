@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { switchLocale } from "@/app/actions/locale";
 import { LOCALES, type AppLocale } from "@/lib/i18n/locale";
@@ -33,7 +32,6 @@ export function AppHeader({
   onHome: () => void;
 }) {
   const t = useTranslations("app");
-  const router = useRouter();
   const [pending, start] = useTransition();
   const [failed, setFailed] = useState(false);
 
@@ -42,10 +40,8 @@ export function AppHeader({
     setFailed(false);
     start(async () => {
       const res = await switchLocale(next);
-      if (res.ok) {
-        // Тексты приходят с сервера — без refresh страница осталась бы прежней.
-        router.refresh();
-      } else {
+      // Тексты на новом языке приносит ответ действия (revalidatePath).
+      if (!res.ok) {
         // Молчаливый провал хуже видимого: человек нажал и вправе знать,
         // что ничего не произошло. Место занято, поэтому сообщение занимает
         // слот города — он единственный здесь только для чтения.

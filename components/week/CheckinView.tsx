@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { completeStory, deferStory } from "@/app/actions/completion";
 import type { Emotion } from "@/generated/prisma/enums";
@@ -22,7 +21,6 @@ const EMOTIONS: readonly Emotion[] = ["DELIGHT", "CALM", "PRIDE", "CLOSENESS"];
 
 export function CheckinView({ story }: { story: SelectedStory }) {
   const t = useTranslations("week");
-  const router = useRouter();
 
   const [done, setDone] = useState<boolean | null>(null);
   const [emotion, setEmotion] = useState<Emotion | null>(null);
@@ -32,14 +30,13 @@ export function CheckinView({ story }: { story: SelectedStory }) {
 
   const save = () =>
     startSave(async () => {
-      const res = await completeStory({ emotion, note: note || null });
-      if (res.ok) router.refresh();
+      // Свежую неделю приносит ответ действия (revalidatePath).
+      await completeStory({ emotion, note: note || null });
     });
 
   const move = () =>
     startMove(async () => {
-      const res = await deferStory();
-      if (res.ok) router.refresh();
+      await deferStory();
     });
 
   return (

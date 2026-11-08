@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import {
@@ -36,7 +35,6 @@ export function WeekSection({ view }: { view: WeeklyView }) {
   const tCat = useTranslations("categories");
   // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
   const locale = useLocale();
-  const router = useRouter();
 
   const [idx, setIdx] = useState(0);
   const [choosing, startChoose] = useTransition();
@@ -195,8 +193,8 @@ export function WeekSection({ view }: { view: WeeklyView }) {
 
     const change = () =>
       startChange(async () => {
-        const res = await uncommitStory();
-        if (res.ok) router.refresh();
+        // Свежую неделю приносит ответ действия (revalidatePath).
+        await uncommitStory();
       });
 
     // Открывает пикер чатов Telegram; запрос ("companion"/"witness") — это
@@ -327,14 +325,14 @@ export function WeekSection({ view }: { view: WeeklyView }) {
     const confirm = () =>
       startCommit(async () => {
         if (!day) return;
-        const res = await commitStory({
+        // Свежую неделю приносит ответ действия (revalidatePath).
+        await commitStory({
           plannedFor: day,
           budget: story.price,
           socialMode: social,
           companionName: companion || null,
           witnessName: witness || null,
         });
-        if (res.ok) router.refresh();
       });
 
     return (
@@ -437,8 +435,7 @@ export function WeekSection({ view }: { view: WeeklyView }) {
 
   const choose = () =>
     startChoose(async () => {
-      const res = await selectStory(c.experienceId);
-      if (res.ok) router.refresh();
+      await selectStory(c.experienceId);
     });
 
   return (

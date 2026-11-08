@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { deleteAccount, deletePreference, updateProfile } from "@/app/actions/profile";
 import type { Locale, PreferenceSentiment, SocialMode } from "@/generated/prisma/enums";
@@ -56,7 +55,6 @@ export function ProfileSheet({
 }) {
   const t = useTranslations("profile");
   const tCat = useTranslations("categories");
-  const router = useRouter();
 
   const [name, setName] = useState(profile.displayName ?? "");
   const [city, setCity] = useState(profile.city ?? "");
@@ -102,9 +100,9 @@ export function ProfileSheet({
         joyTraits: [...traits],
         displayName: name,
       });
+      // Свежую страницу приносит ответ действия (revalidatePath).
       if (res.ok) {
         setSaved(true);
-        router.refresh();
       } else {
         setSaveError(true);
       }
@@ -119,8 +117,7 @@ export function ProfileSheet({
 
   const runDeleteAccount = () =>
     startDelete(async () => {
-      const res = await deleteAccount();
-      if (res.ok) router.refresh();
+      await deleteAccount();
     });
 
   return (

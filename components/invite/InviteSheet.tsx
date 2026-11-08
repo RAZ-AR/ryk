@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { respondInvite } from "@/app/actions/invites";
 import { Button } from "@/components/Button";
@@ -22,15 +21,14 @@ export type InviteView = {
 
 export function InviteSheet({ invites, onClose }: { invites: InviteView[]; onClose: () => void }) {
   const t = useTranslations("invites");
-  const router = useRouter();
   const [pending, start] = useTransition();
   const [failed, setFailed] = useState(false);
 
   const respond = (id: string, accept: boolean) =>
     start(async () => {
       const res = await respondInvite(id, accept);
+      // Свежий список приносит ответ действия (revalidatePath).
       setFailed(!res.ok);
-      if (res.ok) router.refresh();
     });
 
   const dateLabel = (iso: string | null) => {

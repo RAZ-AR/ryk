@@ -21,7 +21,11 @@ export async function selectStory(experienceId: string): Promise<SelectResult> {
   // Без языка: наружу отсюда уходят только id, категория и код «почему» —
   // текст карточки здесь никому не показывается, переводить нечего.
   const view = await getWeeklyView(session.userId);
-  if (view.kind !== "choose") return { ok: true }; // история недели уже есть
+  if (view.kind !== "choose") {
+    // История недели уже есть (выбрана в другой вкладке) — показываем её.
+    revalidatePath("/");
+    return { ok: true };
+  }
 
   // Историей недели можно сделать не только один из трёх кандидатов, но и любое
   // событие из ленты на главном. Проверка остаётся, но по существу: событие

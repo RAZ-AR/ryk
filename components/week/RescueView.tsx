@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import { applyRescue, deferWeek, startRescue } from "@/app/actions/rescue";
@@ -33,7 +32,6 @@ export function RescueView({ onBack }: { onBack: () => void }) {
   const tCat = useTranslations("categories");
   // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
   const locale = useLocale();
-  const router = useRouter();
 
   const [barrier, setBarrier] = useState<BarrierType | null>(null);
   const [options, setOptions] = useState<RescueOption[] | null>(null);
@@ -52,14 +50,13 @@ export function RescueView({ onBack }: { onBack: () => void }) {
 
   const pick = (experienceId: string) =>
     startApply(async () => {
-      const res = await applyRescue(experienceId);
-      if (res.ok) router.refresh();
+      // Свежую неделю приносит ответ действия (revalidatePath).
+      await applyRescue(experienceId);
     });
 
   const defer = () =>
     startDefer(async () => {
-      const res = await deferWeek();
-      if (res.ok) router.refresh();
+      await deferWeek();
     });
 
   const priceLabel = (price: number | null, currency: string) => {

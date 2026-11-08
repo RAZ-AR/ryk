@@ -548,7 +548,7 @@ Tokyo 2020: верх из переливающейся фольги, бумаж�
 
 **Нужно сейчас — всё бесплатно, кроме LLM:**
 - **GitHub** — репозиторий (уже есть).
-- **Vercel** — подключить к GitHub (app + preview/prod). Free.
+- **Vercel** — подключить к GitHub (app + preview/prod). Free. Функции — в **`fra1`** (`vercel.json` → `regions`), рядом с базой: по умолчанию Vercel ставит `iad1`, и каждый запрос к Supabase EU пересекал океан (~90 мс), а на одно нажатие их десятки.
 - **Supabase** — проект в **регионе EU** (Postgres + auth + storage). Free.
 - **Telegram @BotFather** — создать бота и Mini App (токен бота). Free.
 - **PostHog** — проект аналитики (EU-облако). Free.

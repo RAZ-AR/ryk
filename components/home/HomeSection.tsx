@@ -1,9 +1,7 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { reactToExperience } from "@/app/actions/discover";
 import type { DeckCard } from "@/lib/engine/discover";
 import type { Today } from "@/lib/engine/today";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
@@ -17,6 +15,7 @@ import { StoriesCarousel } from "./StoriesCarousel";
 import { WeekBlock } from "./WeekBlock";
 import styles from "./HomeSection.module.css";
 import { HandNote } from "@/components/HandNote";
+import { useAnsweredDeck } from "@/lib/ui/answeredDeck";
 import { clearFreshWelcome, peekFreshWelcome } from "@/lib/ui/freshWelcome";
 
 /*
@@ -43,7 +42,6 @@ export function HomeSection({
   onOpenDeck: () => void;
 }) {
   const t = useTranslations("home");
-  const router = useRouter();
 
   const [openCard, setOpenCard] = useState<DeckCard | null>(null);
   // Строка для только что прошедшего онбординг — один раз (см. lib/ui/freshWelcome.ts).
@@ -53,13 +51,8 @@ export function HomeSection({
   useEffect(() => {
     if (freshWelcome) clearFreshWelcome();
   }, [freshWelcome]);
-  const [reacting, startReact] = useTransition();
-
-  const react = (card: DeckCard, liked: boolean) =>
-    startReact(async () => {
-      await reactToExperience(card.id, liked);
-      router.refresh();
-    });
+  // Ответ — без ожидания сервера, порядок ленты не прыгает (lib/ui/answeredDeck.ts).
+  const { visible: visibleDeck, react } = useAnsweredDeck(deck);
 
   return (
     <div className={styles.wrap}>
@@ -95,19 +88,23 @@ export function HomeSection({
           {/* Колода — не отдельный раздел, а второй способ смотреть эту же
               ленту: те же карточки, те же «интересно / не интересно», просто
               по одной. Поэтому вход отсюда, а не из навигации. */}
-          {deck.length > 0 && (
+          {visibleDeck.length > 0 && (
             <Button variant="link" onClick={onOpenDeck}>
               {t("oneByOne")}
             </Button>
           )}
         </div>
-        <EventFeed deck={deck} onOpen={setOpenCard} onReact={react} busy={reacting} />
+        <EventFeed deck={visibleDeck} onOpen={setOpenCard} onReact={react} />
       </section>
 
       {openCard && (
         <EventSheet
           card={openCard}
           canPickAsWeek={weekly.kind === "choose"}
+          onReact={(liked) => {
+            react(openCard, liked);
+            setOpenCard(null);
+          }}
           onClose={() => setOpenCard(null)}
         />
       )}

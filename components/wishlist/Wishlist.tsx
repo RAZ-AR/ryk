@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import { addWish, analyzeWish, realizeWish } from "@/app/actions/wishes";
@@ -40,7 +39,6 @@ export function Wishlist({
   const tCat = useTranslations("categories");
   // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
   const locale = useLocale();
-  const router = useRouter();
 
   const [mode, setMode] = useState<"list" | "add">("list");
   /** Открытая шторка «Когда» — id желания. */
@@ -73,8 +71,9 @@ export function Wishlist({
   /*
    * «Случилось». Отрыв корешка играется до запроса, а не после: ждать
    * сервер, глядя в неподвижную строку, незачем — тот же приём, что при
-   * свайпе в колоде. Если запрос упадёт, `router.refresh()` вернёт строку
-   * на место, и это честнее, чем блокировать интерфейс на время сети.
+   * свайпе в колоде. Свежий список приносит ответ действия (revalidatePath);
+   * если запрос упадёт, строка просто вернётся на место — это честнее,
+   * чем блокировать интерфейс на время сети.
    */
   const runRealize = (wishId: string) => {
     setTearing(wishId);
@@ -82,7 +81,6 @@ export function Wishlist({
       await new Promise((r) => setTimeout(r, 320));
       await realizeWish(wishId);
       setTearing(null);
-      router.refresh();
     });
   };
 
@@ -102,10 +100,7 @@ export function Wishlist({
     startSave(async () => {
       if (!structured) return;
       const res = await addWish(text, structured);
-      if (res.ok) {
-        resetAdd();
-        router.refresh();
-      }
+      if (res.ok) resetAdd();
     });
 
   // ─────────────── Add view ───────────────
