@@ -210,6 +210,37 @@ describe("updateProfile", () => {
     expect(updateUser.mock.calls[0][0].data.notificationPreferences).toEqual({ nudges: false });
   });
 
+  it("маленькие радости: только известные черты, без дублей", async () => {
+    const { updateProfile } = await import("./profile");
+    await updateProfile({
+      city: null,
+      radiusKm: 25,
+      budgetMax: null,
+      socialMode: null,
+      locale: "RU",
+      noveltyRatio: 40,
+      nudges: true,
+      joyTraits: ["music", "coffee", "hacker", "music"],
+    });
+
+    expect(updateUser.mock.calls[0][0].data.joyTraits).toEqual(["coffee", "music"]);
+  });
+
+  it("без поля радостей выбор не стирается", async () => {
+    const { updateProfile } = await import("./profile");
+    await updateProfile({
+      city: null,
+      radiusKm: 25,
+      budgetMax: null,
+      socialMode: null,
+      locale: "RU",
+      noveltyRatio: 40,
+      nudges: true,
+    });
+
+    expect(updateUser.mock.calls[0][0].data).not.toHaveProperty("joyTraits");
+  });
+
   /*
    * Регрессия: язык сохранялся только в users.locale, а next-intl берёт его
    * из cookie `ryk_locale`. Из-за этого выбор языка в профиле не менял

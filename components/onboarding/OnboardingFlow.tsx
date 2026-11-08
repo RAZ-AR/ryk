@@ -137,6 +137,19 @@ export function OnboardingFlow({
     setProbeIdx((i) => i - 1);
   };
 
+  /*
+   * С «хорошего момента» — обратно к идеям. Если на все ответили, снимаем
+   * последний ответ и показываем ту идею снова; если ушли по «хватит» —
+   * просто возвращаемся к той, что не успели ответить.
+   */
+  const momentBack = () => {
+    if (swipes.length >= ONBOARDING_PROBES.length) {
+      setSwipes((prev) => prev.slice(0, -1));
+      setProbeIdx(ONBOARDING_PROBES.length - 1);
+    }
+    setStep("swipe");
+  };
+
   const finish = () => {
     setSaveFailed(false);
     // Метку ставим до запроса: ответ с revalidatePath может сменить экран
@@ -395,6 +408,11 @@ export function OnboardingFlow({
           >
             {tMoment("next")}
           </Button>
+        </div>
+        <div className={styles.footerSplit}>
+          <Button variant="ghost" onClick={momentBack}>
+            {tCat("back")}
+          </Button>
           <Button variant="ghost" onClick={() => setStep("postponed")}>
             {tMoment("skip")}
           </Button>
@@ -427,6 +445,11 @@ export function OnboardingFlow({
             onClick={() => setStep("rhythm")}
           >
             {tPostponed("next")}
+          </Button>
+        </div>
+        <div className={styles.footerSplit}>
+          <Button variant="ghost" onClick={() => setStep("moment")}>
+            {tCat("back")}
           </Button>
           <Button variant="ghost" onClick={() => setStep("rhythm")}>
             {tPostponed("skip")}
@@ -482,6 +505,11 @@ export function OnboardingFlow({
             }}
           >
             {tRhythm("next")}
+          </Button>
+        </div>
+        <div className={styles.footerSplit}>
+          <Button variant="ghost" onClick={() => setStep("postponed")}>
+            {tCat("back")}
           </Button>
           <Button
             variant="ghost"

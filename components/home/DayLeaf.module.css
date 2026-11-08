@@ -15,6 +15,15 @@
   color: var(--ryk-ink);
 }
 
+/* Обращение по имени — тихая строка над числом, как надпись на листе от руки. */
+.greeting {
+  margin-bottom: var(--ryk-space-4);
+  font-family: var(--ryk-font-serif);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--ryk-text-secondary);
+}
+
 /* Число — единственная крупная цифра на листе (numeral-xl, §4). */
 .date {
   display: flex;

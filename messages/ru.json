@@ -44,6 +44,7 @@
     "pickAsWeek": "Сделать историей недели",
     "actionFailed": "не получилось — попробуй ещё раз",
     "leaf": {
+      "greeting": "{name}, этот день твой",
       "aria": "Лист дня",
       "dayOfYear": "{n, selectordinal, other {#-й}} день года",
       "sunrise": "восход {time}",
@@ -315,6 +316,20 @@
     "socialAny": "Не важно",
     "localeLabel": "Язык",
     "noveltyLabel": "Доля нового, %",
+    "joyLabel": "Маленькие радости",
+    "joyHint": "Из них складывается радость дня на главной.",
+    "joyTraits": {
+      "coffee": "кофе",
+      "walks": "прогулки",
+      "friends": "друзья",
+      "food": "еда",
+      "home": "дом",
+      "city": "город",
+      "nature": "природа",
+      "music": "музыка",
+      "books": "книги",
+      "art": "красота вокруг"
+    },
     "nudgesLabel": "Ryk может писать в Telegram",
     "nudgesHint": "Не больше двух сообщений в неделю, и только когда есть что предложить.",
     "save": "Сохранить",

@@ -104,6 +104,9 @@ export function DayLeaf({
 
   return (
     <section className={styles.leaf} aria-label={t("aria")}>
+      {/* Обращение — именительным падежом: склонять чужое имя мы не умеем,
+          а «Аня, этот день твой» читается естественно на всех трёх языках. */}
+      {today.name && <p className={styles.greeting}>{t("greeting", { name: today.name })}</p>}
       <time className={styles.date} dateTime={today.dateIso}>
         <span className={styles.day}>{day}</span>
         <span className={styles.month}>{month}</span>
