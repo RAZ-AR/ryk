@@ -30,13 +30,28 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--ryk-paper);
+  /* Прозрачный: под ним облачное поле (body::before) поверх фона html. */
+  background: transparent;
   color: var(--ryk-ink);
   font-family: var(--ryk-font-ui);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/*
+ * Облачное поле (ADR-016): неподвижный слой под всем приложением.
+ * Отдельным fixed-слоем, а не background-attachment: fixed — iOS его
+ * игнорирует, и облака уезжали бы со скроллом.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--cloud-field);
+  pointer-events: none;
 }
 
 a {

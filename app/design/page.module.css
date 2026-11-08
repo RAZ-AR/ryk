@@ -227,7 +227,7 @@
 
 .artBox {
   position: relative;
-  height: 120px;
+  aspect-ratio: 3 / 4;
   border-radius: var(--ryk-radius-card);
   overflow: hidden;
   box-shadow: var(--ryk-shadow-card);

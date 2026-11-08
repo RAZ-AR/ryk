@@ -35,8 +35,8 @@
   padding: 18px 22px 20px;
   /* Кегль заголовка считается от ширины билета (cqi), а не экрана. */
   container-type: inline-size;
-  /* Сама заливка — в ReededArt (фигуры под рифлёным стеклом, цвет по тону). */
-  background: var(--art-base);
+  /* Сама картинка — в AuraArt (размытая фигура на пастели, ADR-016). */
+  background: var(--tk-paper);
   border-radius: var(--ryk-radius-ticket) var(--ryk-radius-ticket) 0 0;
 }
 
