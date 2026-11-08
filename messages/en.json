@@ -339,6 +339,23 @@
       "start": "Start living a little more",
       "skip": "I already have a profile"
     },
+    "place": {
+      "step": "Onboarding 1/7",
+      "title": "Where are you now?",
+      "hint": "So we suggest things within reach: events, weather and holidays of your city.",
+      "detected": "looks like you're here",
+      "locate": "Use my location",
+      "locating": "Looking…",
+      "located": "found you",
+      "failed": "Couldn't detect it. Pick your city.",
+      "far": "Ryk doesn't work in any city near you yet. Pick “another city” — stories that aren't tied to a place will still come.",
+      "other": "Another city",
+      "otherHint": "stories without the event listings",
+      "placeholder": "City name",
+      "next": "Next →",
+      "later": "Later",
+      "back": "Back"
+    },
     "inspire": {
       "title": "Joy isn't measured by size",
       "line": "A full day doesn't need a big event. It needs you to notice one small thing.",
@@ -364,84 +381,82 @@
       "no": "Not for me",
       "yes": "I want this ✓",
       "enough": "Enough — next →",
-      "back": "Back"
+      "back": "Back",
+      "free": "free"
     },
     "ideas": {
       "climb": {
         "title": "Beginner climbing gym",
         "note": "Instructor and gear included. Come solo if you like.",
-        "meta": "1500 RSD · 1.5h"
+        "meta": "1.5 h"
       },
       "kayak": {
         "title": "Sunrise kayaking",
         "note": "Groups up to 6. No experience needed.",
-        "meta": "2200 RSD · 2h"
+        "meta": "2 h"
       },
       "organ": {
         "title": "Organ by candlelight",
         "note": "A classical program in an old hall. Tickets usually available.",
-        "meta": "1800 RSD · 2h"
+        "meta": "2 h"
       },
       "pottery": {
         "title": "Pottery workshop",
         "note": "The master fires your piece. Come as a pair.",
-        "meta": "3500 RSD · 2.5h"
+        "meta": "2.5 h"
       },
       "dinner": {
         "title": "Dinner with strangers",
         "note": "Eight people at a shared table, home cooking.",
-        "meta": "2600 RSD · 2.5h"
+        "meta": "2.5 h"
       },
       "rooftop": {
         "title": "Sunrise on a rooftop",
         "note": "An early start — and the city feels brand new.",
-        "meta": "free · 1.5h"
+        "meta": "1.5 h"
       },
       "call": {
         "title": "Call someone you haven't spoken to in a year",
         "note": "No reason, no explaining the silence.",
-        "meta": "free · 20 min"
+        "meta": "20 min"
       },
       "film": {
         "title": "The film you kept putting off",
         "note": "That one, from the list. All of it, phone away.",
-        "meta": "free · 2 h"
+        "meta": "2 h"
       },
       "alone": {
         "title": "Have dinner alone at a restaurant",
         "note": "No phone on the table. The first ten minutes are the strangest.",
-        "meta": "1500 RSD · 1.5 h"
+        "meta": "1.5 h"
       },
       "letter": {
         "title": "A letter to yourself a year from now",
         "note": "By hand, sealed, hidden where you won't find it soon.",
-        "meta": "free · 40 min"
+        "meta": "40 min"
       },
       "cold": {
         "title": "Step into cold water",
         "note": "River, sea, shower. Three minutes, breathe slowly.",
-        "meta": "free · 15 min"
+        "meta": "15 min"
       },
       "help": {
         "title": "A day at an animal shelter",
         "note": "Walking and cleaning. One-time visits are fine.",
-        "meta": "free · 4 h"
+        "meta": "4 h"
       }
     },
     "params": {
       "step": "Onboarding 7/7",
       "title": "Your week's boundaries",
       "budgetLabel": "Budget for a story",
-      "budgetLow": "up to 1500 RSD",
-      "budgetMid": "up to 4000 RSD",
+      "budgetLow": "up to {amount}",
+      "budgetMid": "up to {amount}",
       "budgetAny": "any",
       "socialLabel": "With whom",
       "socialSolo": "Solo",
       "socialClose": "With close ones",
       "socialNew": "With new people",
-      "cityLabel": "City",
-      "cityPlaceholder": "City name",
-      "cityOther": "another city",
       "noveltyLabel": "How much new",
       "noveltyCalm": "Calm",
       "noveltyBalance": "Balance",
@@ -486,6 +501,10 @@
       "windowWEEKEND_EVENING": "Weekend evening",
       "next": "Next →",
       "skip": "Skip"
+    },
+    "currency": {
+      "RSD": "RSD",
+      "AMD": "AMD"
     }
   },
   "memory": {

@@ -15,9 +15,13 @@ import type { AppLocale } from "./i18n/locale";
 
 export type CountryCode = "RS" | "AM";
 
+/** ISO 4217. Цены каталога и бюджет человека — в валюте его города. */
+export type CurrencyCode = "RSD" | "AMD";
+
 export type Country = {
   /** ISO 3166-1 alpha-2: по нему фаза 4 выберет календарь праздников. */
   code: CountryCode;
+  currency: CurrencyCode;
   names: Record<AppLocale, string>;
 };
 
@@ -44,11 +48,13 @@ export type City = {
 
 const SERBIA: Country = {
   code: "RS",
+  currency: "RSD",
   names: { ru: "Сербия", en: "Serbia", es: "Serbia" },
 };
 
 const ARMENIA: Country = {
   code: "AM",
+  currency: "AMD",
   names: { ru: "Армения", en: "Armenia", es: "Armenia" },
 };
 
@@ -100,6 +106,38 @@ const BY_ALIAS = new Map<string, City>(
 export function findCity(city: string | null | undefined): City | null {
   if (!city?.trim()) return null;
   return BY_ALIAS.get(normalizeCity(city)) ?? null;
+}
+
+/** Дальше этого от центра пилотного города — уже не он. Нови-Сад и Белград — 75 км друг от друга. */
+const NEAR_KM = 60;
+
+/** Расстояние по большой окружности, км. Для «какой город ближе» точности хватает с запасом. */
+export function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const rad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * rad;
+  const dLng = (lng2 - lng1) * rad;
+  const a =
+    Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(a));
+}
+
+/**
+ * Пилотный город рядом с точкой — по геопозиции или IP. null, если ближайший
+ * дальше NEAR_KM: человека из Москвы не записываем в Белград только потому,
+ * что Белград «ближайший из известных».
+ */
+export function nearestCity(lat: number, lng: number): City | null {
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  let best: City | null = null;
+  let bestKm = Infinity;
+  for (const c of CITIES) {
+    const km = distanceKm(lat, lng, c.lat, c.lng);
+    if (km < bestKm) {
+      best = c;
+      bestKm = km;
+    }
+  }
+  return bestKm <= NEAR_KM ? best : null;
 }
 
 const BY_ID = new Map<string, City>(CITIES.map((c) => [c.id, c] as const));

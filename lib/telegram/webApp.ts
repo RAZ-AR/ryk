@@ -48,6 +48,16 @@ export type TelegramWebApp = {
     beta: number | null;
     gamma: number | null;
   };
+  /**
+   * Геопозиция (Bot API 8.0). Разрешение спрашивает сам Telegram, своим
+   * окном — без системного диалога браузера внутри WebView.
+   */
+  LocationManager?: {
+    isInited: boolean;
+    isLocationAvailable: boolean;
+    init: (callback?: () => void) => void;
+    getLocation: (callback: (data: { latitude: number; longitude: number } | null) => void) => void;
+  };
 };
 
 export function getTelegramWebApp(): TelegramWebApp | undefined {

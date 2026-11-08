@@ -1,9 +1,35 @@
+/* Сцена шагов: фон (OnboardingBackdrop) лежит под ней фиксированным слоем. */
+.stage {
+  position: relative;
+  isolation: isolate;
+}
+
+/*
+ * Высота — по видимой области Telegram, а не 100vh: в WebView на iOS 100vh
+ * выше видимого окна, и низ экрана с кнопками уезжал под край.
+ */
 .screen {
-  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  min-height: var(--tg-viewport-stable-height, 100dvh);
   display: flex;
   flex-direction: column;
   padding: var(--ryk-screen-top) var(--ryk-screen-x) var(--ryk-space-6);
   box-sizing: border-box;
+  animation: step-in var(--ryk-duration-standard) var(--ryk-ease) both;
+}
+
+/* Новый шаг поднимается на место: видно, что лист сменился, а не дёрнулся. */
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .header {
@@ -28,28 +54,55 @@
   margin-top: var(--ryk-space-2);
 }
 
-.footer {
+/*
+ * Док с кнопками шага: прижат к низу и не уезжает при прокрутке длинных
+ * шагов — главное действие всегда под пальцем. Подложка — тот же лист,
+ * растворяющийся кверху, чтобы прокрученный текст уходил под неё мягко.
+ */
+.dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
   margin-top: auto;
-  padding-top: var(--ryk-space-5);
-  display: flex;
-  gap: var(--ryk-space-2);
-}
-
-.footerCol {
-  margin-top: auto;
-  padding-top: var(--ryk-space-5);
+  margin-inline: calc(var(--ryk-screen-x) * -1);
+  margin-bottom: calc(var(--ryk-space-6) * -1);
+  padding: var(--ryk-space-5) var(--ryk-screen-x) var(--ryk-space-4);
+  padding-bottom: max(var(--ryk-space-4), env(safe-area-inset-bottom));
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--tk-page) 88%, transparent) var(--ryk-space-5)
+  );
   display: flex;
   flex-direction: column;
   gap: var(--ryk-space-2);
 }
 
-.grow {
-  flex: 1;
+.footer {
+  display: flex;
+  gap: var(--ryk-space-2);
 }
 
-.narrow {
+.footerCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+}
+
+/*
+ * Ширины кнопок в ряду. Селектор двойной намеренно: у самой кнопки
+ * width: 100%, и при равной специфичности победитель зависел от порядка
+ * CSS в сборке. В проде побеждала кнопка — «Назад» растягивалась на всю
+ * ширину и выталкивала «Дальше» за край экрана.
+ */
+.footer .grow {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.footer .narrow {
+  flex: 0 0 100px;
   width: 100px;
-  flex-shrink: 0;
 }
 
 /* --- Welcome --- */
@@ -60,7 +113,8 @@
   isolation: isolate;
   overflow: hidden;
   background: var(--art-base);
-  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: var(--tg-viewport-stable-height, 100dvh);
   display: flex;
   flex-direction: column;
   padding: 30px var(--ryk-screen-x) var(--ryk-space-6);
@@ -137,6 +191,7 @@
 
 .cell {
   padding: 17px 15px;
+  transition: background var(--ryk-duration-micro) var(--ryk-ease);
   border-right: 1px solid var(--ryk-border-strong);
   border-bottom: 1px solid var(--ryk-border-strong);
   background: transparent;
@@ -168,6 +223,89 @@
   flex-direction: column;
   justify-content: center;
   margin-top: var(--ryk-space-4);
+  animation: ticket-in 320ms var(--ryk-ease) both;
+}
+
+/* Следующая идея выезжает справа с лёгким поворотом — как билет из пачки. */
+@keyframes ticket-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px) rotate(1.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- Где ты --- */
+.places {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: var(--ryk-space-6);
+  border-top: 1px solid var(--ryk-border-strong);
+  border-left: 1px solid var(--ryk-border-strong);
+}
+
+.place {
+  composes: cell;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 96px;
+  transition: background var(--ryk-duration-micro) var(--ryk-ease);
+}
+
+/* Последняя ячейка нечётного ряда — во всю ширину, как «Вклад» у категорий. */
+.place:last-child:nth-child(odd) {
+  grid-column: span 2;
+  min-height: 72px;
+}
+
+.placeName {
+  font-size: 22px;
+  letter-spacing: -0.3px;
+}
+
+.placeMark {
+  margin-top: auto;
+  animation: step-in var(--ryk-duration-standard) var(--ryk-ease) both;
+}
+
+.placeInput {
+  margin-top: var(--ryk-space-3);
+}
+
+.locate {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ryk-space-2);
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: var(--ryk-space-3);
+  padding: 0 2px;
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ryk-pink-text);
+}
+
+.locate:disabled {
+  opacity: 0.6;
+}
+
+.locate:focus-visible {
+  outline: 2px solid var(--ryk-ink);
+  outline-offset: 3px;
+}
+
+.placeStatus {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ryk-text-muted);
 }
 
 /* --- Params rows --- */
@@ -274,4 +412,12 @@
   margin-top: var(--ryk-space-5);
   min-height: 132px;
   resize: vertical;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen,
+  .ticketWrap,
+  .placeMark {
+    animation: none;
+  }
 }
