@@ -17,13 +17,11 @@
   align-items: center;
   gap: var(--ryk-space-3);
   min-width: 0;
-  /* Капсула жидкого стекла: шапка лежит поверх ленты. */
-  padding: 0 var(--ryk-space-2) 0 var(--ryk-space-4);
-  border-radius: var(--ryk-radius-dock-pill);
-  background: var(--tk-paper);
-  box-shadow:
-    inset 0 0 0 1px var(--ryk-border-row),
-    var(--ryk-shadow-card);
+  /*
+   * Без подложки (v2.1): знак, город и языки стоят прямо на облачном поле,
+   * как подпись на листе. Читаемость над прокрученной лентой даёт растушёвка
+   * под шапкой (AppShell.module.css, .shell::before), а не капсула.
+   */
 }
 
 /* Приглашения пришли — уступаем место значку. */
@@ -38,7 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  opacity: 0.75;
+  opacity: 0.9;
   transition: opacity var(--ryk-duration-micro) var(--ryk-ease);
 }
 
