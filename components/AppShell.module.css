@@ -26,16 +26,29 @@
   pointer-events: none;
 }
 
+/*
+ * Растушёвка — кусок того же облачного поля, что под всем приложением
+ * (body::before): размер слоя = экран, позиция — от того же угла, поэтому
+ * облака совпадают пиксель в пиксель, а край гасит маска. Ровный цвет
+ * бумаги лёг бы поверх облаков заметной полосой — особенно теперь, когда
+ * у шапки нет подложки (v2.1).
+ */
 .shell::before {
   top: 0;
   height: calc(78px + var(--tg-safe-area-inset-top, 0px));
-  background: linear-gradient(var(--ryk-paper) 58%, transparent);
+  background: var(--cloud-field);
+  background-size: 100vw 100vh;
+  background-position: left top;
+  mask-image: linear-gradient(var(--tk-ink) 58%, transparent);
 }
 
 .shell::after {
   bottom: 0;
   height: calc(64px + var(--tg-safe-area-inset-bottom, 0px));
-  background: linear-gradient(transparent, var(--ryk-paper) 85%);
+  background: var(--cloud-field);
+  background-size: 100vw 100vh;
+  background-position: left bottom;
+  mask-image: linear-gradient(transparent, var(--tk-ink) 85%);
 }
 
 .content {
