@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { ReededArt, type ArtTone } from "./ReededArt";
+import { AuraArt } from "./AuraArt";
+import type { AuraMood } from "@/lib/ui/aura";
 import { SvcLabel } from "./SvcLabel";
 import styles from "./Ticket.module.css";
 
@@ -13,7 +14,7 @@ import styles from "./Ticket.module.css";
  */
 export type StubTone = "pink" | "neutral" | "grey";
 
-const ART_TONE: Record<StubTone, ArtTone> = { pink: "rose", neutral: "sun", grey: "silver" };
+const ART_TONE: Record<StubTone, AuraMood> = { pink: "rose", neutral: "sun", grey: "silver" };
 
 /**
  * `default` — билет на весь экран (онбординг, история недели, свайпы).
@@ -111,7 +112,7 @@ export function Ticket({
          *            разделителями, внизу шахматная лента и штрихкод.
          */}
         <div className={[styles.top, styles.cutBottom].join(" ")}>
-          <ReededArt tone={ART_TONE[stubTone]} seed={title} />
+          <AuraArt mood={ART_TONE[stubTone]} seed={title} />
           {emblem ? (
             <div className={[styles.emblem, styles.emblemSign].join(" ")}>{emblem}</div>
           ) : (

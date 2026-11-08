@@ -17,12 +17,13 @@ import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
 import { RykNote } from "@/components/RykNote";
 import { SvcLabel } from "@/components/SvcLabel";
-import { ReededArt, type ArtTone } from "@/components/ReededArt";
+import { AuraArt } from "@/components/AuraArt";
+import type { AuraPalette, AuraShape } from "@/lib/ui/aura";
 import { Ticket } from "@/components/Ticket";
 import styles from "./page.module.css";
 
 /**
- * Витрина дизайн-системы (ryk_docs/17-design-system.md v2.0 «Билет»).
+ * Витрина дизайн-системы (ryk_docs/17-design-system.md v2.1 «Аура»).
  * Внутренняя страница для проверки примитивов — не часть продуктового флоу.
  */
 
@@ -42,10 +43,17 @@ const SWATCHES: ReadonlyArray<{ token: string; varName: string }> = [
   { token: "фольга · лента", varName: "--foil-strip" },
 ];
 
-const ART_TONES: ReadonlyArray<{ tone: ArtTone; label: string }> = [
-  { tone: "rose", label: "роза — история недели" },
-  { tone: "sun", label: "солнце — идея" },
-  { tone: "silver", label: "серебро — приглашение, тихое" },
+/** Все семь фигур — каждая на своей палитре, как на референсе. */
+const AURA_DEMO: ReadonlyArray<{ shape: AuraShape; palette: AuraPalette; label: string }> = [
+  { shape: "flower", palette: "peach", label: "цветок · персик" },
+  { shape: "heart", palette: "rose", label: "сердце · роза" },
+  { shape: "halo", palette: "butter", label: "ореол · масло" },
+  { shape: "rings", palette: "mint", label: "кольца · мята" },
+  { shape: "rays", palette: "sunrise", label: "лучи · рассвет" },
+  { shape: "wave", palette: "dusk", label: "волна · сумерки" },
+  { shape: "glow", palette: "sky", label: "свечение · небо" },
+  { shape: "halo", palette: "citrus", label: "ореол · цитрус" },
+  { shape: "flower", palette: "lilac", label: "цветок · сирень" },
 ];
 
 /** Все девять мотивов на одном экране — так видно, что они не похожи друг на друга. */
@@ -106,11 +114,11 @@ export default function DesignSystemPage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <SvcLabel tone="pink">Design system · v2.0 «Билет»</SvcLabel>
+        <SvcLabel tone="pink">Design system · v2.1 «Аура»</SvcLabel>
         <div className={styles.logo}>RYK</div>
         <p className={styles.body}>
-          Светлая бумага и билеты из фольги. Референс — голографические билеты Tokyo 2020 и рифлёное
-          стекло (ADR-014).
+          Облачное поле, билеты с аурами вместо фольги. Референсы — голографические билеты Tokyo
+          2020 и постеры «aura»: мягкие размытые фигуры на пастели (ADR-014, ADR-016).
         </p>
       </header>
 
@@ -194,16 +202,17 @@ export default function DesignSystemPage() {
 
       <section className={styles.section}>
         <SvcLabel tone="pink">05</SvcLabel>
-        <h2 className={styles.sectionTitle}>Живая фольга</h2>
+        <h2 className={styles.sectionTitle}>Ауры</h2>
         <p className={styles.body}>
-          Светлые размытые пятна медленно плывут под рифлёным стеклом и сдвигаются при наклоне
-          телефона. Вне экрана — пауза.
+          Картинка карточки — мягкая размытая фигура на пастели. Фигура и палитра выбираются по
+          заголовку: у каждой карточки своя, и она не меняется. Свет медленно дышит и сдвигается при
+          наклоне телефона; вне экрана — пауза.
         </p>
         <div className={styles.artRow}>
-          {ART_TONES.map(({ tone, label }) => (
-            <div key={tone} className={styles.artCell}>
+          {AURA_DEMO.map(({ shape, palette, label }) => (
+            <div key={label} className={styles.artCell}>
               <div className={styles.artBox}>
-                <ReededArt tone={tone} seed={tone} />
+                <AuraArt shape={shape} palette={palette} seed={label} />
               </div>
               <SvcLabel tone="muted">{label}</SvcLabel>
             </div>

@@ -23,7 +23,7 @@ import {
   ONBOARDING_PROBES,
   ONBOARDING_WINDOWS,
 } from "./constants";
-import { ReededArt } from "@/components/ReededArt";
+import { AuraArt } from "@/components/AuraArt";
 import styles from "./OnboardingFlow.module.css";
 import { CITIES, findCity, nearestCity, type CurrencyCode } from "@/lib/cities";
 import { DEFAULT_LOCALE, isAppLocale } from "@/lib/i18n/locale";
@@ -287,8 +287,8 @@ export function OnboardingFlow({
     if (step === "welcome") {
       return (
         <main className={styles.welcome}>
-          {/* Обложка приложения — та же живая фольга, что у билетов. */}
-          <ReededArt tone="rose" seed="welcome" />
+          {/* Обложка — аура-цветок, как первая открытка в пачке. */}
+          <AuraArt palette="peach" shape="flower" seed="welcome" blur={18} />
           <SvcLabel tone="ink" className={styles.welcomeKicker}>
             <span>{tWelcome("kicker")}</span>
             <span>MMXXVI</span>

@@ -1,12 +1,12 @@
 /* Блок «твоя неделя» — единственный крупный акцент на главном.
    Не билет: билет закреплён за впечатлением (§11.4), а это состояние. */
-/* Живая фольга (ReededArt) — первым ребёнком, текст поверх неё. */
+/* Аура (AuraArt) — первым ребёнком, текст поверх неё. */
 .block {
   composes: paper onFoil from "../surface.module.css";
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: var(--art-base);
+  background: var(--tk-paper);
   display: block;
   width: 100%;
   text-align: left;

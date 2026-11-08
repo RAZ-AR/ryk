@@ -112,7 +112,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: var(--art-base);
+  background: var(--aura-peach-bg);
   min-height: 100dvh;
   min-height: var(--tg-viewport-stable-height, 100dvh);
   display: flex;

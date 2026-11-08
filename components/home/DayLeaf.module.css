@@ -1,80 +1,143 @@
 /*
- * Отрывной лист: бумага светлее поля, верхняя кромка — перфорация, по
- * которой лист оторвали от блока. Скругление только снизу: сверху лист
- * оторван, а не вырублен. Воздух важнее плотности — строк мало, и каждой
- * дано место.
+ * Лист дня — открытка (ADR-016): сверху аура дня с числом внутри, ниже —
+ * молочная бумага с подробностями. Воздух важнее плотности: строк мало,
+ * и каждой дано место.
  */
 .leaf {
   display: flex;
   flex-direction: column;
-  padding: var(--ryk-space-6) var(--ryk-space-5) var(--ryk-space-7);
+  overflow: hidden;
   background: var(--ryk-white);
-  border-top: var(--ryk-perforation);
-  border-radius: 0 0 var(--ryk-radius-card) var(--ryk-radius-card);
+  border-radius: var(--ryk-radius-card);
   box-shadow: var(--ryk-shadow-card);
   color: var(--ryk-ink);
 }
 
-/* Обращение по имени — тихая строка над числом, как надпись на листе от руки. */
+/* --- Открытка: аура и число --- */
+.poster {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 330px;
+  padding: var(--ryk-space-5) var(--ryk-space-5) var(--ryk-space-6);
+}
+
+.poster > :not(:first-child) {
+  position: relative;
+  z-index: 1;
+}
+
+.posterHead {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--ryk-space-3);
+}
+
+/* Обращение — тихая строка, как надпись на открытке от руки. */
 .greeting {
-  margin-bottom: var(--ryk-space-4);
   font-family: var(--ryk-font-serif);
   font-size: 15px;
   line-height: 1.4;
   color: var(--ryk-text-secondary);
 }
 
-/* Число — единственная крупная цифра на листе (numeral-xl, §4). */
+.dayOfYear {
+  flex-shrink: 0;
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  color: var(--ryk-text-secondary);
+}
+
+/* Число — единственная крупная цифра на листе, в центре ауры. */
 .date {
+  margin: auto 0;
   display: flex;
-  align-items: baseline;
-  gap: var(--ryk-space-3);
+  flex-direction: column;
+  align-items: center;
+  padding-top: var(--ryk-space-4);
 }
 
 .day {
   font-family: var(--ryk-font-display);
   font-weight: 400;
-  font-size: 82px;
-  line-height: 0.8;
-  letter-spacing: -4px;
+  font-size: 132px;
+  line-height: 0.82;
+  letter-spacing: -6px;
 }
 
+/* Месяц — курсивом, как подпись на постере референса. */
 .month {
-  font-family: var(--ryk-font-display);
-  font-size: 22px;
-  letter-spacing: -0.5px;
+  margin-top: var(--ryk-space-2);
+  font-family: var(--ryk-font-serif);
+  font-style: italic;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+}
+
+.weekday {
+  margin-top: var(--ryk-space-4);
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ryk-text-secondary);
+}
+
+/* --- Бумага: подробности дня --- */
+.body {
+  display: flex;
+  flex-direction: column;
+  padding: var(--ryk-space-5) var(--ryk-space-5) var(--ryk-space-6);
 }
 
 .place {
-  margin-top: var(--ryk-space-5);
   font-family: var(--ryk-font-serif);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.4;
-  color: var(--ryk-text-secondary);
 }
 
-.dayOfYear {
-  margin-top: var(--ryk-space-1);
+/* Погода — спецификацией билета: подпись над значением, три колонки. */
+.sky {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: var(--ryk-space-3);
+  margin: var(--ryk-space-4) 0 0;
+  padding-top: var(--ryk-space-3);
+  border-top: 1px solid var(--ryk-border-row);
+}
+
+.skyItem {
+  min-width: 0;
+}
+
+.skyLabel {
   font-family: var(--ryk-font-mono);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--ryk-text-muted);
 }
 
-.sky {
-  margin-top: var(--ryk-space-4);
-  font-family: var(--ryk-font-mono);
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--ryk-text-secondary);
+.skyValue {
+  margin: 2px 0 0;
+  font-family: var(--ryk-font-serif);
+  font-size: 15px;
+  line-height: 1.35;
 }
 
 .joy {
-  margin-top: var(--ryk-space-6);
+  margin-top: var(--ryk-space-5);
 }
 
 .divider {
-  margin: var(--ryk-space-6) 0 var(--ryk-space-4);
+  margin: var(--ryk-space-5) 0 var(--ryk-space-4);
   border: 0;
   border-top: 1px solid var(--ryk-border-row);
 }

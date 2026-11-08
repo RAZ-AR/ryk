@@ -12,11 +12,15 @@
 
 /* ═══ 1. Материалы: сырые значения. В компонентах напрямую не используются. ═══ */
 :root {
-  /* Бумага. Поле экрана — тёплая серая бумага, предметы — светлее неё. */
-  --tk-page: #e8e7e3;
-  --tk-paper: #f7f7f4;
-  --tk-paper-2: #ebebe7;
-  --tk-paper-3: #deded9;
+  /*
+   * Бумага v2.1 «Аура» (ADR-016): поле — тёплое облако, а не серый картон;
+   * предметы — молочно-белые. Ink и все текстовые роли прежние: контраст
+   * на новом поле проверен (muted 5.9:1, faint 4.9:1).
+   */
+  --tk-page: #f3ece7;
+  --tk-paper: #fdfaf7;
+  --tk-paper-2: #f3ede8;
+  --tk-paper-3: #e8dfd8;
   --tk-ink: #0d0d0f;
   --tk-ink-2: #2c2c2e;
   --tk-ink-muted: #5a5a57;
@@ -51,10 +55,8 @@
     radial-gradient(48% 110% at 85% 45%, var(--art-silver-2), transparent),
     radial-gradient(40% 90% at 50% 100%, var(--art-silver-3), transparent), var(--art-base);
   /*
-   * Рифлёное стекло над размытыми цветными пятнами — «живая» фольга
-   * карточек. Три светлых пятна медленно плывут под вертикальными рёбрами
-   * стекла. Тона светлые, пастельные: карточка — свет, а не заливка.
-   * Палитра пятен — по тону карточки.
+   * Пятна фольги кнопок и пилюль (--foil-*) и фона онбординга.
+   * Картинки карточек — ауры (--aura-*, ниже), ADR-016.
    */
   --art-base: #f3f1f7;
   --art-rose-1: #ffa3cf;
@@ -68,18 +70,68 @@
   --art-silver-3: #fdf1c8;
   /* Квадрат светится от жёлтого к оранжевому, как на референсе. */
   --art-glow: #ffc683;
-  /* Рёбра стекла: блик, мягкая тень, снова блик — период 9px. */
-  --reeded:
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.85) 0 1px,
-      rgba(255, 255, 255, 0.3) 2px,
-      rgba(255, 255, 255, 0) 4.5px,
-      rgba(30, 20, 60, 0.06) 7px,
-      rgba(255, 255, 255, 0.5) 9px
-    ),
-    linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18));
-  --reeded-edge: rgba(255, 255, 255, 0.9);
+
+  /*
+   * ═══ Ауры (ADR-016): картинки карточек и листа дня. ═══
+   * Мягкая размытая фигура — цветок, сердце, ореол, кольца, лучи, волна —
+   * на пастельном поле. Палитра из четырёх цветов: поле, основной свет
+   * фигуры, второй свет, светлая сердцевина. Набор взят с референса
+   * «aura posters»: тёплые и холодные пастели, ничего кислотного.
+   */
+  --aura-peach-bg: #fbe2d3;
+  --aura-peach-a: #ff9f80;
+  --aura-peach-b: #ffd0a6;
+  --aura-peach-c: #fff3e8;
+
+  --aura-rose-bg: #fde9ef;
+  --aura-rose-a: #ffaecb;
+  --aura-rose-b: #ffd3e1;
+  --aura-rose-c: #fff6f4;
+
+  --aura-butter-bg: #fbf5e3;
+  --aura-butter-a: #a9c2ff;
+  --aura-butter-b: #d8c9ff;
+  --aura-butter-c: #fff1a3;
+
+  --aura-lilac-bg: #e9e2fb;
+  --aura-lilac-a: #f7b4d6;
+  --aura-lilac-b: #ffd3ad;
+  --aura-lilac-c: #f4efff;
+
+  --aura-mint-bg: #f7f4e5;
+  --aura-mint-a: #a6e3b2;
+  --aura-mint-b: #9eaef0;
+  --aura-mint-c: #fffbea;
+
+  --aura-sky-bg: #f8f3ea;
+  --aura-sky-a: #8ecfd6;
+  --aura-sky-b: #fbe1ec;
+  --aura-sky-c: #f4fbfa;
+
+  --aura-dusk-bg: #dcd8f8;
+  --aura-dusk-a: #fdf2d6;
+  --aura-dusk-b: #f6d4ee;
+  --aura-dusk-c: #e3e0fb;
+
+  --aura-sunrise-bg: #f4cdb9;
+  --aura-sunrise-a: #c9b2f1;
+  --aura-sunrise-b: #ffe2c9;
+  --aura-sunrise-c: #f7b5a7;
+
+  --aura-citrus-bg: #fbf6db;
+  --aura-citrus-a: #fff08c;
+  --aura-citrus-b: #a7efee;
+  --aura-citrus-c: #f9cce8;
+
+  /*
+   * Облачное поле экрана: три очень бледных пятна поверх бумаги — персик
+   * справа, сирень слева сверху, розовое внизу. Лежит неподвижным слоем
+   * под всем приложением (globals.css), чтобы не пересчитываться на скролле.
+   */
+  --cloud-field:
+    radial-gradient(60% 40% at 100% 38%, rgba(255, 196, 170, 0.45), transparent),
+    radial-gradient(55% 38% at 0% 8%, rgba(214, 200, 255, 0.4), transparent),
+    radial-gradient(70% 36% at 30% 100%, rgba(255, 200, 224, 0.4), transparent), var(--tk-page);
 
   /* Фольга для пилюль и кнопок: розовое, сиреневое, голубое и тёплое пятна. */
   --foil-strip:
