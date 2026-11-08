@@ -71,11 +71,7 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
           <p className={styles.hint}>{t("hint")}</p>
 
           <div className={styles.deck}>
-            <SwipeCard
-              onDecide={decide}
-              labelYes={t("verdictYes")}
-              labelNo={t("verdictNo")}
-            >
+            <SwipeCard onDecide={decide} labelYes={t("verdictYes")} labelNo={t("verdictNo")}>
               <Ticket
                 photo={
                   <ExperienceVisual
@@ -99,16 +95,8 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
                  */
                 actions={
                   <>
-                    <TicketAction
-                      tone="no"
-                      label={t("no")}
-                      onClick={() => decide("left")}
-                    />
-                    <TicketAction
-                      tone="yes"
-                      label={t("yes")}
-                      onClick={() => decide("right")}
-                    />
+                    <TicketAction tone="no" label={t("no")} onClick={() => decide("left")} />
+                    <TicketAction tone="yes" label={t("yes")} onClick={() => decide("right")} />
                   </>
                 }
               >
