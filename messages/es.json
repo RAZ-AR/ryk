@@ -281,6 +281,8 @@
     "title": "Perfil",
     "close": "Cerrar",
     "profileTitle": "Ajustes",
+    "nameLabel": "Cómo te llamamos",
+    "namePlaceholder": "Nombre",
     "cityLabel": "Ciudad",
     "cityOther": "otra ciudad",
     "cityPlaceholder": "Nombre de la ciudad",

@@ -5,6 +5,7 @@ import type { Locale, SocialMode } from "@/generated/prisma/enums";
 import { track } from "@/lib/analytics/track";
 import { canonicalCity } from "@/lib/cities";
 import { sanitizeJoyTraits } from "@/lib/engine/joyTraits";
+import { normalizeDisplayName } from "@/lib/user/displayName";
 import { clearSession, getSession } from "@/lib/auth/session";
 import { setLocaleCookie } from "@/lib/i18n/localeCookie";
 import { prisma } from "@/lib/prisma";
@@ -35,6 +36,8 @@ export type ProfileInput = {
    * Не передано — не трогаем: старый клиент не должен стереть выбор.
    */
   joyTraits?: string[];
+  /** Как обращаться; пусто — по имени из Telegram. Не передано — не трогаем. */
+  displayName?: string | null;
 };
 
 export async function updateProfile(input: ProfileInput): Promise<ProfileResult> {
@@ -55,6 +58,21 @@ export async function updateProfile(input: ProfileInput): Promise<ProfileResult>
     return { ok: false, reason: "bad_budget" };
   }
 
+  // Имя из Telegram нужно, чтобы не записать его же как «выбранное»:
+  // тогда смена имени в Telegram перестала бы доходить до приложения.
+  let displayName: string | null | undefined;
+  if (input.displayName !== undefined) {
+    try {
+      const tg = await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { firstName: true },
+      });
+      displayName = normalizeDisplayName(input.displayName, tg?.firstName);
+    } catch {
+      return { ok: false, reason: "db_error" };
+    }
+  }
+
   try {
     await prisma.user.update({
       where: { id: session.userId },
@@ -72,6 +90,7 @@ export async function updateProfile(input: ProfileInput): Promise<ProfileResult>
         notificationPreferences: { nudges: input.nudges !== false },
         // Только известные черты: action — открытая точка входа.
         ...(input.joyTraits !== undefined && { joyTraits: sanitizeJoyTraits(input.joyTraits) }),
+        ...(displayName !== undefined && { displayName }),
       },
     });
   } catch {

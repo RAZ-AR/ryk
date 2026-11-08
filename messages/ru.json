@@ -303,6 +303,8 @@
     "title": "Профиль",
     "close": "Закрыть",
     "profileTitle": "Настройки",
+    "nameLabel": "Как к тебе обращаться",
+    "namePlaceholder": "Имя",
     "cityLabel": "Город",
     "cityOther": "другой город",
     "cityPlaceholder": "Название города",

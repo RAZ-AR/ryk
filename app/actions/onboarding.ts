@@ -8,6 +8,7 @@ import { structureWish } from "@/lib/ai/structureWish";
 import { canonicalCity } from "@/lib/cities";
 import { sanitizeJoyTraits, traitsFromText } from "@/lib/engine/joyTraits";
 import { prisma } from "@/lib/prisma";
+import { normalizeDisplayName } from "@/lib/user/displayName";
 
 /*
  * Завершение онбординга (Flow A): пишем предпочтения и рамки недели,
@@ -88,8 +89,7 @@ export async function completeOnboarding(input: OnboardingInput): Promise<Onboar
 
   const goodMoment = input.goodMoment?.trim().slice(0, 500) || null;
   const postponed = input.postponed?.trim().slice(0, 500) || null;
-  // Имя короткое и одной строкой: оно встанет в обращение, а не в абзац.
-  const displayName = input.displayName?.replace(/\s+/g, " ").trim().slice(0, 60) || null;
+  const displayName = normalizeDisplayName(input.displayName);
 
   /*
    * Черты: выбранные на мини-билетах плюс те, что честно читаются из
