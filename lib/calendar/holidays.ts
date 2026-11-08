@@ -9,6 +9,10 @@ import type { CountryCode } from "@/lib/cities";
  * невнимательность. Для незнакомой страны остаются сезоны и луна — они
  * общие для всех.
  *
+ * Календари лежат в таблице `HOLIDAYS` с типом Record<CountryCode, …>:
+ * добавить страну в lib/cities.ts и забыть её праздники нельзя — сборка
+ * упадёт раньше, чем лист без праздников доедет до людей.
+ *
  * Здесь нет ни одного текста для человека: у момента только ключ, а слова
  * живут в messages/{ru,en,es}.json под `moments.*`. Так перевод не может
  * разойтись с датой, и добавить язык — значит добавить JSON, а не код.
@@ -111,6 +115,12 @@ function armenianHolidays(year: number): Moment[] {
   ];
 }
 
+/** Календарь праздников каждой страны пилота. Новая страна без записи здесь не соберётся. */
+const HOLIDAYS: Record<CountryCode, (year: number) => Moment[]> = {
+  RS: serbianHolidays,
+  AM: armenianHolidays,
+};
+
 /**
  * Сезонные вехи. Все пилотные города в северном полушарии, поэтому
  * «весна с 1 марта» без оговорок. Равноденствия и солнцестояния — по
@@ -186,8 +196,7 @@ export function upcomingMoments(
   const all: Moment[] = [];
   for (let y = firstYear; y <= lastYear; y++) {
     all.push(...seasonalMoments(y));
-    if (countryCode === "RS") all.push(...serbianHolidays(y));
-    if (countryCode === "AM") all.push(...armenianHolidays(y));
+    if (countryCode) all.push(...HOLIDAYS[countryCode](y));
   }
   all.push(...fullMoons(fromMs, toMs));
 
@@ -207,7 +216,8 @@ export function upcomingMoments(
 /** Все ключи моментов — для теста, что у каждого есть перевод. */
 export function allMomentKeys(): string[] {
   const keys = new Set<string>(["moon.full"]);
-  for (const m of [...seasonalMoments(2026), ...serbianHolidays(2026), ...armenianHolidays(2026)]) {
+  const holidays = Object.values(HOLIDAYS).flatMap((calendar) => calendar(2026));
+  for (const m of [...seasonalMoments(2026), ...holidays]) {
     keys.add(m.key);
   }
   return [...keys];
