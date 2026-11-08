@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
-import { reactToExperience } from "@/app/actions/discover";
 import { selectStory } from "@/app/actions/weekly";
 import type { DeckCard } from "@/lib/engine/discover";
 import { Button } from "@/components/Button";
@@ -17,14 +15,20 @@ import styles from "./EventSheet.module.css";
  * Полная карточка события. Три действия: реакция в обе стороны и «сделать
  * историей недели» — последняя доступна, только если история ещё не выбрана,
  * иначе кнопка обманывала бы (selectStory молча вернёт ok и ничего не сделает).
+ *
+ * Реакцию отдаём ленте (`onReact`): она прячет карточку сразу и закрывает
+ * лист, не дожидаясь базы. Свежую главную приносит ответ действия
+ * (revalidatePath), второй router.refresh() не нужен.
  */
 export function EventSheet({
   card,
   canPickAsWeek,
+  onReact,
   onClose,
 }: {
   card: DeckCard;
   canPickAsWeek: boolean;
+  onReact: (liked: boolean) => void;
   onClose: () => void;
 }) {
   const t = useTranslations("home");
@@ -34,31 +38,14 @@ export function EventSheet({
   const tWeek = useTranslations("week");
   // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
   const locale = useLocale();
-  const router = useRouter();
-
   const [pending, start] = useTransition();
   const [failed, setFailed] = useState(false);
-
-  const react = (liked: boolean) =>
-    start(async () => {
-      const res = await reactToExperience(card.id, liked);
-      if (res.ok) {
-        router.refresh();
-        onClose();
-      } else {
-        setFailed(true);
-      }
-    });
 
   const pickAsWeek = () =>
     start(async () => {
       const res = await selectStory(card.id);
-      if (res.ok) {
-        router.refresh();
-        onClose();
-      } else {
-        setFailed(true);
-      }
+      if (res.ok) onClose();
+      else setFailed(true);
     });
 
   const priceLabel =
@@ -123,13 +110,13 @@ export function EventSheet({
           </Button>
         )}
         <div className={styles.split}>
-          <Button variant="secondary" disabled={pending} onClick={() => react(false)}>
+          <Button variant="secondary" disabled={pending} onClick={() => onReact(false)}>
             {tDiscover("no")}
           </Button>
           <Button
             variant={canPickAsWeek ? "secondary" : "primary"}
             disabled={pending}
-            onClick={() => react(true)}
+            onClick={() => onReact(true)}
           >
             {tDiscover("yes")}
           </Button>

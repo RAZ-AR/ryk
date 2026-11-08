@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
-import { reactToExperience } from "@/app/actions/discover";
 import type { DeckCard } from "@/lib/engine/discover";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
@@ -12,6 +10,7 @@ import { HandNote } from "@/components/HandNote";
 import { SvcLabel } from "@/components/SvcLabel";
 import { Ticket } from "@/components/Ticket";
 import { TicketAction } from "@/components/TicketAction";
+import { useAnsweredDeck } from "@/lib/ui/answeredDeck";
 import { SwipeCard, type SwipeDirection } from "./SwipeCard";
 import styles from "./DiscoverSection.module.css";
 
@@ -27,22 +26,17 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
   const tWeek = useTranslations("week");
   // Разделитель разрядов свой у каждого языка: 2 200 / 2,200 / 2.200.
   const locale = useLocale();
-  const router = useRouter();
-
-  const [idx, setIdx] = useState(0);
-  const [saving, startSave] = useTransition();
-
-  const card = deck[idx];
+  /*
+   * Ответ — без ожидания сервера, по id, а не по номеру позиции
+   * (lib/ui/answeredDeck.ts): по номеру колода перескакивала через карточку,
+   * когда ответ действия приносил её уже без отвеченной.
+   */
+  const { visible, answeredCount, react } = useAnsweredDeck(deck);
+  const [total] = useState(deck.length);
+  const card = visible[0];
 
   const decide = (direction: SwipeDirection) => {
-    if (!card) return;
-    const liked = direction === "right";
-    // Карточку сдвигаем сразу: ждать сервер, глядя в застывший экран, незачем.
-    setIdx((i) => i + 1);
-    startSave(async () => {
-      await reactToExperience(card.id, liked);
-      router.refresh();
-    });
+    if (card) react(card, direction === "right");
   };
 
   const priceLabel = (price: number | null, currency: string) => {
@@ -81,7 +75,6 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
               onDecide={decide}
               labelYes={t("verdictYes")}
               labelNo={t("verdictNo")}
-              disabled={saving}
             >
               <Ticket
                 photo={
@@ -109,13 +102,11 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
                     <TicketAction
                       tone="no"
                       label={t("no")}
-                      disabled={saving}
                       onClick={() => decide("left")}
                     />
                     <TicketAction
                       tone="yes"
                       label={t("yes")}
-                      disabled={saving}
                       onClick={() => decide("right")}
                     />
                   </>
@@ -133,7 +124,10 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
 
             <div className={styles.counter}>
               <SvcLabel tone="muted">
-                {t("counter", { current: idx + 1, total: deck.length })}
+                {t("counter", {
+                  current: Math.min(answeredCount + 1, total),
+                  total,
+                })}
               </SvcLabel>
             </div>
           </div>

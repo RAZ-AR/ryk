@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { attachMemoryPhoto, removeMemoryPhoto } from "@/app/actions/memoryPhoto";
 import { MAX_PHOTO_BYTES } from "@/lib/storage/memoryPhotos";
@@ -27,7 +26,6 @@ export function PhotoButton({
   enabled: boolean;
 }) {
   const t = useTranslations("memory");
-  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -51,17 +49,16 @@ export function PhotoButton({
     form.set("photo", file);
 
     start(async () => {
+      // Свежий архив приносит ответ действия (revalidatePath).
       const res = await attachMemoryPhoto(form);
-      if (res.ok) router.refresh();
-      else setError(t("photoFailed"));
+      if (!res.ok) setError(t("photoFailed"));
     });
   };
 
   const remove = () =>
     start(async () => {
       const res = await removeMemoryPhoto(memoryId);
-      if (res.ok) router.refresh();
-      else setError(t("photoFailed"));
+      if (!res.ok) setError(t("photoFailed"));
     });
 
   return (

@@ -19,12 +19,11 @@ export function EventFeed({
   deck,
   onOpen,
   onReact,
-  busy,
 }: {
   deck: DeckCard[];
   onOpen: (card: DeckCard) => void;
+  /** Карточка уходит из ленты сразу — ответ не блокирует остальные. */
   onReact: (card: DeckCard, liked: boolean) => void;
-  busy: boolean;
 }) {
   const t = useTranslations("home");
   const tDiscover = useTranslations("discover");
@@ -85,13 +84,11 @@ export function EventFeed({
                 <TicketAction
                   tone="no"
                   label={tDiscover("no")}
-                  disabled={busy}
                   onClick={() => onReact(card, false)}
                 />
                 <TicketAction
                   tone="yes"
                   label={tDiscover("yes")}
-                  disabled={busy}
                   onClick={() => onReact(card, true)}
                 />
               </>

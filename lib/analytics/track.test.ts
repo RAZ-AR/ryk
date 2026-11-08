@@ -16,11 +16,19 @@ vi.mock("posthog-node", () => ({
   },
 }));
 
+// Вне запроса Next `after` бросает — так и в тестах по умолчанию.
+const after = vi.fn((cb: () => unknown): void => {
+  void cb;
+  throw new Error("`after` was called outside a request scope");
+});
+vi.mock("next/server", () => ({ after: (cb: () => unknown) => after(cb) }));
+
 const ORIGINAL_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 
 beforeEach(() => {
   capture.mockClear();
   shutdown.mockClear();
+  after.mockClear();
 });
 
 afterEach(() => {
@@ -63,5 +71,22 @@ describe("track", () => {
     await expect(
       track("user-1", { name: "week_deferred", props: { stage: "plan" } }),
     ).resolves.toBeUndefined();
+  });
+
+  it("в запросе отправляет после ответа, а не задерживает его", async () => {
+    process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_test";
+    let scheduled: (() => unknown) | null = null;
+    after.mockImplementationOnce((cb) => {
+      scheduled = cb;
+    });
+    const { track } = await import("./track");
+
+    await track("user-1", { name: "wish_realized", props: {} });
+
+    // Действие уже вернуло ответ, а в PostHog ещё ничего не ушло.
+    expect(capture).not.toHaveBeenCalled();
+    await scheduled!();
+    expect(capture).toHaveBeenCalledOnce();
+    expect(shutdown).toHaveBeenCalledOnce();
   });
 });

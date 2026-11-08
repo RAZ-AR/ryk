@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { PostHog } from "posthog-node";
 import type { RykEvent } from "./events";
 
@@ -10,6 +11,11 @@ import type { RykEvent } from "./events";
  *
  * Без NEXT_PUBLIC_POSTHOG_KEY — тихий no-op: аналитика не должна быть
  * условием работы продукта.
+ *
+ * Отправка — после ответа (`after`): человек не ждёт PostHog. Раньше каждое
+ * «Интересно» ждало нового TLS-соединения с eu.i.posthog.com, и кнопка
+ * отпускалась заметно позже, чем записалась реакция. Вне запроса (скрипты,
+ * тесты) `after` недоступен — тогда отправляем сразу.
  */
 
 const DEFAULT_HOST = "https://eu.i.posthog.com";
@@ -18,6 +24,14 @@ export async function track(userId: string, event: RykEvent): Promise<void> {
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   if (!key) return;
 
+  try {
+    after(() => send(key, userId, event));
+  } catch {
+    await send(key, userId, event);
+  }
+}
+
+async function send(key: string, userId: string, event: RykEvent): Promise<void> {
   const client = new PostHog(key, {
     host: process.env.NEXT_PUBLIC_POSTHOG_HOST || DEFAULT_HOST,
     // Serverless: функция может завершиться раньше фонового флаша,

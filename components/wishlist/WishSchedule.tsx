@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { scheduleWish, type WishHorizon } from "@/app/actions/wishes";
 import { weekDaysFromToday } from "@/lib/engine/weekDays";
@@ -32,7 +31,6 @@ export function WishSchedule({
   onClose: () => void;
 }) {
   const t = useTranslations("wishes");
-  const router = useRouter();
 
   const [day, setDay] = useState<string | null>(null);
   const [taken, setTaken] = useState<string | null>(null);
@@ -45,8 +43,8 @@ export function WishSchedule({
     start(async () => {
       setFailed(false);
       const res = await scheduleWish(wishId, horizon, horizon === "thisWeek" ? day : null, replace);
+      // Свежий список приносит ответ действия (revalidatePath).
       if (res.ok) {
-        router.refresh();
         onClose();
         return;
       }
