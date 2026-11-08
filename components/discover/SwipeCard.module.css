@@ -38,8 +38,8 @@
 
 .yes {
   left: var(--ryk-space-5);
-  background: var(--foil-strip);
-  color: var(--tk-ink);
+  background: var(--ryk-fill-ink);
+  color: var(--tk-on-ink);
 }
 
 .no {

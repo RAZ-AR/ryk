@@ -7,6 +7,15 @@
       "runtimeArgs": ["dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "ryk-v2-proto",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "-e",
+        "const h=require('http'),f=require('fs'),p=require('path');const root=p.resolve('design/ryk-v2');const t={'.html':'text/html; charset=utf-8','.svg':'image/svg+xml','.png':'image/png'};h.createServer((q,s)=>{const u=decodeURIComponent(q.url.split('?')[0]);const file=p.join(root,u==='/'?'index.html':u);if(!file.startsWith(root))return s.writeHead(403).end();f.readFile(file,(e,b)=>{if(e)return s.writeHead(404).end('not found');s.writeHead(200,{'content-type':t[p.extname(file)]||'application/octet-stream'}).end(b)})}).listen(process.env.PORT||4321)"
+      ],
+      "port": 4321
     }
   ]
 }

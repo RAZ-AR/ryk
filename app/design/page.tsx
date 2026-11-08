@@ -17,44 +17,38 @@ import { HandNote } from "@/components/HandNote";
 import { MemoryCard } from "@/components/MemoryCard";
 import { RykNote } from "@/components/RykNote";
 import { SvcLabel } from "@/components/SvcLabel";
-import { AuraArt } from "@/components/AuraArt";
-import type { AuraPalette, AuraShape } from "@/lib/ui/aura";
+import { PrintArt } from "@/components/PrintArt";
+import { PRINT_SHAPES } from "@/lib/ui/print";
 import { Ticket } from "@/components/Ticket";
 import styles from "./page.module.css";
 
 /**
- * Витрина дизайн-системы (ryk_docs/17-design-system.md v2.1 «Аура»).
+ * Витрина дизайн-системы (ryk_docs/17-design-system.md v3.0 «Одна краска»).
  * Внутренняя страница для проверки примитивов — не часть продуктового флоу.
  */
 
-/** Материалы v2.0: поле, бумага, чернила, бренд и четыре фольги. */
+/** Материалы v3.0: бумага, краска и её оттенки, негатив. */
 const SWATCHES: ReadonlyArray<{ token: string; varName: string }> = [
   { token: "поле", varName: "--ryk-paper" },
   { token: "бумага", varName: "--ryk-white" },
   { token: "бумага-2", varName: "--ryk-surface-muted" },
-  { token: "ink", varName: "--ryk-ink" },
+  { token: "краска", varName: "--ryk-ink" },
+  { token: "text-secondary", varName: "--ryk-text-secondary" },
   { token: "text-muted", varName: "--ryk-text-muted" },
-  { token: "pink", varName: "--ryk-pink" },
-  { token: "pink-text", varName: "--ryk-pink-text" },
-  { token: "success", varName: "--ryk-success" },
-  { token: "фольга · роза", varName: "--foil-rose" },
-  { token: "фольга · солнце", varName: "--foil-sun" },
-  { token: "фольга · серебро", varName: "--foil-silver" },
-  { token: "фольга · лента", varName: "--foil-strip" },
+  { token: "линия", varName: "--ryk-border-row" },
+  { token: "заливка", varName: "--ryk-fill-ink" },
 ];
 
-/** Все семь фигур — каждая на своей палитре, как на референсе. */
-const AURA_DEMO: ReadonlyArray<{ shape: AuraShape; palette: AuraPalette; label: string }> = [
-  { shape: "flower", palette: "peach", label: "цветок · персик" },
-  { shape: "heart", palette: "rose", label: "сердце · роза" },
-  { shape: "halo", palette: "butter", label: "ореол · масло" },
-  { shape: "rings", palette: "mint", label: "кольца · мята" },
-  { shape: "rays", palette: "sunrise", label: "лучи · рассвет" },
-  { shape: "wave", palette: "dusk", label: "волна · сумерки" },
-  { shape: "glow", palette: "sky", label: "свечение · небо" },
-  { shape: "halo", palette: "citrus", label: "ореол · цитрус" },
-  { shape: "flower", palette: "lilac", label: "цветок · сирень" },
-];
+/** Семь фигур оттиска. */
+const SHAPE_LABEL: Record<(typeof PRINT_SHAPES)[number], string> = {
+  flower: "цветок",
+  heart: "сердце",
+  halo: "ореол",
+  rings: "кольца",
+  rays: "лучи",
+  wave: "волна",
+  glow: "свечение",
+};
 
 /** Все девять мотивов на одном экране — так видно, что они не похожи друг на друга. */
 const PATTERN_CATEGORIES: ReadonlyArray<LifeCategory> = [
@@ -114,11 +108,11 @@ export default function DesignSystemPage() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <SvcLabel tone="pink">Design system · v2.1 «Аура»</SvcLabel>
+        <SvcLabel tone="pink">Design system · v3.0 «Одна краска»</SvcLabel>
         <div className={styles.logo}>RYK</div>
         <p className={styles.body}>
-          Облачное поле, билеты с аурами вместо фольги. Референсы — голографические билеты Tokyo
-          2020 и постеры «aura»: мягкие размытые фигуры на пастели (ADR-014, ADR-016).
+          Всё напечатано одной краской — ультрамарином по кремовой бумаге. Картинки карточек —
+          растровые оттиски, самое важное — негатив (ADR-017).
         </p>
       </header>
 
@@ -202,19 +196,17 @@ export default function DesignSystemPage() {
 
       <section className={styles.section}>
         <SvcLabel tone="pink">05</SvcLabel>
-        <h2 className={styles.sectionTitle}>Ауры</h2>
+        <h2 className={styles.sectionTitle}>Оттиски</h2>
         <p className={styles.body}>
-          Картинка карточки — мягкая размытая фигура на пастели. Фигура и палитра выбираются по
-          заголовку: у каждой карточки своя, и она не меняется. Свет медленно дышит и сдвигается при
-          наклоне телефона; вне экрана — пауза.
+          Картинка карточки — растровый оттиск одной краской: сетка точек под 45°, точка тем
+          крупнее, чем светлее место. Фигура выбирается по заголовку: у каждой карточки своя, и она
+          не меняется. Рамки нет — края растворяются в бумаге.
         </p>
         <div className={styles.artRow}>
-          {AURA_DEMO.map(({ shape, palette, label }) => (
-            <div key={label} className={styles.artCell}>
-              <div className={styles.artBox}>
-                <AuraArt shape={shape} palette={palette} seed={label} />
-              </div>
-              <SvcLabel tone="muted">{label}</SvcLabel>
+          {PRINT_SHAPES.map((shape) => (
+            <div key={shape} className={styles.artCell}>
+              <PrintArt seed={shape} shape={shape} ratio={1} />
+              <SvcLabel tone="muted">{SHAPE_LABEL[shape]}</SvcLabel>
             </div>
           ))}
         </div>
@@ -222,13 +214,12 @@ export default function DesignSystemPage() {
 
       <section className={styles.section}>
         <SvcLabel tone="pink">06</SvcLabel>
-        <h2 className={styles.sectionTitle}>Билет</h2>
+        <h2 className={styles.sectionTitle}>Карточка впечатления</h2>
         <div className={styles.tickets}>
           <Ticket
             metaLeft="СБ"
             metaRight="19:30"
             metaRightSub="Природа"
-            emblem={<CategoryIcon category="NATURE" />}
             title="Ночной поход к маяку"
             stubTone="pink"
             stubLabel="История недели · кандидат"
@@ -241,11 +232,9 @@ export default function DesignSystemPage() {
           </Ticket>
 
           <Ticket
-            photoPlaceholder="Фото идеи"
             metaLeft="07"
             metaRight="15"
             metaRightSub="Вызов"
-            emblem={<CategoryIcon category="CHALLENGE" />}
             title="Скалодром для новичков"
             stubTone="neutral"
             stubLabel="VII · Вызов"
@@ -256,10 +245,8 @@ export default function DesignSystemPage() {
           </Ticket>
 
           <Ticket
-            photoPlaceholder="Фото маяка"
             metaLeft="СБ"
             metaRight="19:30"
-            emblem={<CategoryIcon category="CONNECTION" />}
             title="Ночной поход к маяку"
             note="В субботу иду смотреть на звёзды к маяку. Пойдёшь со мной?"
             stubTone="grey"

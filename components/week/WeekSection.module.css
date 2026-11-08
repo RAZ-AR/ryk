@@ -12,22 +12,20 @@
 
 .heading {
   font-family: var(--ryk-font-display);
-  font-weight: 400;
-  font-size: 34px;
+  font-weight: 500;
+  font-size: 44px;
   line-height: 1;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  letter-spacing: -0.045em;
   color: var(--ryk-ink);
   margin-top: 6px;
 }
 
 .counter {
   font-family: var(--ryk-font-display);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 34px;
   line-height: 1;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  letter-spacing: -0.035em;
   line-height: 0.8;
   color: var(--ryk-pink);
 }
@@ -93,7 +91,7 @@
 }
 
 .storyName {
-  font-family: var(--ryk-font-serif);
+  font-family: var(--ryk-font-voice);
   font-size: 20px;
   font-style: italic;
   color: var(--ryk-pink-text);
@@ -150,7 +148,7 @@
 
 .dayOn {
   composes: paper onFoil from "../surface.module.css";
-  background: var(--foil-strip);
+  background: var(--ryk-fill-ink);
   border-color: transparent;
 }
 

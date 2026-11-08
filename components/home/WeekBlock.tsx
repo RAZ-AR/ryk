@@ -3,12 +3,15 @@
 import { useTranslations } from "next-intl";
 import type { WeeklyView } from "@/lib/engine/weekly";
 import { SvcLabel } from "@/components/SvcLabel";
-import { AuraArt } from "@/components/AuraArt";
+import { PrintArt } from "@/components/PrintArt";
 import styles from "./WeekBlock.module.css";
 
 /*
  * Состояние недели одним блоком: что сейчас требуется от человека.
  * Тап открывает полный цикл — сам цикл не переписан, он живёт в WeekSection.
+ *
+ * v3: негатив — заливка краской с оттиском цвета бумаги. Самое важное на
+ * главном печатается наоборот. Отложенная неделя тише — бумага с контуром.
  */
 export function WeekBlock({ view, onOpen }: { view: WeeklyView; onOpen: () => void }) {
   const t = useTranslations("home");
@@ -92,15 +95,12 @@ export function WeekBlock({ view, onOpen }: { view: WeeklyView; onOpen: () => vo
   const c = content();
 
   return (
-    <button
-      type="button"
-      className={[styles.block, c.quiet && styles.quiet].filter(Boolean).join(" ")}
-      onClick={onOpen}
-    >
-      <AuraArt mood={c.quiet ? "silver" : "rose"} seed={c.title} />
+    <button type="button" className={c.quiet ? styles.quiet : styles.block} onClick={onOpen}>
+      <span className={styles.art}>
+        <PrintArt seed={`week-${c.title}`} ratio={0.5} faint={c.quiet} />
+      </span>
       <span className={styles.head}>
-        <SvcLabel tone="ink">{c.kicker}</SvcLabel>
-        <SvcLabel tone={c.quiet ? "muted" : "ink"}>{t("open")}</SvcLabel>
+        <SvcLabel tone="muted">{c.kicker}</SvcLabel>
       </span>
 
       <span className={styles.title}>{c.title}</span>
@@ -114,6 +114,8 @@ export function WeekBlock({ view, onOpen }: { view: WeeklyView; onOpen: () => vo
           </span>
         </span>
       )}
+
+      <span className={styles.open}>{t("open")}</span>
     </button>
   );
 }

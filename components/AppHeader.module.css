@@ -75,16 +75,16 @@
 }
 
 /*
- * Выбранный язык помечен цветом, а не насыщенностью: у моно-меток вес
- * ничего не различает, а у Prata его и нет. Оба состояния читаемы —
- * text-secondary даёт 10.8:1 на бумаге, pink-text 5.1:1.
+ * Выбранный язык — краской с подчёркиванием, остальные — приглушённой
+ * краской (5.3:1). Один цвет на всё, поэтому различает не оттенок, а черта.
  */
 .locale {
   font-family: var(--ryk-font-mono);
-  font-size: 10px;
+  font-weight: 500;
+  font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--ryk-text-secondary);
+  color: var(--ryk-text-muted);
   /* Метка мелкая, но палец крупный: 44px по высоте набираем полями. */
   min-width: 30px;
   min-height: 44px;
@@ -93,7 +93,10 @@
 }
 
 .localeOn {
-  color: var(--ryk-pink-text);
+  color: var(--ryk-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
 }
 
 .locale:disabled {

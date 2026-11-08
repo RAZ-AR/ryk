@@ -3,22 +3,21 @@
 import { useEffect, useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { trackDayLeafViewed } from "@/app/actions/analytics";
-import { AuraArt } from "@/components/AuraArt";
-import { HandNote } from "@/components/HandNote";
+import { PrintArt } from "@/components/PrintArt";
 import type { SoonItem, Today } from "@/lib/engine/today";
-import { pickAura, type AuraPalette } from "@/lib/ui/aura";
+import type { PrintShape } from "@/lib/ui/print";
 import { soonWhen } from "@/lib/ui/dayLeaf";
 import type { WeatherKind } from "@/lib/weather/openMeteo";
 import styles from "./DayLeaf.module.css";
 
 /*
- * «Лист дня» (ryk_docs/22-daily-joy-plan.md, фаза 5; вид — ADR-016) —
- * открытка дня: сверху аура дня с числом внутри, ниже на бумаге — где ты,
- * какой сегодня свет, одна маленькая радость и что скоро.
+ * «Лист дня» (ryk_docs/22-daily-joy-plan.md, фаза 5; вид — ADR-017) —
+ * первая полоса дня прямо на бумаге, без карточки: оттиск дня, дата
+ * гротеском и погода курсивом («8 ноября. / Облачно.»), одна маленькая
+ * радость, свет дня спецификацией и что скоро.
  *
- * Аура дня: фигура меняется каждый день (по дате), а палитра — по погоде:
- * ясно — персик, облачно — сирень, дождь — небо, снег — масло, гроза —
- * сумерки. Открыл приложение — и цвет листа уже говорит, какой сегодня день.
+ * Оттиск дня: фигура говорит о погоде — ясно — лучи, облачно — свечение,
+ * дождь — волна, снег — цветок, гроза — кольца. Без прогноза — по дате.
  *
  * Это не дашборд: ни метрик, ни прогресса, ни кнопок «сделал». Радость
  * только читается. Нет данных для строки — строки нет, лист короче, а не
@@ -46,14 +45,19 @@ function monthOf(iso: string, locale: string): string {
   return parts.find((p) => p.type === "month")?.value ?? "";
 }
 
-/** Палитра ауры по погоде. Без прогноза — палитра по дате, как у карточек. */
-const WEATHER_AURA: Record<WeatherKind, AuraPalette> = {
-  CLEAR: "peach",
-  CLOUDY: "lilac",
-  RAIN: "sky",
-  SNOW: "butter",
-  STORM: "dusk",
+/** Фигура оттиска по погоде. Без прогноза — по дате, как у карточек. */
+const WEATHER_SHAPE: Record<WeatherKind, PrintShape> = {
+  CLEAR: "rays",
+  CLOUDY: "glow",
+  RAIN: "wave",
+  SNOW: "flower",
+  STORM: "rings",
 };
+
+/** «облачно» → «Облачно.» — вторая строка заголовка, как подпись к числу. */
+function sentence(word: string, locale: string): string {
+  return `${word.charAt(0).toLocaleUpperCase(locale)}${word.slice(1)}.`;
+}
 
 function formatDate(iso: string, locale: string, opts: Intl.DateTimeFormatOptions): string {
   return new Intl.DateTimeFormat(locale, { ...opts, timeZone: "UTC" }).format(utcDate(iso));
@@ -85,23 +89,22 @@ export function DayLeaf({
   const day = Number(today.dateIso.slice(8, 10));
   const month = monthOf(today.dateIso, locale);
   const weekday = formatDate(today.dateIso, locale, { weekday: "long" });
-  const place = [today.cityName, today.countryName].filter(Boolean).join(" · ");
+  const place = [today.cityName, today.countryName].filter(Boolean).join(" / ");
 
   const w = today.weather;
-  // Строка погоды — как спецификация на билете: подпись над значением.
+  // Свет дня — спецификацией: подпись моно над значением.
   const sky = w
     ? [
-        {
-          label: t("skyLabel"),
-          value: `${tAll(`week.weather.${w.kind}`)}, ${w.tempMax > 0 ? "+" : ""}${Math.round(w.tempMax)}°`,
-        },
+        { label: t("skyLabel"), value: `${w.tempMax > 0 ? "+" : ""}${Math.round(w.tempMax)}°` },
         w.sunrise ? { label: t("sunriseLabel"), value: w.sunrise } : null,
         w.sunset ? { label: t("sunsetLabel"), value: w.sunset } : null,
       ].filter((x): x is { label: string; value: string } => x !== null)
     : null;
 
   const seed = `day-${today.dateIso}`;
-  const palette = w ? WEATHER_AURA[w.kind] : pickAura(seed).palette;
+  const greeting = today.name ? t("greeting", { name: today.name }) : null;
+  // Вторая строка заголовка: погода, а без прогноза — обращение по имени.
+  const second = w ? sentence(tAll(`week.weather.${w.kind}`), locale) : greeting;
 
   const when = (item: SoonItem): string => {
     // День памяти называем только датой: «в пятницу · …» звучало бы как
@@ -125,66 +128,63 @@ export function DayLeaf({
 
   return (
     <section className={styles.leaf} aria-label={t("aria")}>
-      <div className={styles.poster}>
-        <AuraArt seed={seed} palette={palette} blur={16} />
-        <div className={styles.posterHead}>
-          {/* Обращение — именительным падежом: склонять чужое имя мы не умеем,
-              а «Аня, этот день твой» читается естественно на всех трёх языках. */}
-          {today.name ? (
-            <p className={styles.greeting}>{t("greeting", { name: today.name })}</p>
-          ) : (
-            <span />
-          )}
-          <p className={styles.dayOfYear}>{t("dayOfYear", { n: today.dayOfYear })}</p>
-        </div>
-        {/* Число — внутри ауры дня, как надпись на открытке. */}
-        <time className={styles.date} dateTime={today.dateIso}>
-          <span className={styles.day}>{day}</span>
-          <span className={styles.month}>{month}</span>
+      <div className={styles.art}>
+        <PrintArt seed={seed} shape={w ? WEATHER_SHAPE[w.kind] : undefined} ratio={1} />
+      </div>
+
+      <p className={styles.eyebrow}>
+        {weekday}
+        <span className={styles.slash} aria-hidden="true">
+          /
+        </span>
+        <span className={styles.srOnly}>, </span>
+        {t("dayOfYear", { n: today.dayOfYear })}
+      </p>
+
+      <h2 className={styles.headline}>
+        <time dateTime={today.dateIso}>
+          {day}&nbsp;{month}.
         </time>
-        <p className={styles.weekday}>{weekday}</p>
-      </div>
+        {second ? <span className={styles.second}>{second}</span> : null}
+      </h2>
 
-      <div className={styles.body}>
-        <p className={styles.place}>{place}</p>
+      {/* Обращение — отдельной тихой строкой, если имя не ушло в заголовок. */}
+      {w && greeting ? <p className={styles.greeting}>{greeting}</p> : null}
 
-        {sky && sky.length > 0 && (
-          <dl className={styles.sky}>
-            {sky.map((item) => (
-              <div key={item.label} className={styles.skyItem}>
-                <dt className={styles.skyLabel}>{item.label}</dt>
-                <dd className={styles.skyValue}>{item.value}</dd>
-              </div>
+      <p className={styles.joy}>{tAll(`joy.${today.joyKey}`, today.joyParams ?? {})}</p>
+
+      {place ? <p className={styles.place}>{place}</p> : null}
+
+      {sky && sky.length > 0 && (
+        <dl className={styles.sky}>
+          {sky.map((item) => (
+            <div key={item.label}>
+              <dt className={styles.skyLabel}>{item.label}</dt>
+              <dd className={styles.skyValue}>{item.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {today.soon.length > 0 && (
+        <div className={styles.soonBlock}>
+          <p className={styles.soonLabel}>{t("soon")}</p>
+          <ul className={styles.soon} aria-label={t("soon")}>
+            {today.soon.map((item) => (
+              <li
+                key={`${item.type}-${item.date}-${item.type === "moment" ? item.key : item.id}`}
+                className={item.type === "moment" && item.quiet ? styles.quiet : undefined}
+              >
+                <time dateTime={item.date} className={styles.when}>
+                  {when(item)}
+                </time>
+                <span aria-hidden="true"> · </span>
+                <span>{title(item)}</span>
+              </li>
             ))}
-          </dl>
-        )}
-
-        <p className={styles.joy}>
-          <HandNote size="large">{tAll(`joy.${today.joyKey}`, today.joyParams ?? {})}</HandNote>
-        </p>
-
-        {today.soon.length > 0 && (
-          <>
-            <hr className={styles.divider} />
-            <ul className={styles.soon} aria-label={t("soon")}>
-              {today.soon.map((item) => (
-                <li
-                  key={`${item.type}-${item.date}-${item.type === "moment" ? item.key : item.id}`}
-                  className={[styles.soonItem, item.type === "moment" && item.quiet && styles.quiet]
-                    .filter(Boolean)
-                    .join(" ")}
-                >
-                  <time dateTime={item.date} className={styles.when}>
-                    {when(item)}
-                  </time>
-                  <span aria-hidden="true"> · </span>
-                  <span>{title(item)}</span>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </div>
+          </ul>
+        </div>
+      )}
     </section>
   );
 }

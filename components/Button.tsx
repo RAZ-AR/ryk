@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import styles from "./Button.module.css";
 
 /**
- * Кнопка. Прямые углы (радиус 0) — характер принта, дизайн-система §5.
+ * Кнопка-пилюля (дизайн-система §5, v3 «Одна краска»).
  * На экране только один `primary` (§11.1).
  *
  * `ghost` — текстовое действие во всю ширину, `link` — оно же по

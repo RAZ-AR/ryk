@@ -1,25 +1,9 @@
 /*
- * Пустой билет над фразой пустого состояния. Приглушён намеренно: знак
- * сопровождает текст, а не спорит с ним — на бумаге это отпечаток, а не
- * иллюстрация.
+ * Бледный оттиск над фразой пустого состояния. Приглушён намеренно:
+ * знак сопровождает текст, а не спорит с ним.
  */
-
 .mark {
-  display: block;
-  width: 56px;
-  height: 70px;
-  margin-bottom: var(--ryk-space-5);
-  fill: none;
-  stroke: var(--ryk-text-disabled);
-  stroke-width: 1.5;
-  stroke-linecap: square;
-}
-
-.outline {
-  stroke-dasharray: 5 4;
-}
-
-/* Линия отрыва — тот же шаг пунктира, что у настоящей перфорации билета. */
-.perforation {
-  stroke-dasharray: 2 3;
+  width: 120px;
+  margin: calc(var(--ryk-space-4) * -1) 0 var(--ryk-space-2) calc(var(--ryk-space-4) * -1);
+  color: var(--ryk-ink);
 }

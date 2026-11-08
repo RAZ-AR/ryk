@@ -1,73 +1,90 @@
 /*
- * Материалы «Билета» (дизайн-система §3, ADR-014).
+ * Материалы «Одной краски» (дизайн-система §3, ADR-017).
  *
- * По умолчанию всё лежит на ночи, и роли --ryk-* дают светлые чернила.
- * Предмет из бумаги или фольги подключает здесь свой материал через
- * `composes: paper from "../surface.module.css"` — и все его потомки
- * получают тёмные чернила, тёмные линии и бумажный розовый, не зная
- * об этом. Так одна кнопка `color: var(--ryk-ink)` правильна и на поле,
- * и внутри корешка.
+ * Бумага — краска по бумаге: синий текст, синие волосяные линии.
+ * Негатив (.onFoil) — наоборот: заливка краской, текст цвета бумаги.
+ * Предмет подключает материал через `composes: paper onFoil from …`,
+ * и все его потомки получают нужные чернила, не зная об этом: кнопка
+ * с `color: var(--ryk-ink)` верна и на бумаге, и на заливке.
  *
- * Фон здесь не задаём: заливку выбирает сам компонент (бумага, фольга,
- * подложка), а материал отвечает только за чернила.
+ * Имя .onFoil историческое: фольги больше нет, её место заняла заливка
+ * краской. Классы .foil* — готовые заливки для кнопок и пилюль.
  */
 
 .paper {
   --ryk-ink: var(--tk-ink);
-  --ryk-on-ink: var(--tk-paper);
+  --ryk-on-ink: var(--tk-on-ink);
   --ryk-text-secondary: var(--tk-ink-2);
   --ryk-text-muted: var(--tk-ink-muted);
   --ryk-text-faint: var(--tk-ink-faint);
   --ryk-text-disabled: var(--tk-ink-disabled);
-  --ryk-pink-text: var(--tk-pink-on-paper);
-  --ryk-pink-deep: var(--tk-pink-deep-on-paper);
-  --ryk-success: var(--tk-success-on-paper);
+  --ryk-pink: var(--tk-ink);
+  --ryk-pink-text: var(--tk-ink);
+  --ryk-pink-deep: var(--tk-ink);
+  --ryk-success: var(--tk-ink);
 
-  --ryk-surface-card: var(--tk-paper-2);
+  --ryk-surface-card: var(--tk-paper);
   --ryk-surface-stub: var(--tk-paper-2);
   --ryk-surface-muted: var(--tk-paper-2);
   --ryk-grey: var(--tk-paper-3);
 
   --ryk-border-strong: var(--tk-ink);
-  --ryk-border-card: rgba(13, 13, 15, 0.22);
+  --ryk-border-card: var(--tk-ink-line);
   --ryk-border-row: var(--tk-ink-line);
-  --ryk-border-dashed: rgba(13, 13, 15, 0.32);
-  --ryk-border-muted-dash: rgba(13, 13, 15, 0.3);
+  --ryk-border-dashed: var(--tk-ink-dash);
+  --ryk-border-muted-dash: var(--tk-ink-dash-muted);
+  --ryk-wash: var(--tk-ink-wash);
 
   color: var(--ryk-ink);
 }
 
 /*
- * Чернила на фольге. Перелив местами темнеет до 3.8:1 против серого
- * подписи, поэтому на фольге вторичный и приглушённый текст — почти
- * чёрные: иерархию держат кегль и капс, а не серость.
- *
- * Подключается только вместе с бумагой: `composes: paper onFoil`.
- * Цепочку из трёх composes сборка не разворачивает — поэтому плоско.
+ * Негатив: всё, что внутри, печатается цветом бумаги по краске.
+ * Подключается вместе с бумагой: `composes: paper onFoil` — порядок важен,
+ * негатив перекрывает чернила бумаги. Цепочку из трёх composes сборка
+ * не разворачивает — поэтому плоско.
  */
 .onFoil {
-  --ryk-text-secondary: var(--tk-ink);
-  --ryk-text-muted: var(--tk-ink-2);
-  --ryk-text-faint: var(--tk-ink-2);
+  --ryk-ink: var(--tk-on-ink);
+  --ryk-on-ink: var(--tk-ink);
+  --ryk-text-secondary: var(--tk-on-ink);
+  --ryk-text-muted: var(--tk-on-ink-muted);
+  --ryk-text-faint: var(--tk-on-ink-muted);
+  --ryk-pink: var(--tk-on-ink);
+  --ryk-pink-text: var(--tk-on-ink);
+  --ryk-pink-deep: var(--tk-on-ink);
+  --ryk-success: var(--tk-on-ink);
+
+  --ryk-surface-stub: var(--tk-ink-press);
+  --ryk-surface-muted: var(--tk-ink-press);
+
+  --ryk-border-strong: var(--tk-on-ink);
+  --ryk-border-card: var(--tk-on-ink-line);
+  --ryk-border-row: var(--tk-on-ink-line);
+  --ryk-border-dashed: var(--tk-on-ink-line);
+  --ryk-border-muted-dash: var(--tk-on-ink-line);
+  --ryk-wash: var(--tk-on-ink-wash);
+
+  color: var(--ryk-ink);
 }
 
-/* Фольга — бумага по чернилам, но с переливом вместо заливки. */
+/* Заливки краской. Раньше — три фольги и лента; теперь у всех один цвет. */
 .foil {
   composes: paper onFoil;
-  background: var(--foil-rose);
+  background: var(--ryk-fill-ink);
 }
 
 .foilSun {
   composes: paper onFoil;
-  background: var(--foil-sun);
+  background: var(--ryk-fill-ink);
 }
 
 .foilSilver {
   composes: paper onFoil;
-  background: var(--foil-silver);
+  background: var(--ryk-fill-ink);
 }
 
 .foilStrip {
   composes: paper onFoil;
-  background: var(--foil-strip);
+  background: var(--ryk-fill-ink);
 }

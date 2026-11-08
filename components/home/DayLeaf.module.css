@@ -1,158 +1,134 @@
 /*
- * Лист дня — открытка (ADR-016): сверху аура дня с числом внутри, ниже —
- * молочная бумага с подробностями. Воздух важнее плотности: строк мало,
- * и каждой дано место.
+ * Лист дня v3 (ADR-017) — первая полоса дня прямо на бумаге, без карточки.
+ * Как на референсе: оттиск справа, ниже — заголовок в две строки
+ * (гротеск + курсивная антиква), реплика, спецификация моно.
  */
 .leaf {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  background: var(--ryk-white);
-  border-radius: var(--ryk-radius-card);
-  box-shadow: var(--ryk-shadow-card);
   color: var(--ryk-ink);
 }
 
-/* --- Открытка: аура и число --- */
-.poster {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 330px;
-  padding: var(--ryk-space-5) var(--ryk-space-5) var(--ryk-space-6);
+/* Оттиск уходит за правую кромку экрана — как статуя на референсе. */
+.art {
+  width: 78%;
+  margin: calc(var(--ryk-space-4) * -1) calc(var(--ryk-screen-x) * -1) 0 auto;
 }
 
-.poster > :not(:first-child) {
-  position: relative;
-  z-index: 1;
-}
-
-.posterHead {
-  align-self: stretch;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--ryk-space-3);
-}
-
-/* Обращение — тихая строка, как надпись на открытке от руки. */
-.greeting {
-  font-family: var(--ryk-font-serif);
-  font-size: 15px;
-  line-height: 1.4;
-  color: var(--ryk-text-secondary);
-}
-
-.dayOfYear {
-  flex-shrink: 0;
+.eyebrow,
+.place,
+.soonLabel,
+.skyLabel {
   font-family: var(--ryk-font-mono);
+  font-weight: 500;
   font-size: 11px;
-  letter-spacing: 0.06em;
-  line-height: 1.5;
-  color: var(--ryk-text-secondary);
-}
-
-/* Число — единственная крупная цифра на листе, в центре ауры. */
-.date {
-  margin: auto 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: var(--ryk-space-4);
-}
-
-.day {
-  font-family: var(--ryk-font-display);
-  font-weight: 400;
-  font-size: 132px;
-  line-height: 0.82;
-  letter-spacing: -6px;
-}
-
-/* Месяц — курсивом, как подпись на постере референса. */
-.month {
-  margin-top: var(--ryk-space-2);
-  font-family: var(--ryk-font-serif);
-  font-style: italic;
-  font-size: 28px;
-  line-height: 1.1;
-  letter-spacing: -0.3px;
-}
-
-.weekday {
-  margin-top: var(--ryk-space-4);
-  font-family: var(--ryk-font-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
+  line-height: 1.6;
   text-transform: uppercase;
-  color: var(--ryk-text-secondary);
 }
 
-/* --- Бумага: подробности дня --- */
-.body {
-  display: flex;
-  flex-direction: column;
-  padding: var(--ryk-space-5) var(--ryk-space-5) var(--ryk-space-6);
+.eyebrow {
+  margin-top: var(--ryk-space-2);
+}
+
+.slash {
+  margin: 0 0.5em;
+}
+
+.headline {
+  margin-top: var(--ryk-space-3);
+  font-family: var(--ryk-font-display);
+  font-weight: 500;
+  font-size: clamp(52px, 16vw, 84px);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+/* Вторая строка — курсивная антиква, на ступень крупнее: у неё ниже x-высота. */
+.second {
+  display: block;
+  margin-top: 0.04em;
+  font-family: var(--ryk-font-voice);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.04em;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.greeting {
+  margin-top: var(--ryk-space-5);
+  font-family: var(--ryk-font-voice);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--ryk-text-muted);
+}
+
+/* Радость дня — человеческая реплика, главный текст листа. */
+.joy {
+  margin-top: var(--ryk-space-3);
+  max-width: 30ch;
+  font-size: 19px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.greeting + .joy {
+  margin-top: var(--ryk-space-1);
+}
+
+.headline + .joy {
+  margin-top: var(--ryk-space-5);
 }
 
 .place {
-  font-family: var(--ryk-font-serif);
-  font-size: 17px;
-  line-height: 1.4;
+  margin-top: var(--ryk-space-3);
+  color: var(--ryk-text-muted);
 }
 
-/* Погода — спецификацией билета: подпись над значением, три колонки. */
 .sky {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: var(--ryk-space-3);
-  margin: var(--ryk-space-4) 0 0;
-  padding-top: var(--ryk-space-3);
-  border-top: 1px solid var(--ryk-border-row);
-}
-
-.skyItem {
-  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ryk-space-2) var(--ryk-space-6);
+  margin-top: var(--ryk-space-5);
 }
 
 .skyLabel {
-  font-family: var(--ryk-font-mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--ryk-text-muted);
 }
 
 .skyValue {
-  margin: 2px 0 0;
-  font-family: var(--ryk-font-serif);
   font-size: 15px;
-  line-height: 1.35;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
-.joy {
+.soonBlock {
+  display: flex;
+  gap: var(--ryk-space-3);
+  align-items: baseline;
   margin-top: var(--ryk-space-5);
+  padding-top: var(--ryk-space-4);
+  border-top: 1px solid var(--ryk-border-row);
 }
 
-.divider {
-  margin: var(--ryk-space-5) 0 var(--ryk-space-4);
-  border: 0;
-  border-top: 1px solid var(--ryk-border-row);
+.soonLabel {
+  flex: none;
+  color: var(--ryk-text-muted);
 }
 
 .soon {
   display: flex;
   flex-direction: column;
-  gap: var(--ryk-space-2);
+  gap: var(--ryk-space-1);
   margin: 0;
   padding: 0;
   list-style: none;
-  font-family: var(--ryk-font-serif);
   font-size: 14px;
   line-height: 1.5;
-  color: var(--ryk-text-secondary);
 }
 
 .when {
@@ -162,4 +138,13 @@
 /* День памяти: тот же текст, но тише — без интонации праздника. */
 .quiet {
   color: var(--ryk-text-muted);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

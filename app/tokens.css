@@ -1,204 +1,99 @@
 /*
  * Ryk design tokens — единственный источник значений в коде.
- * Соответствует ryk_docs/17-design-system.md v2.0 «Билет» (ADR-014).
+ * Соответствует ryk_docs/17-design-system.md v3.0 «Одна краска» (ADR-017).
  *
- * Направление: светлая бумага, на ней — билеты из двух материалов:
- * голографическая фольга с зерном (верх билета, главное действие) и
- * матовая бумага (корешок, карточки, поля). Всё остальное — типографика
- * и тонкие линии, как на спецификации билета.
+ * Направление: всё напечатано одной краской — ультрамарином по кремовой
+ * бумаге. Чёрного, розового и пастелей нет. Картинки карточек — растровый
+ * оттиск той же краской (components/PrintArt.tsx). Самое важное на экране
+ * печатается негативом: заливка краской, текст цвета бумаги.
  *
  * Правило: hex-литералов в компонентах нет. Новый оттенок — сначала в док, потом сюда.
  */
 
 /* ═══ 1. Материалы: сырые значения. В компонентах напрямую не используются. ═══ */
 :root {
-  /*
-   * Бумага v2.1 «Аура» (ADR-016): поле — тёплое облако, а не серый картон;
-   * предметы — молочно-белые. Ink и все текстовые роли прежние: контраст
-   * на новом поле проверен (muted 5.9:1, faint 4.9:1).
-   */
-  --tk-page: #f3ece7;
-  --tk-paper: #fdfaf7;
-  --tk-paper-2: #f3ede8;
-  --tk-paper-3: #e8dfd8;
-  --tk-ink: #0d0d0f;
-  --tk-ink-2: #2c2c2e;
-  --tk-ink-muted: #5a5a57;
-  --tk-ink-faint: #66665f;
-  --tk-ink-disabled: #9a9a94;
-  --tk-ink-line: rgba(13, 13, 15, 0.16);
+  /* Бумага */
+  --tk-page: #f3ede3;
+  --tk-paper: #fbf8f2; /* поднятая бумага: док, листы, поля ввода */
+  --tk-paper-2: #eee7db; /* углубление: подложка корешка, неактивная пилюля */
+  --tk-paper-3: #e4dbcb;
 
   /*
-   * Фольга. Не линейный градиент, а пять мягких пятен поверх подложки —
-   * так переливается настоящая голограмма: цвет «плывёт» пятнами, а не
-   * полосами. Две основные фольги — как на референсе: розовая (бренд) и
-   * солнечная. Серебряная — для нейтрального (приглашение).
+   * Краска и её оттенки. Контраст на --tk-page: ink 6.9:1, ink-2 6.4:1,
+   * muted 5.3:1 (на paper-2 — 5.0:1). Disabled — ниже AA намеренно:
+   * неактивные элементы из требования контраста исключены (WCAG 1.4.3).
    */
-  /*
-   * Фольга — те же светлые размытые пятна, что в живой фольге карточек
-   * (палитра --art-*), только неподвижные. Каждое пятно — эллипс,
-   * растворяющийся к краю: так заливка читается как размытый свет,
-   * а не как радужная полоса. Пятна заданы в процентах, поэтому одинаково
-   * ложатся и на широкую кнопку, и на маленькую пилюлю.
-   */
-  --foil-rose:
-    var(--grain), radial-gradient(48% 110% at 14% 40%, var(--art-rose-1), transparent),
-    radial-gradient(45% 110% at 52% 70%, var(--art-silver-2), transparent),
-    radial-gradient(42% 110% at 88% 30%, var(--art-rose-2), transparent),
-    radial-gradient(36% 90% at 70% 100%, var(--art-rose-3), transparent), var(--art-base);
-  --foil-sun:
-    var(--grain), radial-gradient(48% 110% at 12% 35%, var(--art-sun-3), transparent),
-    radial-gradient(45% 110% at 50% 70%, var(--art-sun-1), transparent),
-    radial-gradient(44% 110% at 90% 35%, var(--art-sun-2), transparent), var(--art-base);
-  --foil-silver:
-    var(--grain), radial-gradient(50% 110% at 15% 40%, var(--art-silver-1), transparent),
-    radial-gradient(48% 110% at 85% 45%, var(--art-silver-2), transparent),
-    radial-gradient(40% 90% at 50% 100%, var(--art-silver-3), transparent), var(--art-base);
-  /*
-   * Пятна фольги кнопок и пилюль (--foil-*) и фона онбординга.
-   * Картинки карточек — ауры (--aura-*, ниже), ADR-016.
-   */
-  --art-base: #f3f1f7;
-  --art-rose-1: #ffa3cf;
-  --art-rose-2: #a9c6ff;
-  --art-rose-3: #ffe08c;
-  --art-sun-1: #ffaa9d;
-  --art-sun-2: #9fcbff;
-  --art-sun-3: #ffdd84;
-  --art-silver-1: #f8dbe9;
-  --art-silver-2: #dbe6ff;
-  --art-silver-3: #fdf1c8;
-  /* Квадрат светится от жёлтого к оранжевому, как на референсе. */
-  --art-glow: #ffc683;
+  --tk-ink: #1a3ad6;
+  --tk-ink-press: #142fb0;
+  --tk-ink-2: #2a45cc;
+  --tk-ink-muted: #4458c2;
+  --tk-ink-faint: #4458c2;
+  --tk-ink-disabled: #9aa4d8;
+  --tk-ink-line: rgba(26, 58, 214, 0.22);
+  --tk-ink-wash: rgba(26, 58, 214, 0.07);
+  --tk-ink-dash: rgba(26, 58, 214, 0.4);
+  --tk-ink-dash-muted: rgba(26, 58, 214, 0.32);
 
-  /*
-   * ═══ Ауры (ADR-016): картинки карточек и листа дня. ═══
-   * Мягкая размытая фигура — цветок, сердце, ореол, кольца, лучи, волна —
-   * на пастельном поле. Палитра из четырёх цветов: поле, основной свет
-   * фигуры, второй свет, светлая сердцевина. Набор взят с референса
-   * «aura posters»: тёплые и холодные пастели, ничего кислотного.
-   */
-  --aura-peach-bg: #fbe2d3;
-  --aura-peach-a: #ff9f80;
-  --aura-peach-b: #ffd0a6;
-  --aura-peach-c: #fff3e8;
+  /* Бумага на краске (негатив): 6.9:1 и 5.1:1 */
+  --tk-on-ink: #f3ede3;
+  --tk-on-ink-muted: #c7cdf0;
+  --tk-on-ink-line: rgba(243, 237, 227, 0.3);
+  --tk-on-ink-wash: rgba(243, 237, 227, 0.12);
 
-  --aura-rose-bg: #fde9ef;
-  --aura-rose-a: #ffaecb;
-  --aura-rose-b: #ffd3e1;
-  --aura-rose-c: #fff6f4;
-
-  --aura-butter-bg: #fbf5e3;
-  --aura-butter-a: #a9c2ff;
-  --aura-butter-b: #d8c9ff;
-  --aura-butter-c: #fff1a3;
-
-  --aura-lilac-bg: #e9e2fb;
-  --aura-lilac-a: #f7b4d6;
-  --aura-lilac-b: #ffd3ad;
-  --aura-lilac-c: #f4efff;
-
-  --aura-mint-bg: #f7f4e5;
-  --aura-mint-a: #a6e3b2;
-  --aura-mint-b: #9eaef0;
-  --aura-mint-c: #fffbea;
-
-  --aura-sky-bg: #f8f3ea;
-  --aura-sky-a: #8ecfd6;
-  --aura-sky-b: #fbe1ec;
-  --aura-sky-c: #f4fbfa;
-
-  --aura-dusk-bg: #dcd8f8;
-  --aura-dusk-a: #fdf2d6;
-  --aura-dusk-b: #f6d4ee;
-  --aura-dusk-c: #e3e0fb;
-
-  --aura-sunrise-bg: #f4cdb9;
-  --aura-sunrise-a: #c9b2f1;
-  --aura-sunrise-b: #ffe2c9;
-  --aura-sunrise-c: #f7b5a7;
-
-  --aura-citrus-bg: #fbf6db;
-  --aura-citrus-a: #fff08c;
-  --aura-citrus-b: #a7efee;
-  --aura-citrus-c: #f9cce8;
-
-  /*
-   * Облачное поле экрана: три очень бледных пятна поверх бумаги — персик
-   * справа, сирень слева сверху, розовое внизу. Лежит неподвижным слоем
-   * под всем приложением (globals.css), чтобы не пересчитываться на скролле.
-   */
-  --cloud-field:
-    radial-gradient(60% 40% at 100% 38%, rgba(255, 196, 170, 0.45), transparent),
-    radial-gradient(55% 38% at 0% 8%, rgba(214, 200, 255, 0.4), transparent),
-    radial-gradient(70% 36% at 30% 100%, rgba(255, 200, 224, 0.4), transparent), var(--tk-page);
-
-  /* Фольга для пилюль и кнопок: розовое, сиреневое, голубое и тёплое пятна. */
-  --foil-strip:
-    radial-gradient(40% 130% at 8% 50%, var(--art-rose-1), transparent),
-    radial-gradient(38% 130% at 38% 40%, var(--art-silver-2), transparent),
-    radial-gradient(38% 130% at 66% 60%, var(--art-rose-2), transparent),
-    radial-gradient(34% 130% at 96% 45%, var(--art-rose-3), transparent), var(--art-base);
-
-  /*
-   * Зерно. Чёрная крупка с переменной прозрачностью — печать по фольге.
-   * Кладётся одним фиксированным слоем на весь экран (globals.css):
-   * на ночи невидима, на фольге и бумаге даёт фактуру риографа.
-   */
-  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.32 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-
-  /* Бренд. Розовый живёт в фольге и в точечных акцентах. */
-  --tk-pink: #f387c8;
-  --tk-pink-on-paper: #a23c7c;
-  --tk-pink-deep-on-paper: #a92d75;
-  --tk-on-pink: #3a1530;
-  --tk-success-on-paper: #3d6a21;
+  /* Затемнение под листом — та же краска, только глубже */
+  --tk-scrim: rgba(12, 22, 82, 0.32);
 }
 
 /*
  * ═══ 2. Роли. Тема одна — светлая (бумага). ═══
  *
- * Фольга переопределяет вторичный текст через
- * components/surface.module.css (.onFoil): на переливе серый не держит контраст.
+ * Имена ролей исторические (pink, foil, grey) — компоненты не переписываем
+ * ради переименования. Значение у всех акцентов теперь одно — краска.
+ * Негатив подключает components/surface.module.css (.onFoil).
  */
 :root {
-  /* --- Бренд и действие --- */
-  --ryk-pink: var(--tk-pink);
-  --ryk-pink-deep: var(--tk-pink-deep-on-paper);
-  --ryk-pink-text: var(--tk-pink-on-paper);
+  /* --- Бренд и действие: краска --- */
+  --ryk-pink: var(--tk-ink);
+  --ryk-pink-deep: var(--tk-ink);
+  --ryk-pink-text: var(--tk-ink);
   --ryk-grey: var(--tk-paper-3);
   --ryk-grey-surface: var(--tk-paper-2);
+  /* Заливка краской — главное действие, выбранное, активный пункт дока */
+  --ryk-fill-ink: var(--tk-ink);
+  --ryk-fill-ink-press: var(--tk-ink-press);
+  --ryk-wash: var(--tk-ink-wash);
+  --ryk-scrim: var(--tk-scrim);
 
   /* --- Бумага и поверхности --- */
   --ryk-paper: var(--tk-page); /* фон экрана */
-  --ryk-white: var(--tk-paper); /* корешок билета, поля, карточки */
+  --ryk-white: var(--tk-paper); /* поднятая бумага */
   --ryk-surface-card: var(--tk-paper);
   --ryk-surface-stub: var(--tk-paper-2);
   --ryk-surface-muted: var(--tk-paper-2);
 
   /* --- Текст --- */
   --ryk-ink: var(--tk-ink);
-  --ryk-on-ink: var(--tk-paper); /* текст на заливке цвета ink */
+  --ryk-on-ink: var(--tk-on-ink); /* текст на заливке краской */
   --ryk-text-secondary: var(--tk-ink-2);
   --ryk-text-muted: var(--tk-ink-muted);
   --ryk-text-faint: var(--tk-ink-faint);
   --ryk-text-disabled: var(--tk-ink-disabled);
-  --ryk-text-on-pink: var(--tk-on-pink);
+  --ryk-text-on-pink: var(--tk-on-ink);
 
-  /* --- Линии: тонкие, как сетка на корешке --- */
+  /* --- Линии: волосяные, той же краской --- */
   --ryk-border-strong: var(--tk-ink);
-  --ryk-border-card: rgba(13, 13, 15, 0.2);
+  --ryk-border-card: var(--tk-ink-line);
   --ryk-border-row: var(--tk-ink-line);
-  --ryk-border-dashed: rgba(13, 13, 15, 0.32);
-  --ryk-border-muted-dash: rgba(13, 13, 15, 0.3);
+  --ryk-border-dashed: var(--tk-ink-dash);
+  --ryk-border-muted-dash: var(--tk-ink-dash-muted);
 
-  /* --- Семантика и акценты --- */
-  --ryk-success: var(--tk-success-on-paper);
-  --ryk-dot-pink: var(--tk-pink);
-  --ryk-dot-rose: #c99bb0;
-  --ryk-dot-gold: #d9c55a;
-  --ryk-task-todo: var(--tk-pink);
-  --ryk-task-plan: #b9bcbe;
+  /* --- Семантика: тоже краска, смысл несут текст и знак, не цвет --- */
+  --ryk-success: var(--tk-ink);
+  --ryk-dot-pink: var(--tk-ink);
+  --ryk-dot-rose: var(--tk-ink-muted);
+  --ryk-dot-gold: var(--tk-ink-disabled);
+  --ryk-task-todo: var(--tk-ink);
+  --ryk-task-plan: var(--tk-ink-disabled);
   --ryk-task-done: var(--tk-ink);
 
   /* --- Отступы --- */
@@ -210,74 +105,64 @@
   --ryk-space-6: 24px;
   --ryk-space-7: 28px;
   --ryk-space-8: 32px;
+  --ryk-space-9: 48px;
   --ryk-screen-x: 20px;
   --ryk-screen-top: 24px;
   --ryk-screen-bottom-dock: 104px; /* CTA не уходят под dock */
 
   /*
    * --- Радиусы: система, а не одно число ---
-   * 6 — поля и чипы-ячейки, 12 — кнопки и карточки, 18 — билет,
-   * пилюля — только док. Билет на референсе скруглён скромно (~6% ширины):
-   * это вырубка картона, а не «мягкий» UI.
+   * Пилюля — всё, что нажимается (кнопки, чипы, док). 12 — поля и фото,
+   * 24 — панели и карточки, 28 — лист. Оттиск картинки рамки не имеет.
    */
-  --ryk-radius-none: 6px; /* имя историческое */
-  --ryk-radius-field: 6px;
-  --ryk-radius-card: 12px;
-  --ryk-radius-photo: 10px;
-  --ryk-radius-ticket: 18px;
-  --ryk-radius-dock: 12px;
+  --ryk-radius-none: 12px; /* имя историческое */
+  --ryk-radius-field: 12px;
+  --ryk-radius-card: 24px;
+  --ryk-radius-photo: 12px;
+  --ryk-radius-ticket: 24px;
+  --ryk-radius-sheet: 28px;
+  --ryk-radius-dock: 999px;
   --ryk-radius-dock-pill: 999px;
+  --ryk-radius-pill: 999px;
 
   /*
-   * --- Тени ---
-   * На ночи тень не видна, поэтому она работает как отрыв от поля:
-   * короткий тёмный слой по краю + широкий выход. Цветной каустики нет.
+   * --- Тени: их нет ---
+   * Отрыв от поля даёт волосяная линия краской (как контур у дока и
+   * пилюли-«Начать» на референсе), а не размытая тень. Имена ролей
+   * остаются, чтобы компоненты не ломались.
    */
-  --ryk-shadow-ticket: 0 1px 2px rgba(13, 13, 15, 0.08), 0 22px 40px -22px rgba(13, 13, 15, 0.45);
-  --ryk-drop-ticket: drop-shadow(0 1px 1px rgba(13, 13, 15, 0.14))
-    drop-shadow(0 14px 22px rgba(13, 13, 15, 0.16));
-  --ryk-shadow-card: 0 1px 2px rgba(13, 13, 15, 0.06), 0 12px 26px -16px rgba(13, 13, 15, 0.4);
-  --ryk-shadow-dock: 0 1px 2px rgba(13, 13, 15, 0.08), 0 16px 34px -14px rgba(13, 13, 15, 0.45);
-  --ryk-shadow-toast: 0 18px 40px -16px rgba(13, 13, 15, 0.45);
+  --ryk-shadow-ticket: none;
+  --ryk-drop-ticket: none;
+  --ryk-shadow-card: none;
+  --ryk-shadow-dock: inset 0 0 0 1.5px var(--tk-ink);
+  --ryk-shadow-toast: none;
+  --ryk-outline: inset 0 0 0 1.5px var(--tk-ink);
 
-  /* --- Motion: коротко и по делу. Фольга не течёт сама по себе. --- */
-  --ryk-duration-micro: 140ms;
+  /* --- Motion: коротко и по делу --- */
+  --ryk-duration-micro: 160ms;
   --ryk-duration-standard: 240ms;
-  --ryk-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ryk-duration-slow: 320ms;
+  --ryk-ease: cubic-bezier(0.2, 0, 0, 1);
+  --ryk-ease-in: cubic-bezier(0.4, 0, 1, 1);
 
   /*
    * --- Гарнитуры (переменные приходят из next/font в layout.tsx) ---
-   * Исходные шрифты продукта: Prata — интерфейс и заголовок билета
-   * (один вес 400: иерархию держат кегль, регистр и трекинг), PT Serif —
-   * текст, IBM Plex Mono — служебные строки билета, Caveat — рукописная ремарка.
+   * Гротеск говорит (Inter Tight): интерфейс, заголовки, текст.
+   * Курсивная антиква чувствует (Source Serif 4 italic): вторая строка
+   * заголовка, реплика, «голос» карточки. Моно считает (IBM Plex Mono):
+   * подписи капсом, цены, время. Рукописного больше нет — его роль у курсива.
    */
-  --ryk-font-ui: var(--font-prata), Georgia, serif;
-  --ryk-font-display: var(--font-prata), Georgia, serif;
-  --ryk-font-serif: var(--font-pt-serif), Georgia, serif;
-  --ryk-font-ticket: var(--font-prata), Georgia, serif;
+  --ryk-font-ui: var(--font-grotesk), system-ui, sans-serif;
+  --ryk-font-display: var(--font-grotesk), system-ui, sans-serif;
+  --ryk-font-serif: var(--font-grotesk), system-ui, sans-serif;
+  --ryk-font-ticket: var(--font-grotesk), system-ui, sans-serif;
+  --ryk-font-voice: var(--font-serif), Georgia, serif;
   --ryk-font-mono: var(--font-plex-mono), ui-monospace, monospace;
-  --ryk-font-hand: var(--font-caveat), cursive;
+  --ryk-font-hand: var(--font-serif), Georgia, serif;
 
-  /* --- Детали билета --- */
-  --ryk-perforation: 1.5px dashed var(--ryk-border-dashed);
+  /* --- Детали --- */
+  --ryk-perforation: 1px dashed var(--ryk-border-dashed);
   --ryk-notch-size: 20px;
-  --ryk-barcode: repeating-linear-gradient(
-    90deg,
-    var(--tk-ink) 0 2px,
-    transparent 2px 4px,
-    var(--tk-ink) 4px 7px,
-    transparent 7px 9px,
-    var(--tk-ink) 9px 10px,
-    transparent 10px 13px
-  );
-  /* Шахматная лента — как полоса под сеткой на корешке референса. */
-  --ryk-checker: conic-gradient(
-      var(--tk-ink) 25%,
-      transparent 0 50%,
-      var(--tk-ink) 0 75%,
-      transparent 0
-    )
-    0 0 / 8px 8px;
   --giant: clamp(72px, 24vw, 132px);
 }
 

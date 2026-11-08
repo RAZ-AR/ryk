@@ -1,33 +1,31 @@
 import type { Metadata } from "next";
-import { Caveat, IBM_Plex_Mono, PT_Serif, Prata } from "next/font/google";
+import { IBM_Plex_Mono, Inter_Tight, Source_Serif_4 } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { TelegramChrome } from "@/components/TelegramChrome";
 import "./globals.css";
 
 /*
- * Гарнитуры (ryk_docs/17-design-system.md §4).
+ * Гарнитуры v3 «Одна краска» (ryk_docs/17-design-system.md §4, ADR-017).
  * Кириллица обязательна: интерфейс en / ru / es.
  *
- * Prata заняла две роли сразу — интерфейс и билет, — поэтому Golos Text
- * и Cormorant больше не грузятся. У Prata единственный вес 400 и нет
- * курсива: иерархия держится на кегле, регистре и трекинге, а не на
- * насыщенности. Синтетический жирный отключён в globals.css — на
- * контрастной антикве он выглядит грязно.
+ * Inter Tight — гротеск интерфейса и заголовков, переменная насыщенность.
+ * Source Serif 4 — только курсив: вторая строка заголовка и «голос»
+ * карточки; ось opsz даёт контрастный рисунок на крупном кегле.
+ * IBM Plex Mono — подписи капсом, цены, время.
  */
 
-const prata = Prata({
-  variable: "--font-prata",
+const grotesk = Inter_Tight({
+  variable: "--font-grotesk",
   subsets: ["latin", "cyrillic"],
-  weight: ["400"],
   display: "swap",
 });
 
-const ptSerif = PT_Serif({
-  variable: "--font-pt-serif",
+const serif = Source_Serif_4({
+  variable: "--font-serif",
   subsets: ["latin", "cyrillic"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
+  style: ["italic"],
+  axes: ["opsz"],
   display: "swap",
 });
 
@@ -35,13 +33,6 @@ const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   subsets: ["latin", "cyrillic"],
   weight: ["400", "500"],
-  display: "swap",
-});
-
-const caveat = Caveat({
-  variable: "--font-caveat",
-  subsets: ["latin", "cyrillic"],
-  weight: ["500", "600"],
   display: "swap",
 });
 
@@ -55,9 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title"), description: t("description") };
 }
 
-const fontVariables = [prata.variable, ptSerif.variable, plexMono.variable, caveat.variable].join(
-  " ",
-);
+const fontVariables = [grotesk.variable, serif.variable, plexMono.variable].join(" ");
 
 export default async function RootLayout({
   children,

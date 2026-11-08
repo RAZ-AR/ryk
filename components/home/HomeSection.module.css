@@ -4,7 +4,7 @@
 }
 
 .section {
-  margin-top: var(--ryk-space-7);
+  margin-top: var(--ryk-space-9);
 }
 
 /* Одноразовая строка после онбординга: под листом, рукой и без рамки —
@@ -20,8 +20,11 @@
 
 .sectionHead {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: var(--ryk-space-3);
   margin-bottom: var(--ryk-space-4);
+  padding-bottom: var(--ryk-space-1);
+  /* Черта краской под заголовком раздела — как линейка в газете. */
+  border-bottom: 1px solid var(--ryk-ink);
 }

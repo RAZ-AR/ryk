@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import type { DeckCard } from "@/lib/engine/discover";
-import { CategoryIcon } from "@/components/CategoryIcon";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { SvcLabel } from "@/components/SvcLabel";
@@ -74,11 +73,13 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
             <SwipeCard onDecide={decide} labelYes={t("verdictYes")} labelNo={t("verdictNo")}>
               <Ticket
                 photo={
-                  <ExperienceVisual
-                    id={card.id}
-                    category={card.category}
-                    imageUrl={card.imageUrl}
-                  />
+                  card.imageUrl ? (
+                    <ExperienceVisual
+                      id={card.id}
+                      category={card.category}
+                      imageUrl={card.imageUrl}
+                    />
+                  ) : undefined
                 }
                 metaLeft={durationLabel(card.durationMin)}
                 metaRight={priceLabel(card.price, card.currency)}
@@ -86,8 +87,6 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
                 title={card.title}
                 stubTone="neutral"
                 stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
-                stubIcon={card.sponsored ? undefined : <CategoryIcon category={card.category} />}
-                emblem={<CategoryIcon category={card.category} />}
                 /*
                  * Та же отрывная полоса, что в ленте на главном. Она внутри
                  * карточки, а значит едет вместе с ней при свайпе — жест

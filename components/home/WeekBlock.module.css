@@ -1,60 +1,85 @@
-/* Блок «твоя неделя» — единственный крупный акцент на главном.
-   Не билет: билет закреплён за впечатлением (§11.4), а это состояние. */
-/* Аура (AuraArt) — первым ребёнком, текст поверх неё. */
-.block {
-  composes: paper onFoil from "../surface.module.css";
+/*
+ * Блок «твоя неделя» — единственный крупный акцент на главном (v3, ADR-017).
+ * Негатив: заливка краской, текст и оттиск цвета бумаги. Не карточка
+ * впечатления: та закреплена за впечатлением (§11.4), а это состояние.
+ */
+.base {
   position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background: var(--tk-paper);
   display: block;
   width: 100%;
   text-align: left;
-  padding: var(--ryk-space-5);
+  padding: 0 var(--ryk-space-5) var(--ryk-space-5);
   margin-top: var(--ryk-space-2);
-  border-radius: var(--ryk-radius-ticket);
-  /* Отрыв от поля: блок нажимается, а плоская заливка читалась бы как фон. */
-  box-shadow: var(--ryk-shadow-ticket);
+  border-radius: var(--ryk-radius-card);
+  overflow: clip;
+  transition: transform var(--ryk-duration-micro) var(--ryk-ease);
 }
 
-.block > :not(:first-child) {
-  position: relative;
-  z-index: 1;
+.base:active {
+  transform: scale(0.99);
+}
+
+.base:focus-visible {
+  outline: 2px solid var(--tk-ink);
+  outline-offset: 3px;
+}
+
+/* Материал выбирается одним классом: два composes с разными чернилами
+   на одном узле спорили бы порядком правил, а не намерением. */
+.block {
+  composes: base;
+  composes: paper onFoil from "../surface.module.css";
+  background: var(--ryk-fill-ink);
+}
+
+/* Отложенная неделя — тише: бумага с контуром, оттиск бледный. */
+.quiet {
+  composes: base;
+  composes: paper from "../surface.module.css";
+  background: transparent;
+  box-shadow: var(--ryk-outline);
+}
+
+/* Оттиск уходит за правый край и вверх — как на референсе. */
+.art {
+  display: block;
+  width: 86%;
+  margin: 0 calc(var(--ryk-space-5) * -1) calc(var(--ryk-space-6) * -1) auto;
+  color: var(--ryk-ink);
 }
 
 .head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--ryk-space-3);
+  position: relative;
+  display: block;
 }
 
 /* Внутри <button> — только строчные элементы, поэтому блочность задаём тут. */
 .title {
+  position: relative;
   display: block;
   margin-top: var(--ryk-space-3);
   font-family: var(--ryk-font-display);
-  font-weight: 400;
-  font-size: 21px;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  font-size: clamp(30px, 9vw, 40px);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
   color: var(--ryk-ink);
 }
 
 .line {
+  position: relative;
   display: block;
-  margin-top: var(--ryk-space-2);
-  font-family: var(--ryk-font-ui);
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--ryk-text-secondary);
-}
-
-.quiet .line {
-  color: var(--ryk-text-secondary);
+  margin-top: var(--ryk-space-3);
+  font-family: var(--ryk-font-voice);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--ryk-text-muted);
 }
 
 .countdown {
+  position: relative;
   display: flex;
   align-items: baseline;
   gap: var(--ryk-space-3);
@@ -63,15 +88,31 @@
 
 .num {
   font-family: var(--ryk-font-display);
-  font-weight: 400;
-  font-size: 44px;
-  letter-spacing: -2px;
+  font-weight: 500;
+  font-size: 48px;
+  letter-spacing: -0.05em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
   color: var(--ryk-ink);
 }
 
 .unit {
-  font-family: var(--ryk-font-ui);
   font-size: 14px;
   color: var(--ryk-text-secondary);
+}
+
+/* «Открыть» — пилюля цветом бумаги: видно, что блок нажимается. */
+.open {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: var(--ryk-space-5);
+  padding: 0 var(--ryk-space-5);
+  border-radius: var(--ryk-radius-pill);
+  background: var(--ryk-ink);
+  color: var(--ryk-on-ink);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: -0.01em;
 }

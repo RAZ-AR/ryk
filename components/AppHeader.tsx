@@ -54,7 +54,7 @@ export function AppHeader({
     <header className={[styles.bar, hasBadge && styles.withBadge].filter(Boolean).join(" ")}>
       <button type="button" className={styles.home} onClick={onHome} aria-label={label}>
         <Image
-          src="/ryk-logo-pink.svg"
+          src="/ryk-logo-blue.svg"
           alt=""
           width={406}
           height={271}
