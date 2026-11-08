@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { trackOnboardingInspirationSeen } from "@/app/actions/analytics";
 import { completeOnboarding } from "@/app/actions/onboarding";
 import type { FreeWindow, LifeBarrier, LifeCategory, SocialMode } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
@@ -23,8 +24,13 @@ import {
 } from "./constants";
 import { ReededArt } from "@/components/ReededArt";
 import styles from "./OnboardingFlow.module.css";
+import { CityPicker } from "@/components/CityPicker";
+import type { JoyTrait } from "@/lib/engine/dailyJoy";
+import { INSPIRE_JOYS } from "@/lib/engine/joyTraits";
+import { clearFreshWelcome, markFreshWelcome } from "@/lib/ui/freshWelcome";
 
-type Step = "welcome" | "categories" | "swipe" | "moment" | "postponed" | "rhythm" | "params";
+type Step =
+  "welcome" | "inspire" | "categories" | "swipe" | "moment" | "postponed" | "rhythm" | "params";
 type BudgetKey = "low" | "mid" | "any";
 type NoveltyKey = "calm" | "balance" | "bold";
 
@@ -36,9 +42,18 @@ const SOCIAL_VALUE: Record<"solo" | "close" | "new", SocialMode> = {
   new: "NEW_PEOPLE",
 };
 
-export function OnboardingFlow({ initialCity }: { initialCity: string | null }) {
+export function OnboardingFlow({
+  initialCity,
+  initialName,
+}: {
+  initialCity: string | null;
+  /** Имя из Telegram (или уже выбранное) — подставляем, чтобы не печатать заново. */
+  initialName: string | null;
+}) {
   const router = useRouter();
   const tWelcome = useTranslations("onboarding.welcome");
+  const tInspire = useTranslations("onboarding.inspire");
+  const tJoy = useTranslations("joy");
   const tCat = useTranslations("onboarding.categories");
   const tCatLabel = useTranslations("categories");
   const tSwipe = useTranslations("onboarding.swipe");
@@ -60,7 +75,30 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
   const [socialKey, setSocialKey] = useState<keyof typeof SOCIAL_VALUE | null>(null);
   const [noveltyKey, setNoveltyKey] = useState<NoveltyKey>("balance");
   const [city, setCity] = useState(initialCity ?? "");
+  const [traits, setTraits] = useState<Set<JoyTrait>>(new Set());
+  const [name, setName] = useState(initialName ?? "");
+  // Куда ведёт «Назад» с рамок: на них приходят и после ритма, и прямо с
+  // обложки («У меня уже есть профиль») — и возвращать надо туда же.
+  const [paramsBack, setParamsBack] = useState<Step>("rhythm");
+  const [saveFailed, setSaveFailed] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  // Экран-вдохновение считаем один раз: «Назад» и снова «Дальше» — это
+  // всё ещё один показ для воронки, а не два.
+  const inspireTracked = useRef(false);
+  useEffect(() => {
+    if (step !== "inspire" || inspireTracked.current) return;
+    inspireTracked.current = true;
+    void trackOnboardingInspirationSeen().catch(() => {});
+  }, [step]);
+
+  const toggleTrait = (t: JoyTrait) =>
+    setTraits((prev) => {
+      const next = new Set(prev);
+      if (next.has(t)) next.delete(t);
+      else next.add(t);
+      return next;
+    });
 
   const toggleWindow = (w: FreeWindow) =>
     setWindows((prev) => {
@@ -85,7 +123,25 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
     else setProbeIdx((i) => i + 1);
   };
 
+  /*
+   * «Назад» в свайпах — к предыдущей идее, и её ответ снимаем: человек
+   * вернулся, чтобы ответить иначе, и старый ответ не должен дожить до вкусов.
+   * С первой идеи — к категориям.
+   */
+  const swipeBack = () => {
+    if (probeIdx === 0) {
+      setStep("categories");
+      return;
+    }
+    setSwipes((prev) => prev.slice(0, -1));
+    setProbeIdx((i) => i - 1);
+  };
+
   const finish = () => {
+    setSaveFailed(false);
+    // Метку ставим до запроса: ответ с revalidatePath может сменить экран
+    // на главную раньше, чем выполнится код после await (lib/ui/freshWelcome.ts).
+    markFreshWelcome();
     startTransition(async () => {
       const res = await completeOnboarding({
         categories: [...selected],
@@ -98,8 +154,19 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
         postponed: postponed.trim() || null,
         mainBarrier: barrier,
         freeWindows: [...windows],
-      });
-      if (res.ok) router.refresh();
+        joyTraits: [...traits],
+        // Имя как в Telegram не сохраняем отдельно: тогда смена имени там
+        // продолжит доходить до приложения, а не замёрзнет сегодняшним.
+        displayName: name.trim() && name.trim() !== initialName?.trim() ? name.trim() : null,
+      }).catch(() => ({ ok: false as const, reason: "network" }));
+      if (res.ok) {
+        router.refresh();
+        return;
+      }
+      // Раньше отказ был немым: кнопка просто снова становилась активной,
+      // и человек не понимал, сохранилось ли что-нибудь.
+      clearFreshWelcome();
+      setSaveFailed(true);
     });
   };
 
@@ -128,12 +195,73 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
           <div className={styles.welcomeLead}>{tWelcome("lead")}</div>
           <p className={styles.welcomeSub}>{tWelcome("sub")}</p>
         </div>
-        <button className={styles.welcomeStart} onClick={() => setStep("categories")}>
+        <button className={styles.welcomeStart} onClick={() => setStep("inspire")}>
           {tWelcome("start")}
         </button>
-        <button className={styles.welcomeSkip} onClick={() => setStep("params")}>
+        <button
+          className={styles.welcomeSkip}
+          onClick={() => {
+            setParamsBack("welcome");
+            setStep("params");
+          }}
+        >
           <SvcLabel tone="ink">{tWelcome("skip")}</SvcLabel>
         </button>
+      </main>
+    );
+  }
+
+  // ─────────────── Вдохновение ───────────────
+  // До всяких вопросов о неделе — про масштаб: радость бывает крошечной.
+  // Без номера шага и счётчика выбранного: это продолжение обложки, а не
+  // анкета, и «выбрано 3 из 8» звучало бы как оценка. Ничего не выбрать —
+  // тоже ответ: радость дня будет просто из всего каталога.
+  if (step === "inspire") {
+    return (
+      <main className={styles.screen}>
+        <h1 className={styles.title}>{tInspire("title")}</h1>
+        <p className={styles.hint}>{tInspire("line")}</p>
+
+        <SvcLabel tone="muted" className={styles.inspireQuestion}>
+          {tInspire("question")}
+        </SvcLabel>
+        <div className={styles.joyGrid}>
+          {INSPIRE_JOYS.map(({ trait, joyKey }) => {
+            const on = traits.has(trait);
+            return (
+              <button
+                key={trait}
+                type="button"
+                aria-pressed={on}
+                className={[styles.joyStub, on && styles.joyStubOn].filter(Boolean).join(" ")}
+                onClick={() => toggleTrait(trait)}
+              >
+                <span className={styles.joyStubLabel}>{tInspire("stub")}</span>
+                {/* Текст — из каталога радостей дня: {time} есть только у заката,
+                    которого здесь нет. */}
+                <span className={styles.joyStubText}>{tJoy(joyKey)}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className={styles.footer}>
+          <Button variant="secondary" className={styles.narrow} onClick={() => setStep("welcome")}>
+            {tCat("back")}
+          </Button>
+          <Button variant="grey" className={styles.grow} onClick={() => setStep("categories")}>
+            {tInspire("next")}
+          </Button>
+        </div>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            setTraits(new Set());
+            setStep("categories");
+          }}
+        >
+          {tInspire("skip")}
+        </Button>
       </main>
     );
   }
@@ -173,7 +301,7 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
         </div>
 
         <div className={styles.footer}>
-          <Button variant="secondary" className={styles.narrow} onClick={() => setStep("welcome")}>
+          <Button variant="secondary" className={styles.narrow} onClick={() => setStep("inspire")}>
             {tCat("back")}
           </Button>
           <Button
@@ -228,9 +356,14 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
             {tSwipe("yes")}
           </Button>
         </div>
-        <Button variant="ghost" onClick={() => setStep("moment")}>
-          {tSwipe("enough")}
-        </Button>
+        <div className={styles.footerSplit}>
+          <Button variant="ghost" onClick={swipeBack}>
+            {tSwipe("back")}
+          </Button>
+          <Button variant="ghost" onClick={() => setStep("moment")}>
+            {tSwipe("enough")}
+          </Button>
+        </div>
       </main>
     );
   }
@@ -341,7 +474,13 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
         </div>
 
         <div className={styles.footerCol}>
-          <Button variant="grey" onClick={() => setStep("params")}>
+          <Button
+            variant="grey"
+            onClick={() => {
+              setParamsBack("rhythm");
+              setStep("params");
+            }}
+          >
             {tRhythm("next")}
           </Button>
           <Button
@@ -349,6 +488,7 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
             onClick={() => {
               setBarrier(null);
               setWindows(new Set());
+              setParamsBack("rhythm");
               setStep("params");
             }}
           >
@@ -366,6 +506,25 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
       <h1 className={styles.title}>{tParams("title")}</h1>
 
       <div className={styles.rows}>
+        {/* Имя — строкой рамок, а не отдельным шагом: чаще всего имя из Telegram
+            уже верное, и целый экран ради «да, так» удлинил бы онбординг. Идёт
+            и на пути «У меня уже есть профиль» — рамки там единственный экран. */}
+        <div className={styles.row}>
+          <label htmlFor="onboarding-name">
+            <SvcLabel tone="muted" className={styles.rowLabel}>
+              {tParams("nameLabel")}
+            </SvcLabel>
+          </label>
+          <Input
+            id="onboarding-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={tParams("namePlaceholder")}
+            maxLength={60}
+            autoComplete="given-name"
+          />
+        </div>
+
         <div className={styles.row}>
           <SvcLabel tone="muted" className={styles.rowLabel}>
             {tParams("budgetLabel")}
@@ -396,9 +555,10 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
           <SvcLabel tone="muted" className={styles.rowLabel}>
             {tParams("cityLabel")}
           </SvcLabel>
-          <Input
+          <CityPicker
             value={city}
-            onChange={(e) => setCity(e.target.value)}
+            onChange={setCity}
+            otherLabel={tParams("cityOther")}
             placeholder={tParams("cityPlaceholder")}
             maxLength={120}
           />
@@ -429,8 +589,22 @@ export function OnboardingFlow({ initialCity }: { initialCity: string | null }) 
         <HandNote>{tParams("note")}</HandNote>
       </div>
 
-      <div className={styles.footerCol}>
-        <Button variant="primary" disabled={pending} onClick={finish}>
+      {saveFailed && (
+        <p role="alert" className={styles.error}>
+          {tParams("error")}
+        </p>
+      )}
+
+      <div className={styles.footer}>
+        <Button
+          variant="secondary"
+          className={styles.narrow}
+          disabled={pending}
+          onClick={() => setStep(paramsBack)}
+        >
+          {tParams("back")}
+        </Button>
+        <Button variant="primary" className={styles.grow} disabled={pending} onClick={finish}>
           {pending ? tParams("saving") : tParams("finish")}
         </Button>
       </div>

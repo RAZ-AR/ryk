@@ -3,23 +3,19 @@
   flex-direction: column;
 }
 
-.greeting {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.promise {
-  font-family: var(--ryk-font-serif);
-  font-weight: 400;
-  font-size: 22px;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: var(--ryk-ink);
-}
-
 .section {
   margin-top: var(--ryk-space-7);
+}
+
+/* Одноразовая строка после онбординга: под листом, рукой и без рамки —
+   это реплика, а не карточка, и спорить с листом за внимание не должна. */
+.welcome {
+  margin-top: var(--ryk-space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ryk-space-2) var(--ryk-space-3);
 }
 
 .sectionHead {

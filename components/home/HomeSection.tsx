@@ -1,32 +1,40 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { reactToExperience } from "@/app/actions/discover";
 import type { DeckCard } from "@/lib/engine/discover";
+import type { Today } from "@/lib/engine/today";
 import type { UpcomingItem } from "@/lib/engine/upcoming";
 import type { WeeklyView } from "@/lib/engine/weekly";
 import { Button } from "@/components/Button";
 import { SvcLabel } from "@/components/SvcLabel";
+import { DayLeaf } from "./DayLeaf";
 import { EventFeed } from "./EventFeed";
 import { EventSheet } from "./EventSheet";
 import { StoriesCarousel } from "./StoriesCarousel";
 import { WeekBlock } from "./WeekBlock";
 import styles from "./HomeSection.module.css";
+import { HandNote } from "@/components/HandNote";
+import { clearFreshWelcome, peekFreshWelcome } from "@/lib/ui/freshWelcome";
 
 /*
- * Главный экран: что впереди (карусель) → состояние недели → лента событий.
+ * Главный экран: лист дня → что впереди (карусель) → состояние недели →
+ * лента событий. Лист заменил приветствие-слоган: обещание «одна неделя —
+ * одна история» человек уже слышал, а сегодняшний день каждый раз новый.
  * Недельный цикл целиком живёт в WeekSection и открывается по тапу на блок —
  * здесь только его сжатая сводка.
  */
 export function HomeSection({
+  today,
   upcoming,
   weekly,
   deck,
   onOpenWeek,
   onOpenDeck,
 }: {
+  today: Today;
   upcoming: UpcomingItem[];
   weekly: WeeklyView;
   deck: DeckCard[];
@@ -35,10 +43,16 @@ export function HomeSection({
   onOpenDeck: () => void;
 }) {
   const t = useTranslations("home");
-  const app = useTranslations("app");
   const router = useRouter();
 
   const [openCard, setOpenCard] = useState<DeckCard | null>(null);
+  // Строка для только что прошедшего онбординг — один раз (см. lib/ui/freshWelcome.ts).
+  // Читаем в инициализаторе: на сервере хранилища нет и выйдет false, а
+  // после онбординга главная монтируется на клиенте без гидратации.
+  const [freshWelcome] = useState(peekFreshWelcome);
+  useEffect(() => {
+    if (freshWelcome) clearFreshWelcome();
+  }, [freshWelcome]);
   const [reacting, startReact] = useTransition();
 
   const react = (card: DeckCard, liked: boolean) =>
@@ -49,10 +63,18 @@ export function HomeSection({
 
   return (
     <div className={styles.wrap}>
-      <header className={styles.greeting}>
-        <SvcLabel tone="pink">{app("promise")}</SvcLabel>
-        <p className={styles.promise}>{t("lead")}</p>
-      </header>
+      <DayLeaf today={today} />
+
+      {/* Первый лист дня и есть финал онбординга: день уже здесь, а неделю
+          не торопим — только тихо зовём к ней. */}
+      {freshWelcome && (
+        <div className={styles.welcome}>
+          <HandNote>{t("welcomeLine")}</HandNote>
+          <Button variant="link" onClick={onOpenWeek}>
+            {t("welcomeAction")}
+          </Button>
+        </div>
+      )}
 
       {upcoming.length > 0 && (
         <section className={styles.section}>

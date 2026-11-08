@@ -1,0 +1,93 @@
+/*
+ * Отрывной лист: бумага светлее поля, верхняя кромка — перфорация, по
+ * которой лист оторвали от блока. Скругление только снизу: сверху лист
+ * оторван, а не вырублен. Воздух важнее плотности — строк мало, и каждой
+ * дано место.
+ */
+.leaf {
+  display: flex;
+  flex-direction: column;
+  padding: var(--ryk-space-6) var(--ryk-space-5) var(--ryk-space-7);
+  background: var(--ryk-white);
+  border-top: var(--ryk-perforation);
+  border-radius: 0 0 var(--ryk-radius-card) var(--ryk-radius-card);
+  box-shadow: var(--ryk-shadow-card);
+  color: var(--ryk-ink);
+}
+
+/* Число — единственная крупная цифра на листе (numeral-xl, §4). */
+.date {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ryk-space-3);
+}
+
+.day {
+  font-family: var(--ryk-font-display);
+  font-weight: 400;
+  font-size: 82px;
+  line-height: 0.8;
+  letter-spacing: -4px;
+}
+
+.month {
+  font-family: var(--ryk-font-display);
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+
+.place {
+  margin-top: var(--ryk-space-5);
+  font-family: var(--ryk-font-serif);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ryk-text-secondary);
+}
+
+.dayOfYear {
+  margin-top: var(--ryk-space-1);
+  font-family: var(--ryk-font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ryk-text-muted);
+}
+
+.sky {
+  margin-top: var(--ryk-space-4);
+  font-family: var(--ryk-font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ryk-text-secondary);
+}
+
+.joy {
+  margin-top: var(--ryk-space-6);
+}
+
+.divider {
+  margin: var(--ryk-space-6) 0 var(--ryk-space-4);
+  border: 0;
+  border-top: 1px solid var(--ryk-border-row);
+}
+
+.soon {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ryk-font-serif);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ryk-text-secondary);
+}
+
+.when {
+  color: var(--ryk-text-muted);
+}
+
+/* День памяти: тот же текст, но тише — без интонации праздника. */
+.quiet {
+  color: var(--ryk-text-muted);
+}

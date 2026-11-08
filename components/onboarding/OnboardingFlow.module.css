@@ -200,6 +200,75 @@
   grid-column: span 2;
 }
 
+/* --- Вдохновение: мини-билеты маленьких радостей --- */
+.inspireQuestion {
+  display: block;
+  margin-top: var(--ryk-space-6);
+}
+
+.joyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ryk-space-2);
+  margin-top: var(--ryk-space-3);
+}
+
+/*
+ * Мини-билет — облегчённый корешок, а не Ticket: полноразмерный билет
+ * зарезервирован за впечатлением (дизайн-система §11.4), а здесь крошечная
+ * радость. От билета остались бумага и перфорация по верхней кромке —
+ * «оторвано от того же блока», что и лист дня; без фото, цены и меты.
+ */
+.joyStub {
+  composes: paper from "../surface.module.css";
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-2);
+  min-height: 44px;
+  padding: var(--ryk-space-3);
+  background: var(--tk-paper);
+  border-top: var(--ryk-perforation);
+  border-radius: 0 0 var(--ryk-radius-ticket) var(--ryk-radius-ticket);
+  box-shadow: var(--ryk-shadow-card);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--ryk-duration-micro) var(--ryk-ease);
+}
+
+/* Выбрано: корешок становится фольгой — тот же знак выбора, что у категорий. */
+.joyStubOn {
+  composes: onFoil from "../surface.module.css";
+  background: var(--foil-strip);
+}
+
+.joyStubLabel {
+  font-family: var(--ryk-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ryk-text-muted);
+}
+
+.joyStubText {
+  font-family: var(--ryk-font-serif);
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ryk-ink);
+}
+
+/* Свайпы: «Назад» и «Хватит» — тихие ссылки по краям, не спорят с ответом. */
+.footerSplit {
+  display: flex;
+  justify-content: space-between;
+}
+
+.error {
+  margin-top: var(--ryk-space-4);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ryk-pink-text);
+}
+
 /* Свободный рассказ: поле должно приглашать писать, а не отделываться словом. */
 .textarea {
   margin-top: var(--ryk-space-5);

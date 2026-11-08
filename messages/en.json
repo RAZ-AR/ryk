@@ -20,6 +20,8 @@
     "upcomingTitle": "Ahead",
     "feedTitle": "What you could live",
     "oneByOne": "One by one →",
+    "welcomeLine": "and we'll pick the week's story together",
+    "welcomeAction": "To the week's story →",
     "feedEmpty": "You've seen everything for now. More shows up as the curator adds it.",
     "noDate": "no date",
     "open": "Open",
@@ -40,7 +42,25 @@
     "kindLabel": "Kind",
     "durationLabel": "Duration",
     "pickAsWeek": "Make it my week's story",
-    "actionFailed": "didn't work — try again"
+    "actionFailed": "didn't work — try again",
+    "leaf": {
+      "aria": "Today's leaf",
+      "dayOfYear": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} day of the year",
+      "sunrise": "sunrise {time}",
+      "sunset": "sunset {time}",
+      "soon": "Soon",
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "on": {
+        "1": "on Monday",
+        "2": "on Tuesday",
+        "3": "on Wednesday",
+        "4": "on Thursday",
+        "5": "on Friday",
+        "6": "on Saturday",
+        "7": "on Sunday"
+      }
+    }
   },
   "discover": {
     "kicker": "What you like",
@@ -74,6 +94,7 @@
     "commitKicker": "Decision",
     "commitTitle": "Make this the story of your week?",
     "whenLabel": "When",
+    "dayFits": "your time",
     "budgetLabel": "Budget",
     "companyLabel": "Company",
     "witnessLabel": "Witness",
@@ -260,6 +281,8 @@
     "close": "Close",
     "profileTitle": "Settings",
     "cityLabel": "City",
+    "cityOther": "another city",
+    "cityPlaceholder": "City name",
     "radiusLabel": "Radius, km",
     "budgetLabel": "Budget for a story",
     "budgetAny": "any",
@@ -299,6 +322,14 @@
       "start": "Start living a little more",
       "skip": "I already have a profile"
     },
+    "inspire": {
+      "title": "Joy isn't measured by size",
+      "line": "A full day doesn't need a big event. It needs you to notice one small thing.",
+      "question": "Which of these sound like you?",
+      "stub": "a small joy",
+      "next": "Next →",
+      "skip": "Skip"
+    },
     "categories": {
       "step": "Onboarding 2/7",
       "time": "≈ 6 min",
@@ -315,7 +346,8 @@
       "title": "Would you go?",
       "no": "Not for me",
       "yes": "I want this ✓",
-      "enough": "Enough — next →"
+      "enough": "Enough — next →",
+      "back": "Back"
     },
     "ideas": {
       "climb": {
@@ -391,14 +423,19 @@
       "socialClose": "With close ones",
       "socialNew": "With new people",
       "cityLabel": "City",
-      "cityPlaceholder": "Belgrade",
+      "cityPlaceholder": "City name",
+      "cityOther": "another city",
       "noveltyLabel": "How much new",
       "noveltyCalm": "Calm",
       "noveltyBalance": "Balance",
       "noveltyBold": "Bolder",
       "note": "you can change all of this later",
       "finish": "Show my first stories →",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "back": "Back",
+      "nameLabel": "What should we call you?",
+      "namePlaceholder": "Name",
+      "error": "Couldn't save. Check your connection and try again — everything you entered is still here."
     },
     "moment": {
       "step": "Onboarding 4/7",
@@ -526,5 +563,81 @@
     "tickets": "tickets ↗",
     "restore": "Restore",
     "archive": "Take down"
+  },
+  "moments": {
+    "rs": {
+      "newYear": "New Year",
+      "christmas": "Orthodox Christmas",
+      "statehood": "Sretenje — Statehood Day",
+      "labour": "Labour Day",
+      "armistice": "Armistice Day",
+      "goodFriday": "Good Friday",
+      "holySaturday": "Holy Saturday",
+      "easter": "Easter",
+      "easterMonday": "Easter Monday"
+    },
+    "am": {
+      "newYear": "New Year",
+      "christmas": "Christmas",
+      "army": "Army Day",
+      "womensDay": "Women's Day",
+      "remembrance": "Genocide Remembrance Day",
+      "labour": "Labour Day",
+      "victory": "Victory and Peace Day",
+      "republic": "First Republic Day",
+      "constitution": "Constitution Day",
+      "independence": "Independence Day",
+      "newYearsEve": "New Year's Eve"
+    },
+    "season": {
+      "springStart": "First day of spring",
+      "springEquinox": "Spring equinox",
+      "summerStart": "First day of summer",
+      "summerSolstice": "The longest day of the year",
+      "autumnStart": "First day of autumn",
+      "autumnEquinox": "Autumn equinox",
+      "winterStart": "First day of winter",
+      "winterSolstice": "The longest night of the year"
+    },
+    "moon": {
+      "full": "Full moon"
+    }
+  },
+  "joy": {
+    "sunsetToEnd": "Watch today's sunset all the way through — it's at {time}",
+    "seasonalMarket": "Buy something seasonal at the market",
+    "coffeeOutside": "Have your morning coffee outside instead of indoors",
+    "newWayHome": "Take a new way home",
+    "fewLinesToFriend": "Write a friend a few lines, just because",
+    "listenToRain": "Open the window a little and listen to the rain for five minutes",
+    "untouchedSnow": "Leave footprints in untouched snow",
+    "childhoodDish": "Cook something from your childhood",
+    "newBakery": "Step into a bakery you've never been to",
+    "lookUp": "Look up and notice the top floors of your street",
+    "songFromSixteen": "Put on a song you loved at sixteen",
+    "waitingBook": "Read a couple of pages of the book that's been waiting on the shelf",
+    "flowersForNoReason": "Buy yourself flowers for no reason",
+    "parkBench": "Sit on a park bench, phone in your pocket",
+    "slowTea": "Make tea and drink it slowly, doing nothing else",
+    "photoOfLight": "Take a photo of how the light falls in your room",
+    "callSomeone": "Call someone who hasn't heard your voice in a while",
+    "slowBreakfast": "Have an unhurried breakfast — on a nice plate",
+    "walkOneStop": "Walk one stop instead of riding",
+    "favouriteMug": "Pour your morning coffee into your favourite mug",
+    "fruitAtStall": "Eat cherries or a peach right at the stall",
+    "prettiestLeaf": "Find the prettiest leaf and bring it home",
+    "warmMug": "Make cocoa and hold the mug with both hands",
+    "bloomingTree": "Find a tree in bloom and stand under it for a minute",
+    "oneStar": "Step out in the evening and find at least one star",
+    "moveOneThing": "Move one thing at home — let the room look new",
+    "localWord": "Learn one new word in the city's language",
+    "handwrittenNote": "Leave someone a handwritten note",
+    "cloudAnimal": "Find a cloud that looks like an animal",
+    "rainyEvening": "A blanket, warm socks and an evening to the sound outside",
+    "morningAir": "Open the window in the morning and breathe in today's air",
+    "kitchenDance": "Dance in the kitchen to one song",
+    "kindWord": "Say something kind to a shop assistant or a driver",
+    "smallGallery": "Drop into a small gallery or bookshop on your way",
+    "feetInWater": "Dip your feet in water — a river, a lake, a fountain"
   }
 }

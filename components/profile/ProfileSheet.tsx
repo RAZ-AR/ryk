@@ -9,6 +9,7 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
 import styles from "./ProfileSheet.module.css";
+import { CityPicker } from "@/components/CityPicker";
 
 export type ProfileView = {
   city: string | null;
@@ -115,10 +116,18 @@ export function ProfileSheet({
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("profileTitle")}</h2>
 
-        <label className={styles.field}>
+        {/* div, а не label: внутри несколько кнопок-чипов, и label передавал бы
+            клик по подписи первому из них — Белград выбирался бы сам. */}
+        <div className={styles.field}>
           <span className={styles.label}>{t("cityLabel")}</span>
-          <Input value={city} onChange={(e) => setCity(e.target.value)} maxLength={80} />
-        </label>
+          <CityPicker
+            value={city}
+            onChange={setCity}
+            otherLabel={t("cityOther")}
+            placeholder={t("cityPlaceholder")}
+            maxLength={80}
+          />
+        </div>
 
         <div className={styles.row}>
           <label className={styles.field}>

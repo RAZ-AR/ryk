@@ -31,3 +31,29 @@ export async function trackInviteInitiated(role: "companion" | "witness"): Promi
   if (!session) return;
   await track(session.userId, { name: "invite_initiated", props: { role } });
 }
+
+/**
+ * Экран-вдохновение онбординга показан. Без аргументов — мерить нечего,
+ * кроме самого факта: доля дошедших до мини-билетов против выбравших их.
+ */
+export async function trackOnboardingInspirationSeen(): Promise<void> {
+  const session = await getSession();
+  if (!session) return;
+  await track(session.userId, { name: "onboarding_inspiration_seen", props: {} });
+}
+
+/**
+ * «Лист дня» показан. Server action — открытая точка входа, поэтому
+ * аргументы не берём на веру: флаг приводим к boolean, а число строк
+ * зажимаем в 0–2 — больше на листе не бывает, и мусор не должен попасть
+ * в воронку.
+ */
+export async function trackDayLeafViewed(hasWeather: boolean, soonCount: number): Promise<void> {
+  const session = await getSession();
+  if (!session) return;
+  const count = Number.isFinite(soonCount) ? Math.min(2, Math.max(0, Math.trunc(soonCount))) : 0;
+  await track(session.userId, {
+    name: "day_leaf_viewed",
+    props: { hasWeather: hasWeather === true, soonCount: count },
+  });
+}

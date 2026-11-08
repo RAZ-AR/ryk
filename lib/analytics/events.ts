@@ -26,8 +26,14 @@ export type RykEvent =
         namedBarrier: boolean;
         windows: number;
         swipes: number;
+        /** Сколько черт сохранено — выбранных и найденных в рассказе. Сами черты не шлём. */
+        traits: number;
       };
     }
+  /** Экран-вдохновение показан: сравнивая с joy_traits_picked, видно, откликаются ли мини-билеты. */
+  | { name: "onboarding_inspiration_seen"; props: Record<string, never> }
+  /** Сколько мини-билетов человек отметил «про себя». Только число — черты про человека. */
+  | { name: "joy_traits_picked"; props: { count: number } }
   | { name: "candidates_viewed"; props: { count: number } }
   | { name: "story_selected"; props: { category: LifeCategory; whyCode: string } }
   | {
@@ -62,6 +68,13 @@ export type RykEvent =
   | { name: "invite_accepted"; props: { role: "companion" | "witness" } }
   | { name: "invite_declined"; props: { role: "companion" | "witness" } }
   // ── Лента впечатлений ─────────────────────────────────────
-  | { name: "experience_reacted"; props: { category: LifeCategory; liked: boolean } };
+  | { name: "experience_reacted"; props: { category: LifeCategory; liked: boolean } }
+  // ── «Лист дня» (22-daily-joy-plan, фаза 5) ────────────────
+  /**
+   * Лист показан. Только факты о полноте листа — была ли погода и сколько
+   * строк «Скоро»: по ним видно, часто ли лист выходит пустым. Ни города,
+   * ни текста радости, ни названий событий — это уже про человека.
+   */
+  | { name: "day_leaf_viewed"; props: { hasWeather: boolean; soonCount: number } };
 
 export type RykEventName = RykEvent["name"];

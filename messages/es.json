@@ -20,6 +20,8 @@
     "upcomingTitle": "Por delante",
     "feedTitle": "Lo que podrías vivir",
     "oneByOne": "Una por una →",
+    "welcomeLine": "y la historia de la semana la elegimos juntos",
+    "welcomeAction": "A la historia de la semana →",
     "feedEmpty": "Por ahora lo has visto todo. Aparecerá más cuando el curador lo añada.",
     "noDate": "sin fecha",
     "open": "Abrir",
@@ -40,7 +42,25 @@
     "kindLabel": "Tipo",
     "durationLabel": "Duración",
     "pickAsWeek": "Hacerla mi historia de la semana",
-    "actionFailed": "no funcionó — inténtalo de nuevo"
+    "actionFailed": "no funcionó — inténtalo de nuevo",
+    "leaf": {
+      "aria": "Hoja del día",
+      "dayOfYear": "{n, selectordinal, other {día #}} del año",
+      "sunrise": "amanecer {time}",
+      "sunset": "atardecer {time}",
+      "soon": "Pronto",
+      "today": "hoy",
+      "tomorrow": "mañana",
+      "on": {
+        "1": "el lunes",
+        "2": "el martes",
+        "3": "el miércoles",
+        "4": "el jueves",
+        "5": "el viernes",
+        "6": "el sábado",
+        "7": "el domingo"
+      }
+    }
   },
   "discover": {
     "kicker": "Lo que te gusta",
@@ -74,6 +94,7 @@
     "commitKicker": "Decisión",
     "commitTitle": "¿Hacemos de esto la historia de tu semana?",
     "whenLabel": "Cuándo",
+    "dayFits": "tu momento",
     "budgetLabel": "Presupuesto",
     "companyLabel": "Compañía",
     "witnessLabel": "Testigo",
@@ -260,6 +281,8 @@
     "close": "Cerrar",
     "profileTitle": "Ajustes",
     "cityLabel": "Ciudad",
+    "cityOther": "otra ciudad",
+    "cityPlaceholder": "Nombre de la ciudad",
     "radiusLabel": "Radio, km",
     "budgetLabel": "Presupuesto por historia",
     "budgetAny": "cualquiera",
@@ -299,6 +322,14 @@
       "start": "Empieza a vivir un poco más",
       "skip": "Ya tengo un perfil"
     },
+    "inspire": {
+      "title": "La alegría no se mide por su tamaño",
+      "line": "Un día pleno no necesita un gran acontecimiento. Basta con notar una cosa pequeña.",
+      "question": "¿Cuáles de estas van contigo?",
+      "stub": "una pequeña alegría",
+      "next": "Siguiente →",
+      "skip": "Omitir"
+    },
     "categories": {
       "step": "Onboarding 2/7",
       "time": "≈ 6 min",
@@ -315,7 +346,8 @@
       "title": "¿Irías?",
       "no": "No es lo mío",
       "yes": "Lo quiero ✓",
-      "enough": "Suficiente — siguiente →"
+      "enough": "Suficiente — siguiente →",
+      "back": "Atrás"
     },
     "ideas": {
       "climb": {
@@ -391,14 +423,19 @@
       "socialClose": "Con cercanos",
       "socialNew": "Con gente nueva",
       "cityLabel": "Ciudad",
-      "cityPlaceholder": "Belgrado",
+      "cityPlaceholder": "Nombre de la ciudad",
+      "cityOther": "otra ciudad",
       "noveltyLabel": "Cuánto de nuevo",
       "noveltyCalm": "Tranquilo",
       "noveltyBalance": "Equilibrio",
       "noveltyBold": "Más audaz",
       "note": "puedes cambiar todo esto después",
       "finish": "Mostrar mis primeras historias →",
-      "saving": "Guardando…"
+      "saving": "Guardando…",
+      "back": "Atrás",
+      "nameLabel": "¿Cómo quieres que te llamemos?",
+      "namePlaceholder": "Nombre",
+      "error": "No se pudo guardar. Revisa la conexión e inténtalo de nuevo — todo lo que escribiste sigue aquí."
     },
     "moment": {
       "step": "Onboarding 4/7",
@@ -526,5 +563,81 @@
     "tickets": "entradas ↗",
     "restore": "Recuperar",
     "archive": "Retirar"
+  },
+  "moments": {
+    "rs": {
+      "newYear": "Año Nuevo",
+      "christmas": "Navidad ortodoxa",
+      "statehood": "Sretenje — Día del Estado",
+      "labour": "Día del Trabajo",
+      "armistice": "Día del Armisticio",
+      "goodFriday": "Viernes Santo",
+      "holySaturday": "Sábado Santo",
+      "easter": "Pascua",
+      "easterMonday": "Lunes de Pascua"
+    },
+    "am": {
+      "newYear": "Año Nuevo",
+      "christmas": "Navidad",
+      "army": "Día del Ejército",
+      "womensDay": "Día de la Mujer",
+      "remembrance": "Día de Recuerdo del Genocidio",
+      "labour": "Día del Trabajo",
+      "victory": "Día de la Victoria y la Paz",
+      "republic": "Día de la Primera República",
+      "constitution": "Día de la Constitución",
+      "independence": "Día de la Independencia",
+      "newYearsEve": "Nochevieja"
+    },
+    "season": {
+      "springStart": "Primer día de primavera",
+      "springEquinox": "Equinoccio de primavera",
+      "summerStart": "Primer día de verano",
+      "summerSolstice": "El día más largo del año",
+      "autumnStart": "Primer día de otoño",
+      "autumnEquinox": "Equinoccio de otoño",
+      "winterStart": "Primer día de invierno",
+      "winterSolstice": "La noche más larga del año"
+    },
+    "moon": {
+      "full": "Luna llena"
+    }
+  },
+  "joy": {
+    "sunsetToEnd": "Mira hoy el atardecer hasta el final: es a las {time}",
+    "seasonalMarket": "Compra algo de temporada en el mercado",
+    "coffeeOutside": "Tómate el café de la mañana al aire libre, no dentro",
+    "newWayHome": "Vuelve a casa por un camino nuevo",
+    "fewLinesToFriend": "Escríbele a un amigo un par de líneas, porque sí",
+    "listenToRain": "Entreabre la ventana y escucha la lluvia cinco minutos",
+    "untouchedSnow": "Deja huellas en la nieve sin pisar",
+    "childhoodDish": "Cocina algo de tu infancia",
+    "newBakery": "Entra en una panadería donde nunca has estado",
+    "lookUp": "Levanta la vista y mira los últimos pisos de tu calle",
+    "songFromSixteen": "Pon una canción que te encantaba a los dieciséis",
+    "waitingBook": "Lee un par de páginas del libro que lleva tiempo esperando en la estantería",
+    "flowersForNoReason": "Cómprate flores sin motivo",
+    "parkBench": "Siéntate en un banco del parque, con el móvil en el bolsillo",
+    "slowTea": "Prepara un té y bébelo despacio, sin hacer nada más",
+    "photoOfLight": "Haz una foto de cómo cae la luz en tu habitación",
+    "callSomeone": "Llama a alguien que hace tiempo no oye tu voz",
+    "slowBreakfast": "Desayuna sin prisa, en un plato bonito",
+    "walkOneStop": "Camina una parada en vez de ir en transporte",
+    "favouriteMug": "Sírvete el café de la mañana en tu taza favorita",
+    "fruitAtStall": "Cómete unas cerezas o un melocotón junto al puesto",
+    "prettiestLeaf": "Busca la hoja más bonita y llévatela a casa",
+    "warmMug": "Prepara un cacao y abraza la taza con las dos manos",
+    "bloomingTree": "Busca un árbol en flor y quédate un minuto debajo",
+    "oneStar": "Sal por la noche y encuentra al menos una estrella",
+    "moveOneThing": "Cambia una cosa de sitio en casa: que la habitación se vea nueva",
+    "localWord": "Aprende una palabra nueva en el idioma de la ciudad",
+    "handwrittenNote": "Déjale a alguien una nota escrita a mano",
+    "cloudAnimal": "Busca una nube con forma de animal",
+    "rainyEvening": "Una manta, calcetines calentitos y una tarde con el sonido de fuera",
+    "morningAir": "Abre la ventana por la mañana y respira el aire de hoy",
+    "kitchenDance": "Baila una canción en la cocina",
+    "kindWord": "Dile algo amable a un dependiente o a un conductor",
+    "smallGallery": "Entra de paso en una pequeña galería o librería",
+    "feetInWater": "Mete los pies en el agua: un río, un lago, una fuente"
   }
 }
