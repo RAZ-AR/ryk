@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import ru from "@/messages/ru.json";
 import en from "@/messages/en.json";
 import es from "@/messages/es.json";
+import { CITIES } from "@/lib/cities";
 import { allMomentKeys, orthodoxEaster, upcomingMoments } from "./holidays";
 
 /*
@@ -65,6 +66,16 @@ describe("upcomingMoments", () => {
     expect(moons.length).toBeLessThanOrEqual(13);
     // Настоящее полнолуние — 3 января 2026; среднее может уехать на день.
     expect(["2026-01-02", "2026-01-03", "2026-01-04"]).toContain(moons[0].date);
+  });
+
+  it("у каждой страны из списка городов есть праздники", () => {
+    // Тип ловит забытый календарь при сборке; тест — пустой календарь.
+    for (const city of CITIES) {
+      const holidays = upcomingMoments(city.country.code, "2026-01-01", 365).filter(
+        (m) => m.kind === "holiday",
+      );
+      expect(holidays.length, city.id).toBeGreaterThan(5);
+    }
   });
 
   it("пустое окно — пустой список", () => {
