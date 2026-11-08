@@ -14,13 +14,14 @@ const deleteManyWeeklyStory = vi.fn();
 const deleteManyWish = vi.fn();
 const deleteManyInvite = vi.fn();
 const updateUser = vi.fn();
+const findUniqueUser = vi.fn(async () => ({ firstName: "Аня" }));
 const findManyMemory = vi.fn();
 const deleteMemoryPhoto = vi.fn();
 const $transaction = vi.fn(async (ops: unknown[]) => Promise.all(ops));
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    user: { update: updateUser },
+    user: { update: updateUser, findUnique: findUniqueUser },
     preference: { deleteMany: deleteManyPreference, findMany },
     intervention: { deleteMany: deleteManyIntervention },
     weeklyStory: { deleteMany: deleteManyWeeklyStory },
@@ -226,6 +227,24 @@ describe("updateProfile", () => {
     expect(updateUser.mock.calls[0][0].data.joyTraits).toEqual(["coffee", "music"]);
   });
 
+  it("имя: своё сохраняется, а пустое или как в Telegram — null", async () => {
+    const { updateProfile } = await import("./profile");
+    const base = {
+      city: null,
+      radiusKm: 25,
+      budgetMax: null,
+      socialMode: null,
+      locale: "RU" as const,
+      noveltyRatio: 40,
+      nudges: true,
+    };
+    await updateProfile({ ...base, displayName: "  Анна " });
+    await updateProfile({ ...base, displayName: "Аня" });
+    await updateProfile({ ...base, displayName: "" });
+
+    expect(updateUser.mock.calls.map((c) => c[0].data.displayName)).toEqual(["Анна", null, null]);
+  });
+
   it("без поля радостей выбор не стирается", async () => {
     const { updateProfile } = await import("./profile");
     await updateProfile({
@@ -239,6 +258,7 @@ describe("updateProfile", () => {
     });
 
     expect(updateUser.mock.calls[0][0].data).not.toHaveProperty("joyTraits");
+    expect(updateUser.mock.calls[0][0].data).not.toHaveProperty("displayName");
   });
 
   /*

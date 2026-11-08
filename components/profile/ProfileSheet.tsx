@@ -24,6 +24,10 @@ export type ProfileView = {
   nudges: boolean;
   /** Маленькие радости «про меня» — питают радость дня на листе. */
   joyTraits: readonly string[];
+  /** Имя из Telegram — подсказка в пустом поле имени. */
+  firstName: string | null;
+  /** Выбранное имя; null — обращаемся по Telegram. */
+  displayName: string | null;
 };
 
 export type PreferenceRow = {
@@ -54,6 +58,7 @@ export function ProfileSheet({
   const tCat = useTranslations("categories");
   const router = useRouter();
 
+  const [name, setName] = useState(profile.displayName ?? "");
   const [city, setCity] = useState(profile.city ?? "");
   const [radiusKm, setRadiusKm] = useState(String(profile.radiusKm));
   const [budgetMax, setBudgetMax] = useState(
@@ -95,6 +100,7 @@ export function ProfileSheet({
         noveltyRatio: Number(noveltyRatio),
         nudges,
         joyTraits: [...traits],
+        displayName: name,
       });
       if (res.ok) {
         setSaved(true);
@@ -128,6 +134,17 @@ export function ProfileSheet({
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("profileTitle")}</h2>
+
+        <label className={styles.field}>
+          <span className={styles.label}>{t("nameLabel")}</span>
+          <Input
+            value={name}
+            placeholder={profile.firstName ?? t("namePlaceholder")}
+            maxLength={60}
+            autoComplete="given-name"
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
 
         {/* div, а не label: внутри несколько кнопок-чипов, и label передавал бы
             клик по подписи первому из них — Белград выбирался бы сам. */}

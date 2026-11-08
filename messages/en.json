@@ -281,6 +281,8 @@
     "title": "Profile",
     "close": "Close",
     "profileTitle": "Settings",
+    "nameLabel": "What should we call you",
+    "namePlaceholder": "Name",
     "cityLabel": "City",
     "cityOther": "another city",
     "cityPlaceholder": "City name",

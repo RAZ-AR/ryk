@@ -75,6 +75,8 @@ export default async function Home() {
           noveltyRatio: true,
           notificationPreferences: true,
           joyTraits: true,
+          firstName: true,
+          displayName: true,
         },
       }),
       prisma.preference.findMany({
