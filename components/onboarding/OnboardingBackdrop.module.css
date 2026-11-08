@@ -1,0 +1,97 @@
+/*
+ * Слой лежит под экраном онбординга (position: fixed — не уезжает при
+ * прокрутке длинных шагов). Пятна прозрачнее, чем на обложке: поверх них
+ * текст и поля, и контраст важнее эффекта.
+ */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--tk-page);
+  pointer-events: none;
+}
+
+/* Слой целиком: смещение шага (плавно) + наклон телефона (мгновенно, его сглаживает JS). */
+.field {
+  position: absolute;
+  inset: -20%;
+  transform: translate3d(
+    calc(var(--step-x, 0px) + var(--tilt-x, 0) * -26px),
+    calc(var(--step-y, 0px) + var(--tilt-y, 0) * -20px),
+    0
+  );
+  transition: transform 1200ms var(--ryk-ease);
+  will-change: transform;
+}
+
+.blob {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  opacity: 0.55;
+  animation: drift 22s ease-in-out infinite alternate;
+}
+
+/* Вне экрана (свернули Telegram) — пауза, как у карточек. */
+.backdrop[data-live="false"] .blob {
+  animation-play-state: paused;
+}
+
+.rose {
+  left: -4%;
+  top: 2%;
+  width: 78%;
+  background: radial-gradient(closest-side, var(--art-rose-1), transparent);
+}
+
+.blue {
+  right: -10%;
+  top: 34%;
+  width: 70%;
+  background: radial-gradient(closest-side, var(--art-rose-2), transparent);
+  animation-duration: 27s;
+  animation-delay: -9s;
+}
+
+.sun {
+  left: 12%;
+  bottom: -6%;
+  width: 66%;
+  background: radial-gradient(
+    closest-side,
+    var(--art-rose-3) 10%,
+    var(--art-glow) 45%,
+    transparent
+  );
+  animation-duration: 19s;
+  animation-delay: -5s;
+}
+
+/* Зерно печати: фон остаётся бумагой, а не градиентом экрана. */
+.backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  opacity: 0.4;
+}
+
+@keyframes drift {
+  from {
+    transform: translate(-8%, -6%) scale(0.92);
+  }
+  to {
+    transform: translate(12%, 10%) scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob {
+    animation: none;
+  }
+
+  .field {
+    transition: none;
+  }
+}

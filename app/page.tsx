@@ -1,8 +1,10 @@
+import { headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import { AppShell } from "@/components/AppShell";
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
 import { TelegramBootstrap } from "@/components/TelegramBootstrap";
 import { getCurrentUser } from "@/lib/auth/currentUser";
+import { cityFromIpHeaders } from "@/lib/geo/ipCity";
 import { getDiscoverDeck } from "@/lib/engine/discover";
 import { getMemories } from "@/lib/engine/memories";
 import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
@@ -28,7 +30,15 @@ export default async function Home() {
   if (user.onboardingState !== "DONE") {
     // Имя — подсказка для «Как к тебе обращаться?»: чаще всего имя из
     // Telegram подходит, и печатать его заново заставлять незачем.
-    return <OnboardingFlow initialCity={user.city} initialName={user.name} />;
+    // Город по IP — только подсказка на шаге «Где ты?»: отмечен, но не сохранён.
+    const detected = user.city ? null : cityFromIpHeaders(await headers());
+    return (
+      <OnboardingFlow
+        initialCity={user.city}
+        detectedCity={detected?.names.ru ?? null}
+        initialName={user.name}
+      />
+    );
   }
 
   /*

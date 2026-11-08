@@ -339,6 +339,23 @@
       "start": "Empieza a vivir un poco más",
       "skip": "Ya tengo un perfil"
     },
+    "place": {
+      "step": "Onboarding 1/7",
+      "title": "¿Dónde estás ahora?",
+      "hint": "Para proponerte lo que tienes a mano: eventos, clima y festivos de tu ciudad.",
+      "detected": "parece que estás aquí",
+      "locate": "Usar mi ubicación",
+      "locating": "Buscando…",
+      "located": "te encontramos",
+      "failed": "No pudimos detectarla. Elige tu ciudad.",
+      "far": "Ryk aún no funciona en ninguna ciudad cercana. Elige «otra ciudad»: las historias que no dependen del lugar llegarán igual.",
+      "other": "Otra ciudad",
+      "otherHint": "historias sin cartelera",
+      "placeholder": "Nombre de la ciudad",
+      "next": "Siguiente →",
+      "later": "Más tarde",
+      "back": "Atrás"
+    },
     "inspire": {
       "title": "La alegría no se mide por su tamaño",
       "line": "Un día pleno no necesita un gran acontecimiento. Basta con notar una cosa pequeña.",
@@ -364,84 +381,82 @@
       "no": "No es lo mío",
       "yes": "Lo quiero ✓",
       "enough": "Suficiente — siguiente →",
-      "back": "Atrás"
+      "back": "Atrás",
+      "free": "gratis"
     },
     "ideas": {
       "climb": {
         "title": "Escalada para principiantes",
         "note": "Instructor y equipo incluidos. Puedes venir solo.",
-        "meta": "1500 RSD · 1,5 h"
+        "meta": "1,5 h"
       },
       "kayak": {
         "title": "Kayak al amanecer",
         "note": "Grupos de hasta 6. No hace falta experiencia.",
-        "meta": "2200 RSD · 2 h"
+        "meta": "2 h"
       },
       "organ": {
         "title": "Órgano a la luz de velas",
         "note": "Programa clásico en una sala antigua. Suele haber entradas.",
-        "meta": "1800 RSD · 2 h"
+        "meta": "2 h"
       },
       "pottery": {
         "title": "Taller de cerámica",
         "note": "El maestro hornea tu pieza. Ven en pareja.",
-        "meta": "3500 RSD · 2,5 h"
+        "meta": "2,5 h"
       },
       "dinner": {
         "title": "Cena con desconocidos",
         "note": "Ocho personas en una mesa común, cocina casera.",
-        "meta": "2600 RSD · 2,5 h"
+        "meta": "2,5 h"
       },
       "rooftop": {
         "title": "Amanecer en una azotea",
         "note": "Madrugar — y la ciudad se siente nueva.",
-        "meta": "gratis · 1,5 h"
+        "meta": "1,5 h"
       },
       "call": {
         "title": "Llamar a alguien con quien no hablas hace un año",
         "note": "Sin motivo y sin explicar el silencio.",
-        "meta": "gratis · 20 min"
+        "meta": "20 min"
       },
       "film": {
         "title": "La película que llevas años posponiendo",
         "note": "Esa, la de la lista. Entera, sin teléfono.",
-        "meta": "gratis · 2 h"
+        "meta": "2 h"
       },
       "alone": {
         "title": "Cenar solo en un restaurante",
         "note": "Sin teléfono en la mesa. Los primeros diez minutos son los raros.",
-        "meta": "1500 RSD · 1,5 h"
+        "meta": "1,5 h"
       },
       "letter": {
         "title": "Una carta para ti dentro de un año",
         "note": "A mano, sellada, guardada donde no la encuentres pronto.",
-        "meta": "gratis · 40 min"
+        "meta": "40 min"
       },
       "cold": {
         "title": "Meterte en agua fría",
         "note": "Río, mar, ducha. Tres minutos, respirando despacio.",
-        "meta": "gratis · 15 min"
+        "meta": "15 min"
       },
       "help": {
         "title": "Un día en un refugio de animales",
         "note": "Pasear y limpiar. También se puede ir una sola vez.",
-        "meta": "gratis · 4 h"
+        "meta": "4 h"
       }
     },
     "params": {
       "step": "Onboarding 7/7",
       "title": "Los límites de tu semana",
       "budgetLabel": "Presupuesto por historia",
-      "budgetLow": "hasta 1500 RSD",
-      "budgetMid": "hasta 4000 RSD",
+      "budgetLow": "hasta {amount}",
+      "budgetMid": "hasta {amount}",
       "budgetAny": "cualquiera",
       "socialLabel": "Con quién",
       "socialSolo": "Solo",
       "socialClose": "Con cercanos",
       "socialNew": "Con gente nueva",
-      "cityLabel": "Ciudad",
-      "cityPlaceholder": "Nombre de la ciudad",
-      "cityOther": "otra ciudad",
       "noveltyLabel": "Cuánto de nuevo",
       "noveltyCalm": "Tranquilo",
       "noveltyBalance": "Equilibrio",
@@ -486,6 +501,10 @@
       "windowWEEKEND_EVENING": "Noche de fin de semana",
       "next": "Siguiente →",
       "skip": "Omitir"
+    },
+    "currency": {
+      "RSD": "RSD",
+      "AMD": "AMD"
     }
   },
   "memory": {
