@@ -44,6 +44,7 @@
     "pickAsWeek": "Hacerla mi historia de la semana",
     "actionFailed": "no funcionó — inténtalo de nuevo",
     "leaf": {
+      "greeting": "{name}, este día es tuyo",
       "aria": "Hoja del día",
       "dayOfYear": "{n, selectordinal, other {día #}} del año",
       "sunrise": "amanecer {time}",
@@ -293,6 +294,20 @@
     "socialAny": "Cualquiera",
     "localeLabel": "Idioma",
     "noveltyLabel": "Porcentaje de novedad",
+    "joyLabel": "Pequeñas alegrías",
+    "joyHint": "Con ellas se elige la alegría del día en el inicio.",
+    "joyTraits": {
+      "coffee": "café",
+      "walks": "paseos",
+      "friends": "amigos",
+      "food": "comida",
+      "home": "casa",
+      "city": "la ciudad",
+      "nature": "naturaleza",
+      "music": "música",
+      "books": "libros",
+      "art": "belleza alrededor"
+    },
     "nudgesLabel": "Ryk puede escribirte en Telegram",
     "nudgesHint": "No más de dos mensajes por semana, y solo cuando haya algo que proponer.",
     "save": "Guardar",

@@ -44,6 +44,7 @@
     "pickAsWeek": "Make it my week's story",
     "actionFailed": "didn't work — try again",
     "leaf": {
+      "greeting": "{name}, this day is yours",
       "aria": "Today's leaf",
       "dayOfYear": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} day of the year",
       "sunrise": "sunrise {time}",
@@ -293,6 +294,20 @@
     "socialAny": "Any",
     "localeLabel": "Language",
     "noveltyLabel": "Share of new, %",
+    "joyLabel": "Small joys",
+    "joyHint": "They shape the joy of the day on the home screen.",
+    "joyTraits": {
+      "coffee": "coffee",
+      "walks": "walks",
+      "friends": "friends",
+      "food": "food",
+      "home": "home",
+      "city": "the city",
+      "nature": "nature",
+      "music": "music",
+      "books": "books",
+      "art": "beauty around"
+    },
     "nudgesLabel": "Ryk may message you on Telegram",
     "nudgesHint": "No more than two a week, and only when there's something to offer.",
     "save": "Save",

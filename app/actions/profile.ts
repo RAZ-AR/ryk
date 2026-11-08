@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import type { Locale, SocialMode } from "@/generated/prisma/enums";
 import { track } from "@/lib/analytics/track";
 import { canonicalCity } from "@/lib/cities";
+import { sanitizeJoyTraits } from "@/lib/engine/joyTraits";
 import { clearSession, getSession } from "@/lib/auth/session";
 import { setLocaleCookie } from "@/lib/i18n/localeCookie";
 import { prisma } from "@/lib/prisma";
@@ -29,6 +30,11 @@ export type ProfileInput = {
   noveltyRatio: number;
   /** Разрешено ли боту писать первым (см. lib/engine/nudgeDelivery). */
   nudges: boolean;
+  /**
+   * Маленькие радости «про меня» — те же черты, что на экране-вдохновении.
+   * Не передано — не трогаем: старый клиент не должен стереть выбор.
+   */
+  joyTraits?: string[];
 };
 
 export async function updateProfile(input: ProfileInput): Promise<ProfileResult> {
@@ -64,6 +70,8 @@ export async function updateProfile(input: ProfileInput): Promise<ProfileResult>
         // Пишем всё поле целиком: других ключей в нём пока нет, и слияние
         // усложнило бы код ради несуществующей настройки.
         notificationPreferences: { nudges: input.nudges !== false },
+        // Только известные черты: action — открытая точка входа.
+        ...(input.joyTraits !== undefined && { joyTraits: sanitizeJoyTraits(input.joyTraits) }),
       },
     });
   } catch {

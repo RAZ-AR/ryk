@@ -9,6 +9,7 @@ import { notificationsEnabled } from "@/lib/engine/nudgeDelivery";
 import { localizeCity } from "@/lib/i18n/city";
 import { localizeExperience } from "@/lib/i18n/experience";
 import { isPhotoStorageConfigured } from "@/lib/storage/memoryPhotos";
+import { parseJoyTraits } from "@/lib/engine/joyTraits";
 import { getToday } from "@/lib/engine/today";
 import { getUpcoming } from "@/lib/engine/upcoming";
 import { getWeeklyView, weekStartUTC } from "@/lib/engine/weekly";
@@ -73,6 +74,7 @@ export default async function Home() {
           locale: true,
           noveltyRatio: true,
           notificationPreferences: true,
+          joyTraits: true,
         },
       }),
       prisma.preference.findMany({
@@ -104,7 +106,13 @@ export default async function Home() {
       // Promise.all, и ждать его значило бы выстроить запросы в очередь.
       // Это одно и то же поле users.city. getToday не бросает — лист
       // украшение и не роняет главную.
-      getToday({ id: user.id, city: user.city, locale, joyTraits: user.joyTraits }),
+      getToday({
+        id: user.id,
+        city: user.city,
+        locale,
+        joyTraits: user.joyTraits,
+        name: user.name,
+      }),
     ]);
 
   /*
@@ -142,7 +150,11 @@ export default async function Home() {
       memories={memories}
       // Json из БД разворачиваем здесь: экрану профиля нужен простой флаг,
       // а не форма хранения настроек.
-      profile={{ ...profile, nudges: notificationsEnabled(profile.notificationPreferences) }}
+      profile={{
+        ...profile,
+        nudges: notificationsEnabled(profile.notificationPreferences),
+        joyTraits: parseJoyTraits(profile.joyTraits),
+      }}
       preferences={preferences}
       invites={inviteViews}
       deck={deck}

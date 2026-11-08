@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { deleteAccount, deletePreference, updateProfile } from "@/app/actions/profile";
 import type { Locale, PreferenceSentiment, SocialMode } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
+import { Chip } from "@/components/Chip";
+import { JOY_TRAITS, type JoyTrait } from "@/lib/engine/dailyJoy";
 import { Input } from "@/components/Input";
 import { Select } from "@/components/Select";
 import styles from "./ProfileSheet.module.css";
@@ -20,6 +22,8 @@ export type ProfileView = {
   noveltyRatio: number;
   /** Разрешено ли боту писать первым. */
   nudges: boolean;
+  /** Маленькие радости «про меня» — питают радость дня на листе. */
+  joyTraits: readonly string[];
 };
 
 export type PreferenceRow = {
@@ -59,6 +63,14 @@ export function ProfileSheet({
   const [locale, setLocale] = useState<Locale>(profile.locale);
   const [noveltyRatio, setNoveltyRatio] = useState(String(profile.noveltyRatio));
   const [nudges, setNudges] = useState(profile.nudges);
+  const [traits, setTraits] = useState<ReadonlySet<string>>(() => new Set(profile.joyTraits));
+  const toggleTrait = (trait: JoyTrait) =>
+    setTraits((prev) => {
+      const next = new Set(prev);
+      if (next.has(trait)) next.delete(trait);
+      else next.add(trait);
+      return next;
+    });
 
   const [saving, startSave] = useTransition();
   const [saved, setSaved] = useState(false);
@@ -82,6 +94,7 @@ export function ProfileSheet({
         locale,
         noveltyRatio: Number(noveltyRatio),
         nudges,
+        joyTraits: [...traits],
       });
       if (res.ok) {
         setSaved(true);
@@ -184,6 +197,25 @@ export function ProfileSheet({
             onChange={(e) => setNoveltyRatio(e.target.value.replace(/[^\d]/g, ""))}
           />
         </label>
+
+        {/* Те же радости, что на экране-вдохновении: выбор не должен застывать
+            после онбординга. Ничего не выбрано — радость дня из всего каталога. */}
+        <div className={styles.field}>
+          <span className={styles.label}>{t("joyLabel")}</span>
+          <div className={styles.chips}>
+            {JOY_TRAITS.map((trait) => (
+              <Chip
+                key={trait}
+                tone="pink"
+                selected={traits.has(trait)}
+                onClick={() => toggleTrait(trait)}
+              >
+                {t(`joyTraits.${trait}`)}
+              </Chip>
+            ))}
+          </div>
+          <span className={styles.toggleHint}>{t("joyHint")}</span>
+        </div>
 
         <label className={styles.toggle}>
           <input type="checkbox" checked={nudges} onChange={(e) => setNudges(e.target.checked)} />

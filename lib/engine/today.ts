@@ -43,6 +43,8 @@ export type Today = {
   cityName: string | null;
   countryName: string | null;
   weather: TodayWeather | null;
+  /** Как обращаться к человеку на листе; null — лист без обращения. */
+  name?: string | null;
   joyKey: string;
   joyParams?: Record<string, string>;
   soon: SoonItem[];
@@ -63,6 +65,8 @@ export type TodayUser = {
   /** "ru" | "RU" | … — принимаем обе стороны Prisma. */
   locale: string;
   joyTraits?: readonly string[] | null;
+  /** Имя для обращения: выбранное в онбординге или из Telegram. */
+  name?: string | null;
 };
 
 export type BuildTodayInput = {
@@ -232,7 +236,7 @@ export async function getToday(user: TodayUser, now: Date = new Date()): Promise
     nearestExperience(user.city, now),
   ]);
 
-  return buildToday({
+  const today = buildToday({
     userId: user.id,
     locale,
     rawCity: user.city,
@@ -244,4 +248,5 @@ export async function getToday(user: TodayUser, now: Date = new Date()): Promise
     experience,
     traits: user.joyTraits ?? [],
   });
+  return { ...today, name: user.name?.trim() || null };
 }

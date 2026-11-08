@@ -85,6 +85,7 @@ const TODAY_DEMO: Today = {
   dayOfYear: 99,
   cityName: "Белград",
   countryName: "Сербия",
+  name: "Аня",
   weather: { kind: "CLEAR", tempMax: 19, sunrise: "06:24", sunset: "19:41" },
   joyKey: "sunsetToEnd",
   joyParams: { time: "19:41" },

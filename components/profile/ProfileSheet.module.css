@@ -61,6 +61,12 @@
   color: var(--ryk-text-secondary);
 }
 
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ryk-space-2);
+}
+
 .row {
   display: flex;
   gap: var(--ryk-space-4);
