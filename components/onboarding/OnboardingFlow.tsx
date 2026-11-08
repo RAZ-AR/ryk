@@ -9,8 +9,6 @@ import { completeOnboarding } from "@/app/actions/onboarding";
 import type { FreeWindow, LifeBarrier, LifeCategory, SocialMode } from "@/generated/prisma/enums";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
-import { CategoryIcon } from "@/components/CategoryIcon";
-import { ExperiencePattern } from "@/components/ExperiencePattern";
 import { HandNote } from "@/components/HandNote";
 import { Input } from "@/components/Input";
 import { SvcLabel } from "@/components/SvcLabel";
@@ -23,13 +21,12 @@ import {
   ONBOARDING_PROBES,
   ONBOARDING_WINDOWS,
 } from "./constants";
-import { AuraArt } from "@/components/AuraArt";
+import { PrintArt } from "@/components/PrintArt";
 import styles from "./OnboardingFlow.module.css";
 import { CITIES, findCity, nearestCity, type CurrencyCode } from "@/lib/cities";
 import { DEFAULT_LOCALE, isAppLocale } from "@/lib/i18n/locale";
 import { requestLocation } from "@/lib/telegram/location";
 import { haptic } from "@/lib/telegram/webApp";
-import { OnboardingBackdrop } from "./OnboardingBackdrop";
 import type { JoyTrait } from "@/lib/engine/dailyJoy";
 import { INSPIRE_JOYS } from "@/lib/engine/joyTraits";
 import { clearFreshWelcome, markFreshWelcome } from "@/lib/ui/freshWelcome";
@@ -45,18 +42,6 @@ type Step =
   | "rhythm"
   | "params";
 
-/** Порядок шагов — для фона: он перетекает на новое место с каждым шагом. */
-const STEP_ORDER: readonly Step[] = [
-  "welcome",
-  "place",
-  "inspire",
-  "categories",
-  "swipe",
-  "moment",
-  "postponed",
-  "rhythm",
-  "params",
-];
 type BudgetKey = "low" | "mid" | "any";
 type NoveltyKey = "calm" | "balance" | "bold";
 
@@ -287,14 +272,16 @@ export function OnboardingFlow({
     if (step === "welcome") {
       return (
         <main className={styles.welcome}>
-          {/* Обложка — аура-цветок, как первая открытка в пачке. */}
-          <AuraArt palette="peach" shape="flower" seed="welcome" blur={18} />
+          {/* Обложка — оттиск-цветок, как первая открытка в пачке. */}
+          <div className={styles.welcomeArt}>
+            <PrintArt seed="welcome" shape="flower" ratio={1} />
+          </div>
           <SvcLabel tone="ink" className={styles.welcomeKicker}>
             <span>{tWelcome("kicker")}</span>
             <span>MMXXVI</span>
           </SvcLabel>
           <Image
-            src="/ryk-logo-ink.svg"
+            src="/ryk-logo-blue.svg"
             alt="Ryk"
             width={406}
             height={271}
@@ -587,15 +574,12 @@ export function OnboardingFlow({
           {/* Ключ по идее: каждая следующая въезжает заново, а не подменяет текст. */}
           <div key={probe.id} className={styles.ticketWrap}>
             <Ticket
-              // Узор по id пробы: тот же язык, что и в ленте после онбординга.
-              photo={<ExperiencePattern seed={`probe-${probe.id}`} category={probe.category} />}
-              metaLeft={String(probeIdx + 1).padStart(2, "0")}
-              metaRight={String(ONBOARDING_PROBES.length)}
+              // Счётчик пробы — одной строкой спецификации: «01 / 08».
+              metaLeft={`${String(probeIdx + 1).padStart(2, "0")} / ${String(ONBOARDING_PROBES.length).padStart(2, "0")}`}
+              metaRight=""
               title={tIdeas(`${probe.id}.title`)}
               stubTone="neutral"
               stubLabel={tCatLabel(probe.category)}
-              stubIcon={<CategoryIcon category={probe.category} />}
-              emblem={<CategoryIcon category={probe.category} />}
             >
               {tIdeas(`${probe.id}.note`)}
               <br />
@@ -901,12 +885,7 @@ export function OnboardingFlow({
     );
   })();
 
-  // Обложка — сама лист фольги; остальным шагам фольга лежит фоном.
+  // Обложка — сама лист; остальные шаги — в общей сцене на бумаге.
   if (step === "welcome") return screen;
-  return (
-    <div className={styles.stage}>
-      <OnboardingBackdrop step={STEP_ORDER.indexOf(step)} />
-      {screen}
-    </div>
-  );
+  return <div className={styles.stage}>{screen}</div>;
 }

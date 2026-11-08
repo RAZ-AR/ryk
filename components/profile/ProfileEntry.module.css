@@ -13,12 +13,14 @@
   justify-content: center;
   min-width: 48px;
   min-height: 48px;
-  /* Без подложки (v2.1): буква-монограмма прямо на поле, как знак слева. */
+  /* Монограмма курсивом в контурном круге краской (v3): видно, что нажимается. */
   background: none;
   color: var(--ryk-ink);
   border-radius: 50%;
-  font-family: var(--ryk-font-display);
-  font-weight: 400;
+  box-shadow: var(--ryk-outline);
+  font-family: var(--ryk-font-voice);
+  font-style: italic;
+  font-weight: 500;
   font-size: 20px;
   line-height: 1;
   transition: opacity var(--ryk-duration-micro) var(--ryk-ease);

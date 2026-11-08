@@ -1,432 +1,141 @@
-/* Сигнатурный компонент — отрывной билет (дизайн-система §6). */
-
+/*
+ * Карточка впечатления v3 «Одна краска» (дизайн-система §6, ADR-017).
+ * Панель без тени и рамки: материал задаёт тон, иерархию — кегль.
+ */
 .ticket {
-  display: flex;
-  flex-direction: column;
-  /*
-   * Тень у билета целиком, а не у одной белой части. Раньше она висела на
-   * `.top`, и корешок оставался без неё; с появлением полосы действий это
-   * читалось бы как три отдельные плашки вместо одного предмета.
-   *
-   * `filter`, а не `box-shadow`: вырезы перфорации — дырки в форме (см.
-   * `.cut*` ниже), и тень обязана идти по вырубленному силуэту, включая
-   * края самих вырезов. `box-shadow` рисуется по прямоугольнику и о дырках
-   * не знает.
-   */
-  filter: var(--ryk-drop-ticket);
+  position: relative;
+  container-type: inline-size;
+  border-radius: var(--ryk-radius-ticket);
+  padding: var(--ryk-space-2) var(--ryk-space-5) var(--ryk-space-5);
+  overflow: clip;
 }
 
-/* Лицо билета: верх + корешок. Опора для накладки-кнопки «открыть». */
+/* Идея — поднятая бумага. */
+.neutral {
+  composes: paper from "./surface.module.css";
+  background: var(--ryk-white);
+}
+
+/* История недели и кандидаты — негатив: самое важное печатается заливкой. */
+.pink {
+  composes: paper onFoil from "./surface.module.css";
+  background: var(--ryk-fill-ink);
+}
+
+/* Приглашение — бумага с контуром: тише идеи. */
+.grey {
+  composes: paper from "./surface.module.css";
+  background: transparent;
+  box-shadow: var(--ryk-outline);
+}
+
 .face {
   position: relative;
-  display: flex;
-  flex-direction: column;
 }
 
-/* --- Верх: фольга. Как у референса — всё по центру, сверху вниз:
-       эмблема → строка серии → заголовок с орбитой → «+ подпись +» → черта. --- */
-.top {
-  composes: paper onFoil from "./surface.module.css";
+/* Оттиск выходит в поля карточки: края растворяются в её материале. */
+.art {
+  margin: 0 calc(var(--ryk-space-5) * -1);
+  color: var(--ryk-ink);
+}
+
+/* Афиша — дуотон той же краской: тени краской, света бумагой. */
+.photo {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 18px 22px 20px;
-  /* Кегль заголовка считается от ширины билета (cqi), а не экрана. */
-  container-type: inline-size;
-  /* Сама картинка — в AuraArt (размытая фигура на пастели, ADR-016). */
-  background: var(--tk-paper);
-  border-radius: var(--ryk-radius-ticket) var(--ryk-radius-ticket) 0 0;
-}
-
-/* Контент и отверстия — поверх живой фольги. */
-.top > :not(:first-child) {
-  position: relative;
-  z-index: 1;
-}
-
-/* Пробитые отверстия в верхних углах — кольцо чернил, фольга видна насквозь. */
-.top::before,
-.top::after {
-  content: "";
-  position: absolute;
-  top: 14px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1.5px solid var(--ryk-ink);
-  pointer-events: none;
-  z-index: 2;
-}
-
-.top::before {
-  left: 14px;
-}
-
-.top::after {
-  right: 14px;
-}
-
-/*
- * Эмблема — маленькое окно с узором впечатления (как глобус над
- * «2020 TOKYO OLYMPICS»). Узор позиционируется абсолютно, поэтому
- * размер задаёт окно; подложку узора делаем прозрачной — видна фольга.
- */
-.emblem {
-  position: relative;
-  width: 92px;
-  height: 38px;
-  border-radius: 999px;
-  border: 1.5px solid var(--ryk-ink);
+  aspect-ratio: 16 / 10;
+  margin: var(--ryk-space-3) var(--ryk-space-5) 0;
+  border-radius: var(--ryk-radius-photo);
   overflow: hidden;
-  --ryk-surface-muted: transparent;
-  color: var(--ryk-text-faint);
-  font-size: 9px;
-}
-
-/* Эмблема-знак: тонкий знак категории в кольце, без узора за ним. */
-.emblemSign {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ryk-ink);
-}
-
-.emblemSign svg {
-  width: 22px;
-  height: 22px;
-  stroke-width: 1.1;
-}
-
-.compact .emblemSign svg {
-  width: 18px;
-  height: 18px;
-}
-
-.kicker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-/* Заголовок с орбитой: эллипс проходит сквозь буквы, как кольцо вокруг «野球». */
-.titleWrap {
-  position: relative;
-  isolation: isolate;
-  width: 100%;
-  margin-top: 22px;
-  padding: 14px 4px;
-}
-
-/*
- * У Prata тонкие штрихи: кольцо, проходящее сквозь строку, читалось бы
- * как зачёркивание. Поэтому орбита шире и выше блока текста — она
- * обходит заголовок и пересекает его только по краям, и она тоньше.
- */
-.titleWrap::before {
-  content: "";
-  position: absolute;
-  left: -7%;
-  right: -7%;
-  top: 50%;
-  height: 118%;
-  border: 1px solid var(--ryk-ink);
-  opacity: 0.55;
-  border-radius: 50%;
-  transform: translateY(-50%) rotate(-6deg);
-  z-index: -1;
-  pointer-events: none;
-}
-
-/*
- * Заголовок должен помещаться целиком:
- *  - кегль от ширины билета: 30px на обычном, меньше на узком;
- *  - строки выровнены (`balance`), без одинокого слова внизу;
- *  - длинное слово переносится с дефисом по правилам языка страницы —
- *    но только слово от 10 букв и не ближе 4 букв к краю, поэтому
- *    обычные заголовки не покрываются дефисами;
- *  - `break-word` — последняя страховка, если словаря переносов нет.
- */
-.title {
-  font-family: var(--ryk-font-ticket);
-  font-size: clamp(22px, 9.5cqi, 30px);
-  line-height: 1.04;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-  color: var(--ryk-ink);
-  text-wrap: balance;
-  hyphens: auto;
-  -webkit-hyphens: auto;
-  hyphenate-limit-chars: 10 4 4;
-  overflow-wrap: break-word;
-}
-
-/* «+ BASEBALL +» — подпись под заголовком. */
-.sub {
-  margin-top: 14px;
-  font-family: var(--ryk-font-mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ryk-ink);
-}
-
-.note {
-  margin-top: 10px;
-  font-family: var(--ryk-font-serif);
-  font-size: 14px;
-  font-style: italic;
-  line-height: 1.45;
-  color: var(--ryk-text-secondary);
-}
-
-/* Черта внизу фольги — как подчёркивание «東京オリンピック». */
-.bar {
-  display: block;
-  width: 64px;
-  height: 0;
-  margin-top: 16px;
-  border-top: 1.5px solid var(--ryk-ink);
-}
-
-/* Компактный билет — для ленты: та же анатомия, просто ниже. */
-.compact .top {
-  padding: 14px 18px 14px;
-}
-
-.compact .emblem {
-  width: 72px;
-  height: 30px;
-}
-
-.compact .kicker {
-  margin-top: 10px;
-}
-
-.compact .titleWrap {
-  margin-top: 16px;
-  padding: 10px 4px;
-}
-
-.compact .title {
-  font-size: clamp(18px, 7cqi, 22px);
-}
-
-.compact .sub {
-  margin-top: 8px;
-  font-size: 10px;
-}
-
-.compact .bar {
-  margin-top: 12px;
-}
-
-.compact .stub {
-  padding: 12px var(--ryk-space-4) 12px;
-}
-
-.compact .num {
-  font-size: clamp(15px, 5.2cqi, 19px);
-}
-
-/* --- Корешок: бумага-спецификация --- */
-.stub {
-  composes: paper from "./surface.module.css";
-  position: relative;
-  container-type: inline-size;
-  background: var(--ryk-white);
-  border-radius: 0 0 var(--ryk-radius-ticket) var(--ryk-radius-ticket);
-  padding: 16px var(--ryk-space-5) 16px;
-  border-top: var(--ryk-perforation);
-}
-
-/* Под корешком пришита полоса действий — низ у него прямой, билет продолжается. */
-.stub.cutBoth {
-  border-radius: 0;
-}
-
-/* Чёрная метка на левой кромке корешка — как указатель ряда на спецификации. */
-.stub::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 22px;
-  width: 7px;
-  height: 18px;
   background: var(--ryk-ink);
 }
 
-/* --- Вырубка: полукруглые вырезы по краям перфорации ---
- *
- * Дырка — в форме билета, а не кружком поверх него. Кружком цвета бумаги
- * было видно, что это отдельный предмет: заливка закрывала собой тень и
- * край карточки, и на бумаге оставалось светлое пятно ровно там, где
- * должен быть вырез. Теперь полоса режется маской, а тень (`filter` на
- * `.ticket`) идёт по вырубленному силуэту — вырез читается как прорезь.
- *
- * Полукруги на стыке двух полос складываются в круг: нижний край верхней
- * полосы и верхний край нижней вырезаны по одной и той же окружности.
- *
- * Слои маски по умолчанию складываются (`mask-composite: add`), поэтому
- * композитинг не нужен — вместо него непересекающиеся плитки: каждая
- * закрывает свою половину (или четверть) полосы и несёт ровно один вырез.
- * Плитки берут по 51%, чтобы на стыке не осталось прозрачного волоса.
- */
-.cutTop,
-.cutBottom,
-.cutBoth {
-  --notch-r: calc(var(--ryk-notch-size) / 2);
-  /* Полпикселя растушёвки — иначе край выреза лесенкой. `black` здесь не
-     цвет из палитры, а непрозрачность маски: билет виден там, где маска
-     плотная, и вырезан там, где прозрачная. */
-  --notch-hole: transparent calc(var(--notch-r) - 0.5px), black var(--notch-r);
-  mask-repeat: no-repeat;
+.photo :is(img, svg) {
+  filter: grayscale(1) contrast(1.1);
+  mix-blend-mode: screen;
 }
 
-.cutTop {
-  mask-image:
-    radial-gradient(circle var(--notch-r) at left top, var(--notch-hole)),
-    radial-gradient(circle var(--notch-r) at right top, var(--notch-hole));
-  mask-size: 51% 100%;
-  mask-position:
-    left top,
-    right top;
-}
-
-.cutBottom {
-  mask-image:
-    radial-gradient(circle var(--notch-r) at left bottom, var(--notch-hole)),
-    radial-gradient(circle var(--notch-r) at right bottom, var(--notch-hole));
-  mask-size: 51% 100%;
-  mask-position:
-    left bottom,
-    right bottom;
-}
-
-/* Корешок между двумя перфорациями — вырезан с обеих сторон, поэтому
-   плитки уже четвертинки: полосой во всю высоту нижний слой затянул бы
-   верхний вырез обратно. */
-.cutBoth {
-  mask-image:
-    radial-gradient(circle var(--notch-r) at left top, var(--notch-hole)),
-    radial-gradient(circle var(--notch-r) at right top, var(--notch-hole)),
-    radial-gradient(circle var(--notch-r) at left bottom, var(--notch-hole)),
-    radial-gradient(circle var(--notch-r) at right bottom, var(--notch-hole));
-  mask-size: 51% 51%;
-  mask-position:
-    left top,
-    right top,
-    left bottom,
-    right bottom;
-}
-
-.stubBody {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-/*
- * Мелкий текст корешка — PT Serif: у неё настоящий жирный, а подписи
- * полей («Почему:», «Погода:») различаются именно им.
- */
-.stubContent {
-  flex: 1;
-  min-width: 0;
-  font-family: var(--ryk-font-serif);
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--ryk-ink);
-}
-
-.stubContent b,
-.stubContent strong {
-  font-weight: 700;
-  letter-spacing: normal;
-}
-
-/* Крупные значения справа, каждое — с колонкой точек, как «02 ⁝ / 8月 ⁝». */
-/* Значения не шире половины корешка; кегль — от его ширины. */
-.nums {
-  flex: 0 1 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  max-width: 52%;
-}
-
-.num {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--ryk-font-ticket);
-  font-size: clamp(16px, 6.4cqi, 22px);
-  line-height: 1.1;
+.kicker {
+  margin-top: var(--ryk-space-2);
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
   text-transform: uppercase;
-  text-align: right;
-  white-space: nowrap;
+  color: var(--ryk-text-muted);
+}
+
+.slash {
+  margin: 0 0.5em;
+}
+
+.title {
+  margin-top: var(--ryk-space-2);
+  font-family: var(--ryk-font-display);
+  font-weight: 500;
+  /* Кегль от ширины карточки: в ленте и в колоде заголовок помещается целиком. */
+  font-size: clamp(24px, 9cqi, 32px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
   color: var(--ryk-ink);
 }
 
-.num::after {
-  content: "";
-  flex: none;
-  width: 3px;
-  height: 0.9em;
-  background: radial-gradient(circle, var(--ryk-ink) 1.2px, transparent 1.6px) 0 0 / 3px 6px
-    repeat-y;
+/* Реплика — «голос» карточки: курсивная антиква. */
+.voice {
+  margin-top: var(--ryk-space-2);
+  font-family: var(--ryk-font-voice);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  text-wrap: pretty;
+  color: var(--ryk-text-secondary);
 }
 
-/* Низ корешка: шахматная лента и штрихкод, как на референсе. */
-.stubFoot {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 14px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--ryk-border-row);
+.voice b {
+  font-weight: 600;
 }
 
-.checker {
-  flex: 1;
-  max-width: 120px;
-  height: 16px;
-  background: var(--ryk-checker);
+/* Спецификация — моно капсом: время · цена. */
+.spec {
+  margin-top: var(--ryk-space-3);
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--ryk-text-muted);
 }
 
-.barcode {
-  width: 96px;
-  height: 22px;
-  background: var(--ryk-barcode);
+.compact .title {
+  font-size: clamp(22px, 8cqi, 27px);
 }
 
-/* --- Зона нажатия на билет --- */
+.compact .voice {
+  font-size: 16px;
+}
 
-/*
- * Накладка поверх лица билета. Не мешает полосе действий: та лежит
- * следующим элементом, вне `.face`, и накладка её не накрывает.
- */
+/* Две пилюли: «не интересно» и «интересно» поровну. */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ryk-space-2);
+  margin-top: var(--ryk-space-5);
+}
+
 .openOverlay {
   position: absolute;
   inset: 0;
-  width: 100%;
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
+  border-radius: var(--ryk-radius-card);
+  background: transparent;
 }
 
 .openOverlay:focus-visible {
   outline: 2px solid var(--ryk-ink);
-  outline-offset: -3px;
-  border-radius: var(--ryk-radius-ticket) var(--ryk-radius-ticket) 0 0;
+  outline-offset: 4px;
 }
 
 .srOnly {
@@ -434,47 +143,6 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip-path: inset(50%);
+  clip: rect(0 0 0 0);
   white-space: nowrap;
-}
-
-/* --- Отрывная полоса действий --- */
-
-/*
- * Третья полоса билета, пришитая второй перфорацией. Половины делит
- * такая же пунктирная линия отрыва, повёрнутая вертикально: выбор
- * читается как «оторви в свою сторону», а не как две кнопки рядом.
- */
-.tear {
-  composes: paper from "./surface.module.css";
-  position: relative;
-  display: flex;
-  border-top: var(--ryk-perforation);
-  border-radius: 0 0 var(--ryk-radius-ticket) var(--ryk-radius-ticket);
-  overflow: hidden;
-}
-
-.tear > * {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-/*
- * Линия отрыва между половинами — псевдоэлементом полосы, а не бордюром
- * кнопки. Через бордюр не выходит: у половины свой `border: 0` (иначе
- * вылезает бордюр кнопки по умолчанию), специфичность правил равная, и
- * победитель зависел бы от порядка склейки CSS-модулей — то есть от
- * случайности сборки.
- *
- * Полоса рассчитана ровно на две половины: они всегда `flex: 1 1 0`,
- * поэтому граница между ними всегда посередине.
- */
-.tear::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  border-left: var(--ryk-perforation);
-  pointer-events: none;
 }

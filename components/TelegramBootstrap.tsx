@@ -73,7 +73,7 @@ export function TelegramBootstrap() {
   return (
     <div className={styles.wrap}>
       <Image
-        src="/ryk-logo-pink.svg"
+        src="/ryk-logo-blue.svg"
         alt="Ryk"
         width={406}
         height={271}

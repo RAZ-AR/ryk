@@ -1,4 +1,4 @@
-/* Сцена шагов: фон (OnboardingBackdrop) лежит под ней фиксированным слоем. */
+/* Сцена шагов онбординга: ровная бумага (v3), без живого фона. */
 .stage {
   position: relative;
   isolation: isolate;
@@ -106,13 +106,16 @@
 }
 
 /* --- Welcome --- */
-/* Первый экран — целиком лист фольги: обложка билета до всякого выбора. */
+/*
+ * Обложка v3 — как первый экран референса: бумага, знак, подпись моно,
+ * крупная строка гротеском и оттиск-цветок, уходящий за правый нижний угол.
+ */
 .welcome {
-  composes: paper onFoil from "../surface.module.css";
+  composes: paper from "../surface.module.css";
   position: relative;
   isolation: isolate;
-  overflow: hidden;
-  background: var(--aura-peach-bg);
+  overflow: clip;
+  background: var(--ryk-paper);
   min-height: 100dvh;
   min-height: var(--tg-viewport-stable-height, 100dvh);
   display: flex;
@@ -121,23 +124,26 @@
   box-sizing: border-box;
 }
 
-/* Контент обложки — поверх живой фольги (она первый ребёнок). */
-.welcome > :not(:first-child) {
-  position: relative;
-  z-index: 1;
+/* Оттиск за текстом: правый нижний угол, края растворяются в бумаге. */
+.welcomeArt {
+  position: absolute;
+  right: -30%;
+  bottom: -6%;
+  width: 92%;
+  z-index: -1;
+  color: var(--ryk-ink);
 }
 
 .welcomeKicker {
   display: flex;
   justify-content: space-between;
-  color: var(--ryk-ink);
-  opacity: 0.6;
+  color: var(--ryk-text-muted);
 }
 
 .logo {
-  width: 144px;
+  width: 112px;
   height: auto;
-  margin-top: 44px;
+  margin-top: 36px;
 }
 
 .welcomePromise {
@@ -146,38 +152,46 @@
 }
 
 .welcomeBody {
-  margin: auto 0;
+  margin: var(--ryk-space-8) 0 auto;
 }
 
 .welcomeLead {
   font-family: var(--ryk-font-display);
-  font-weight: 400;
-  font-size: 28px;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  font-size: clamp(36px, 11vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
   color: var(--ryk-ink);
 }
 
 .welcomeSub {
-  font-size: 17px;
-  line-height: 1.55;
+  font-family: var(--ryk-font-voice);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.4;
   color: var(--ryk-ink);
-  opacity: 0.85;
-  margin-top: var(--ryk-space-5);
+  margin-top: var(--ryk-space-4);
   max-width: 300px;
 }
 
 .welcomeStart {
-  background: var(--tk-ink);
-  color: var(--tk-paper);
-  padding: 19px 0;
+  align-self: flex-start;
+  min-height: 52px;
+  padding: 0 var(--ryk-space-8);
+  border-radius: var(--ryk-radius-pill);
+  background: var(--ryk-ink);
+  color: var(--ryk-on-ink);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.01em;
 }
 
 .welcomeSkip {
-  text-align: center;
-  padding: 16px 0 0;
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: var(--ryk-space-2);
   color: var(--ryk-ink);
-  opacity: 0.6;
 }
 
 /* --- Categories grid --- */
@@ -204,7 +218,7 @@
 /* Выбрано: ячейка становится фольгой, чернила — тёмные. */
 .cellOn {
   composes: paper onFoil from "../surface.module.css";
-  background: var(--foil-strip);
+  background: var(--ryk-fill-ink);
 }
 
 .cellLabel {
@@ -376,7 +390,7 @@
 /* Выбрано: корешок становится фольгой — тот же знак выбора, что у категорий. */
 .joyStubOn {
   composes: onFoil from "../surface.module.css";
-  background: var(--foil-strip);
+  background: var(--ryk-fill-ink);
 }
 
 .joyStubLabel {

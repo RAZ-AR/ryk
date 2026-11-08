@@ -1,6 +1,6 @@
 @import "./tokens.css";
 
-/* Ryk base v2.0 «Билет» — светлая бумага, билеты из фольги и бумаги (ADR-014). */
+/* Ryk base v3.0 «Одна краска» — ультрамарин по кремовой бумаге (ADR-017). */
 
 *,
 *::before,
@@ -15,7 +15,7 @@
 
 html {
   height: 100%;
-  /* Тема одна — светлая (ADR-014). Палитру не переключаем. */
+  /* Тема одна — светлая (ADR-017). Палитру не переключаем. */
   color-scheme: light;
   background: var(--ryk-paper);
 }
@@ -30,28 +30,14 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  /* Прозрачный: под ним облачное поле (body::before) поверх фона html. */
-  background: transparent;
+  background: var(--ryk-paper);
   color: var(--ryk-ink);
   font-family: var(--ryk-font-ui);
   font-size: 16px;
   line-height: 1.5;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/*
- * Облачное поле (ADR-016): неподвижный слой под всем приложением.
- * Отдельным fixed-слоем, а не background-attachment: fixed — iOS его
- * игнорирует, и облака уезжали бы со скроллом.
- */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: var(--cloud-field);
-  pointer-events: none;
 }
 
 a {
@@ -68,32 +54,37 @@ button {
 }
 
 /*
- * У Prata единственный вес 400 — синтетический жирный размазывает тонкие
- * штрихи. Запрещаем его везде: выделение делаем кеглем и трекингом.
+ * У гротеска настоящая переменная насыщенность, у курсива — только italic:
+ * синтетику запрещаем, чтобы браузер не дорисовывал начертаний, которых нет.
  */
 html {
-  font-synthesis-weight: none;
+  font-synthesis: none;
 }
 
 b,
 strong {
-  font-weight: 400;
-  letter-spacing: 0.03em;
+  font-weight: 600;
 }
 
+/* Заголовки — гротеск 500 с плотным трекингом, как на референсе. */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
 }
 
 ::selection {
-  background: var(--tk-pink);
-  color: var(--tk-on-pink);
+  background: var(--tk-ink);
+  color: var(--tk-on-ink);
+}
+
+/* Компонентный display (grid, flex) иначе перебивает атрибут hidden. */
+[hidden] {
+  display: none !important;
 }
 
 /* Перелив: общая анимация для лент и кнопок. */

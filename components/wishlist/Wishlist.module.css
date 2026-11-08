@@ -12,28 +12,26 @@
 
 .heading {
   font-family: var(--ryk-font-display);
-  font-weight: 400;
-  font-size: 34px;
+  font-weight: 500;
+  font-size: 44px;
   line-height: 1;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  letter-spacing: -0.045em;
   color: var(--ryk-ink);
   margin-top: 6px;
 }
 
 .count {
   font-family: var(--ryk-font-display);
-  font-weight: 400;
-  font-size: 34px;
+  font-weight: 500;
+  font-size: 44px;
   line-height: 1;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  letter-spacing: -0.045em;
   color: var(--ryk-pink);
 }
 
 .list {
-  margin-top: var(--ryk-space-5);
-  border-top: 1px solid var(--ryk-border-row);
+  margin-top: var(--ryk-space-6);
+  border-top: 1px solid var(--ryk-ink);
   flex: 1;
 }
 
@@ -78,7 +76,7 @@
 .rowDone .rowTitle {
   color: var(--ryk-text-muted);
   text-decoration: line-through;
-  text-decoration-color: var(--ryk-border-card);
+  text-decoration-thickness: 1.5px;
 }
 
 /*
@@ -109,15 +107,20 @@
 }
 
 .rowTitle {
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
   color: var(--ryk-ink);
 }
 
+/* Срок — моно-подпись в контурной пилюле, тише заголовка. */
 .tag {
   flex-shrink: 0;
-  border: 1px solid var(--ryk-border-dashed);
+  border-radius: var(--ryk-radius-pill);
+  box-shadow: inset 0 0 0 1px var(--ryk-border-dashed);
   color: var(--ryk-text-muted);
-  padding: 3px 8px;
+  padding: 4px 10px;
 }
 
 .rowMeta {
@@ -238,7 +241,7 @@
 
 .valuePink {
   composes: paper onFoil from "../surface.module.css";
-  background: var(--foil-strip);
+  background: var(--ryk-fill-ink);
   border-radius: var(--ryk-radius-field);
   color: var(--ryk-ink);
   padding: 4px 10px;

@@ -1,18 +1,23 @@
-/* Рукописная ремарка. Всегда с поворотом -2deg и цветом pink-deep (§4, §10). */
+/*
+ * Человеческая реплика — «голос» (v3, ADR-017). Рукописный Caveat ушёл:
+ * его роль у курсивной антиквы. Без поворота — наклон даёт сам курсив.
+ */
 .hand {
-  display: inline-block;
-  font-family: var(--ryk-font-hand);
-  font-weight: 600;
+  display: inline;
+  font-family: var(--ryk-font-voice);
+  font-style: italic;
+  font-weight: 500;
   font-size: 18px;
-  line-height: 1.2;
-  color: var(--ryk-pink-deep);
-  transform: rotate(-2deg);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ryk-ink);
 }
 
 .large {
-  font-size: 20px;
+  font-size: 21px;
+  line-height: 1.32;
 }
 
 .onInk {
-  color: var(--ryk-pink);
+  color: var(--ryk-ink);
 }

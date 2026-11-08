@@ -35,27 +35,28 @@
 .visual {
   position: relative;
   margin-top: var(--ryk-space-4);
-  height: 132px;
+  height: 180px;
   overflow: hidden;
   border-radius: var(--ryk-radius-photo);
-  box-shadow: var(--ryk-shadow-card);
+  background: var(--ryk-ink);
 }
 
 .title {
   margin-top: var(--ryk-space-4);
   font-family: var(--ryk-font-ticket);
+  font-weight: 500;
   font-size: 28px;
   line-height: 1.06;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: -0.035em;
   color: var(--ryk-ink);
 }
 
 .description {
-  margin-top: var(--ryk-space-4);
-  font-family: var(--ryk-font-serif);
-  font-size: 17px;
-  line-height: 1.6;
+  margin-top: var(--ryk-space-3);
+  font-family: var(--ryk-font-voice);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.4;
   color: var(--ryk-text-secondary);
 }
 
@@ -96,7 +97,7 @@
 
 .split {
   display: flex;
-  gap: var(--ryk-space-3);
+  gap: var(--ryk-space-2);
 }
 
 .split > * {
@@ -109,8 +110,14 @@
   text-align: center;
 }
 
-@media (max-width: 400px) {
-  .split {
-    flex-direction: column;
-  }
+/* Оттиск без рамки выходит в поля экрана, как на карточке. */
+.print {
+  margin: var(--ryk-space-2) calc(var(--ryk-screen-x) * -1) 0;
+  color: var(--ryk-ink);
+}
+
+/* Афиша — дуотон той же краской. */
+.visual :is(img, svg) {
+  filter: grayscale(1) contrast(1.1);
+  mix-blend-mode: screen;
 }

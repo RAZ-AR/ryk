@@ -1,78 +1,61 @@
-/* Половина отрывной полосы билета (дизайн-система §6). */
-
+/*
+ * Действие под карточкой (дизайн-система §6, v3): пилюля.
+ * «Не интересно» — контур краской, «интересно» — заливка краской.
+ * Сетку из двух поровну задаёт карточка (`.actions` в Ticket.module.css).
+ */
 .action {
-  /* Ширину и линию отрыва задаёт полоса `.tear` в Ticket.module.css —
-     на call-site примитив не переопределяем (§ правила дизайн-системы). */
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-
-  /* 56px — с запасом над минимальным тач-таргетом 44px. */
-  min-height: 56px;
+  min-height: 48px;
   padding: 10px var(--ryk-space-3);
-
-  background: none;
-  border: 0;
-  cursor: pointer;
-  transition: background-color 120ms ease-out;
-}
-
-/* Прямые углы: у билета скруглён только верх, низ оторван. */
-.no {
-  background: var(--tk-paper-2);
-  color: var(--ryk-ink);
-}
-
-/*
- * Текст — ink, а не `--ryk-text-on-pink`: тот приглушённый и живёт в роли
- * вторичной подписи (подзаголовок на розовом блоке). Здесь подпись набрана
- * служебным кеглем 9px, для которого порог AA — 4.5:1, а приглушённый даёт
- * 3.26:1. На ink выходит ≈8:1 — то же правило, что у Button.primary (§9).
- */
-.yes {
-  background: var(--foil-strip);
-  color: var(--ryk-ink);
-}
-
-.mark {
-  width: 20px;
-  height: 20px;
-  flex: none;
-}
-
-.label {
-  font-family: var(--ryk-font-mono);
+  border-radius: var(--ryk-radius-pill);
+  font-family: var(--ryk-font-ui);
   font-weight: 500;
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
   text-align: center;
-  /* Длинная подпись («Не интересно» / «No me interesa») не должна ломать
-     полосу: перенос по словам, но без разрыва внутри слова. */
-  line-height: 1.2;
+  /* Длинная подпись («No me interesa») переносится по словам, не ломая пилюлю. */
   overflow-wrap: break-word;
+  cursor: pointer;
+  transition:
+    transform var(--ryk-duration-micro) var(--ryk-ease),
+    background-color var(--ryk-duration-micro) var(--ryk-ease);
 }
 
-/* Наведение только там, где есть настоящий курсор: на тач-устройстве
-   :hover залипает после нажатия и половина остаётся подсвеченной. */
+.action:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.no {
+  background: transparent;
+  color: var(--ryk-ink);
+  box-shadow: inset 0 0 0 1.5px var(--ryk-ink);
+}
+
+/* Цвета от материала: на бумаге — краска с бумажным текстом, на негативе — наоборот. */
+.yes {
+  background: var(--ryk-ink);
+  color: var(--ryk-on-ink);
+}
+
 @media (hover: hover) {
   .no:hover:not(:disabled) {
-    background: var(--ryk-grey);
+    background: var(--ryk-wash);
   }
 
   .yes:hover:not(:disabled) {
-    background: var(--foil-rose);
+    opacity: 0.9;
   }
 }
 
 .action:focus-visible {
   outline: 2px solid var(--ryk-ink);
-  outline-offset: -4px;
+  outline-offset: 3px;
 }
 
 .action:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: default;
 }

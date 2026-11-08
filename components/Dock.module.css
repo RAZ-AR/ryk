@@ -4,7 +4,7 @@
    dock уезжал вместе с ним за пределы видимой области.
    Отступ учитывает safe-area (домашний индикатор iOS / жест-зона Android),
    которую Telegram Mini App пишет в --tg-safe-area-inset-bottom. */
-/* Бумажный корешок: непрозрачный, поэтому стекло и блюр не нужны. */
+/* Бумажная пилюля с контуром краской (v3): непрозрачная, тени нет. */
 .dock {
   composes: paper from "./surface.module.css";
   position: fixed;
@@ -14,8 +14,8 @@
   display: flex;
   align-items: center;
   gap: var(--ryk-space-1);
-  background: var(--tk-paper);
-  padding: 6px;
+  background: var(--ryk-white);
+  padding: 5px;
   border-radius: var(--ryk-radius-dock-pill);
   box-shadow: var(--ryk-shadow-dock);
   max-width: calc(100% - 40px);
@@ -33,12 +33,12 @@
   justify-content: center;
   font-family: var(--ryk-font-mono);
   font-weight: 500;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   /* Цель нажатия неактивного — 44×44 ровно: знак 16px + поля. */
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 48px;
+  min-height: 48px;
   padding: 0 var(--ryk-space-3);
   border-radius: var(--ryk-radius-dock-pill);
   background: transparent;
@@ -50,10 +50,10 @@
     color var(--ryk-duration-micro) var(--ryk-ease);
 }
 
-/* Активный: розовая пилюля с ink-текстом (контраст ≈8:1). */
+/* Активный: пилюля, залитая краской, подпись цветом бумаги (6.9:1). */
 .active {
-  background: var(--foil-strip);
-  color: var(--ryk-ink);
+  background: var(--ryk-fill-ink);
+  color: var(--ryk-on-ink);
 }
 
 /*

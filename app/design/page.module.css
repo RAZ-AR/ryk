@@ -121,7 +121,7 @@
 }
 
 .quote {
-  font-family: var(--ryk-font-serif);
+  font-family: var(--ryk-font-voice);
   font-size: 20px;
   font-style: italic;
   line-height: 1.45;
@@ -130,9 +130,9 @@
 
 .ticketTitle {
   font-family: var(--ryk-font-ticket);
+  font-weight: 500;
   font-size: 34px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: -0.035em;
   line-height: 1.06;
 }
 

@@ -3,7 +3,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { formatNumber } from "@/lib/i18n/locale";
 import type { DeckCard } from "@/lib/engine/discover";
-import { CategoryIcon } from "@/components/CategoryIcon";
 import { EmptyMark } from "@/components/EmptyMark";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
 import { Ticket } from "@/components/Ticket";
@@ -17,10 +16,13 @@ import styles from "./EventFeed.module.css";
  */
 export function EventFeed({
   deck,
+  stamped,
   onOpen,
   onReact,
 }: {
   deck: DeckCard[];
+  /** Карточки, на которых сейчас растекается оттиск «Интересно». */
+  stamped?: ReadonlySet<string>;
   onOpen: (card: DeckCard) => void;
   /** Карточка уходит из ленты сразу — ответ не блокирует остальные. */
   onReact: (card: DeckCard, liked: boolean) => void;
@@ -63,7 +65,9 @@ export function EventFeed({
           <Ticket
             size="compact"
             photo={
-              <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
+              card.imageUrl ? (
+                <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
+              ) : undefined
             }
             metaLeft={durationLabel(card.durationMin)}
             metaRight={priceLabel(card.price, card.currency)}
@@ -73,10 +77,7 @@ export function EventFeed({
             title={card.title}
             stubTone="neutral"
             stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
-            // У спонсорского корешка подпись не категория, а пометка —
-            // знак категории рядом с ней сообщал бы неправду.
-            stubIcon={card.sponsored ? undefined : <CategoryIcon category={card.category} />}
-            emblem={<CategoryIcon category={card.category} />}
+            stamped={stamped?.has(card.id)}
             onOpen={() => onOpen(card)}
             openLabel={t("open")}
             actions={

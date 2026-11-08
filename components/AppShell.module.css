@@ -12,9 +12,10 @@
 }
 
 /*
- * Растушёвка под плавающей шапкой и доком. Без неё билеты уезжали
- * прямо под плашку с логотипом и обрезались её краем. Слой — между
- * контентом и шапкой (z 5 < 6), нажатий не перехватывает.
+ * Растушёвка под плавающей шапкой и доком: контент уходит в цвет бумаги,
+ * а не обрезается краем плашки. Слой — между контентом и шапкой
+ * (z 5 < 6), нажатий не перехватывает. Поле ровное (v3), поэтому
+ * хватает градиента — облачного поля под ним больше нет.
  */
 .shell::before,
 .shell::after {
@@ -26,29 +27,16 @@
   pointer-events: none;
 }
 
-/*
- * Растушёвка — кусок того же облачного поля, что под всем приложением
- * (body::before): размер слоя = экран, позиция — от того же угла, поэтому
- * облака совпадают пиксель в пиксель, а край гасит маска. Ровный цвет
- * бумаги лёг бы поверх облаков заметной полосой — особенно теперь, когда
- * у шапки нет подложки (v2.1).
- */
 .shell::before {
   top: 0;
   height: calc(78px + var(--tg-safe-area-inset-top, 0px));
-  background: var(--cloud-field);
-  background-size: 100vw 100vh;
-  background-position: left top;
-  mask-image: linear-gradient(var(--tk-ink) 58%, transparent);
+  background: linear-gradient(var(--ryk-paper) 58%, transparent);
 }
 
 .shell::after {
   bottom: 0;
   height: calc(64px + var(--tg-safe-area-inset-bottom, 0px));
-  background: var(--cloud-field);
-  background-size: 100vw 100vh;
-  background-position: left bottom;
-  mask-image: linear-gradient(transparent, var(--tk-ink) 85%);
+  background: linear-gradient(transparent, var(--ryk-paper) 85%);
 }
 
 .content {
@@ -59,7 +47,7 @@
   /* Сверху освобождаем место под фиксированный логотип (AppHeader) — он
      стоит в том же левом углу, где начинаются заголовки секций, и без
      этого отступа накрывал бы их. */
-  padding: calc(var(--ryk-screen-top) + 44px + var(--tg-safe-area-inset-top, 0px))
+  padding: calc(var(--ryk-screen-top) + 56px + var(--tg-safe-area-inset-top, 0px))
     var(--ryk-screen-x) var(--ryk-screen-bottom-dock);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -74,7 +62,7 @@
   background: var(--ryk-paper);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: calc(var(--ryk-screen-top) + 44px + var(--tg-safe-area-inset-top, 0px))
+  padding: calc(var(--ryk-screen-top) + 56px + var(--tg-safe-area-inset-top, 0px))
     var(--ryk-screen-x) var(--ryk-screen-bottom-dock);
 }
 

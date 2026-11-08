@@ -1,25 +1,29 @@
 /*
- * Кнопка v1.2: пилюля, шрифты исходного дизайна.
- *  primary   — перелив: цветная лента медленно течёт, действие бренда;
- *  grey      — тёмная: главное действие шага;
- *  secondary — контур;
- *  ghost / link — моно-подпись без подложки.
+ * Кнопка v3 «Одна краска»: пилюля, гротеск 500, обычный регистр.
+ *  primary   — заливка краской, текст цвета бумаги: главное действие;
+ *  grey      — то же (главное действие шага); имя историческое;
+ *  secondary — контур краской 1.5px;
+ *  ghost / link — текстовое действие гротеском, подчёркивание при наведении.
  */
 .btn {
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ryk-space-2);
   width: 100%;
   text-align: center;
   font-family: var(--ryk-font-ui);
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-radius: var(--ryk-radius-card);
-  padding: 18px var(--ryk-space-5);
-  min-height: 56px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  border-radius: var(--ryk-radius-pill);
+  padding: 14px var(--ryk-space-6);
+  min-height: 52px;
   transition:
     transform var(--ryk-duration-micro) var(--ryk-ease),
+    background-color var(--ryk-duration-micro) var(--ryk-ease),
     opacity var(--ryk-duration-micro) var(--ryk-ease);
 }
 
@@ -32,10 +36,11 @@
   outline-offset: 3px;
 }
 
-/* Главное действие — кусок фольги. Чернила тёмные в любом контексте. */
-.primary {
-  composes: foil from "./surface.module.css";
-  box-shadow: var(--ryk-shadow-card);
+/* Главное действие — заливка краской. На негативе — заливка бумагой. */
+.primary,
+.grey {
+  background: var(--ryk-ink);
+  color: var(--ryk-on-ink);
 }
 
 .secondary {
@@ -44,33 +49,40 @@
   box-shadow: inset 0 0 0 1.5px var(--ryk-ink);
 }
 
-/* Заливка цветом чернил: на ночи — бумажная, на бумаге — чёрная. */
-.grey {
-  background: var(--ryk-ink);
-  color: var(--ryk-on-ink);
-}
-
 .ghost {
   background: transparent;
-  color: var(--ryk-pink-text);
-  font-family: var(--ryk-font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 14px var(--ryk-space-2);
+  color: var(--ryk-ink);
   min-height: 44px;
+  padding: 10px var(--ryk-space-2);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
 }
 
 .link {
   composes: ghost;
-  display: inline-block;
+  display: inline-flex;
   width: auto;
-  padding: 12px 0;
+  padding: 10px 0;
+}
+
+@media (hover: hover) {
+  .primary:hover:not(:disabled),
+  .grey:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  .secondary:hover:not(:disabled) {
+    background: var(--ryk-wash);
+  }
+
+  .ghost:hover:not(:disabled) {
+    text-decoration-color: currentColor;
+  }
 }
 
 .btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
-  animation: none;
 }

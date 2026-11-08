@@ -7,6 +7,7 @@ import { selectStory } from "@/app/actions/weekly";
 import type { DeckCard } from "@/lib/engine/discover";
 import { Button } from "@/components/Button";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
+import { PrintArt } from "@/components/PrintArt";
 import { HandNote } from "@/components/HandNote";
 import { SvcLabel } from "@/components/SvcLabel";
 import styles from "./EventSheet.module.css";
@@ -71,9 +72,16 @@ export function EventSheet({
         </button>
       </header>
 
-      <div className={styles.visual}>
-        <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
-      </div>
+      {card.imageUrl ? (
+        <div className={styles.visual}>
+          <ExperienceVisual id={card.id} category={card.category} imageUrl={card.imageUrl} />
+        </div>
+      ) : (
+        // Тот же оттиск, что на карточке в ленте: seed — заголовок.
+        <div className={styles.print}>
+          <PrintArt seed={card.title} ratio={0.62} />
+        </div>
+      )}
 
       <h1 className={styles.title}>{card.title}</h1>
       {card.description && <p className={styles.description}>{card.description}</p>}

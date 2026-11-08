@@ -52,7 +52,7 @@ export function HomeSection({
     if (freshWelcome) clearFreshWelcome();
   }, [freshWelcome]);
   // Ответ — без ожидания сервера, порядок ленты не прыгает (lib/ui/answeredDeck.ts).
-  const { visible: visibleDeck, react } = useAnsweredDeck(deck);
+  const { visible: visibleDeck, stamped, react } = useAnsweredDeck(deck);
 
   return (
     <div className={styles.wrap}>
@@ -94,7 +94,12 @@ export function HomeSection({
             </Button>
           )}
         </div>
-        <EventFeed deck={visibleDeck} onOpen={setOpenCard} onReact={react} />
+        <EventFeed
+          deck={visibleDeck}
+          stamped={stamped}
+          onOpen={setOpenCard}
+          onReact={(card, liked) => react(card, liked, true)}
+        />
       </section>
 
       {openCard && (
