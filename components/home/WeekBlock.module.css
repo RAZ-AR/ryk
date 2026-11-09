@@ -30,6 +30,7 @@
   composes: base;
   composes: paper onFoil from "../surface.module.css";
   background: var(--ryk-fill-ink);
+  box-shadow: var(--ryk-shadow-ticket);
 }
 
 /* Отложенная неделя — тише: бумага с контуром, оттиск бледный. */

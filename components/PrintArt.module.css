@@ -4,6 +4,47 @@
   width: 100%;
   height: auto;
   fill: currentColor;
+  transform-origin: var(--print-origin, 50% 50%);
+  /* Дыхание: чуть растёт и поворачивается. Фаза от seed — не хором. */
+  animation: breathe 14s ease-in-out var(--print-delay, 0s) infinite alternate;
+  animation-play-state: paused;
+}
+
+/* Дышат только видимые: вне экрана — пауза (data-live ставит PrintArt). */
+.print[data-live="true"] {
+  animation-play-state: running;
+  will-change: transform;
+}
+
+@keyframes breathe {
+  from {
+    transform: scale(1) rotate(0deg);
+  }
+  to {
+    transform: scale(1.06) rotate(var(--print-turn, 2deg));
+  }
+}
+
+/*
+ * Проявление: краска ложится из центра фигуры, как оттиск под прессом.
+ * Один раз — когда точки дорисованы при подъезде к экрану.
+ */
+.print path {
+  stroke: currentColor;
+  stroke-width: 0;
+  transition: stroke-width var(--ryk-duration-slow) var(--ryk-ease);
+  animation: reveal 720ms var(--ryk-ease) both;
+}
+
+@keyframes reveal {
+  from {
+    clip-path: circle(0% at 50% 50%);
+    opacity: 0.4;
+  }
+  to {
+    clip-path: circle(75% at 50% 50%);
+    opacity: 1;
+  }
 }
 
 /*
@@ -11,20 +52,13 @@
  * не станет сплошной; края, где точек нет, остаются бумагой. Включается
  * атрибутом data-stamped на любом предке (Ticket).
  */
-.print path {
-  stroke: currentColor;
-  stroke-width: 0;
-  transition: stroke-width var(--ryk-duration-slow) var(--ryk-ease);
-  animation: appear var(--ryk-duration-standard) var(--ryk-ease);
-}
-
 :global([data-stamped]) .print path {
   stroke-width: 6px;
 }
 
-/* Точки дорисовываются при подъезде к экрану — проявляются, а не выскакивают. */
-@keyframes appear {
-  from {
-    opacity: 0;
+@media (prefers-reduced-motion: reduce) {
+  .print,
+  .print path {
+    animation: none;
   }
 }
