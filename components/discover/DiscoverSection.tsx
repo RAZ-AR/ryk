@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useCardContextText } from "@/components/home/useCardContextText";
 import { formatNumber } from "@/lib/i18n/locale";
 import type { DeckCard } from "@/lib/engine/discover";
 import { ExperienceVisual } from "@/components/ExperiencePattern";
@@ -20,6 +21,7 @@ import styles from "./DiscoverSection.module.css";
  */
 export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
   const t = useTranslations("discover");
+  const ctx = useCardContextText();
   const tCat = useTranslations("categories");
   const tKind = useTranslations("kinds");
   const tWeek = useTranslations("week");
@@ -85,6 +87,9 @@ export function DiscoverSection({ deck }: { deck: DeckCard[] }) {
                 metaRight={priceLabel(card.price, card.currency)}
                 metaRightSub={tKind(card.kind)}
                 title={card.title}
+                badge={ctx.when(card.when)}
+                reason={ctx.reason(card.reason)}
+                reasonLabel={ctx.reasonLabel}
                 stubTone="neutral"
                 stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
                 /*

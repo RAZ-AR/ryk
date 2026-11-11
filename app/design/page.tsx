@@ -236,6 +236,9 @@ export default function DesignSystemPage() {
             metaRight="15"
             metaRightSub="Вызов"
             title="Скалодром для новичков"
+            badge="В субботу · 19:00 · ясно, +14°"
+            reason="Попадает в твоё свободное время"
+            reasonLabel="Почему тебе"
             stubTone="neutral"
             stubLabel="VII · Вызов"
           >

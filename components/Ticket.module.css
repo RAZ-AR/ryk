@@ -57,6 +57,28 @@
   mix-blend-mode: screen;
 }
 
+/* Живая метка «когда» — пилюля-негатив: календарное важнее категории. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  margin-top: var(--ryk-space-2);
+  padding: 0 var(--ryk-space-3);
+  border-radius: var(--ryk-radius-pill);
+  background: var(--ryk-ink);
+  color: var(--ryk-on-ink);
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.badge + .kicker {
+  margin-top: var(--ryk-space-3);
+}
+
 .kicker {
   margin-top: var(--ryk-space-2);
   font-family: var(--ryk-font-mono);
@@ -98,6 +120,28 @@
 
 .voice b {
   font-weight: 600;
+}
+
+/* Почему тебе — гротеск с точкой краски: факт о человеке, не реплика. */
+.reason {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ryk-space-2);
+  margin-top: var(--ryk-space-3);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--ryk-ink);
+}
+
+.reasonMark {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translateY(-1px);
 }
 
 /* Спецификация — моно капсом: время · цена. */
