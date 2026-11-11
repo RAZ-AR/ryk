@@ -62,6 +62,17 @@
         "6": "on Saturday",
         "7": "on Sunday"
       }
+    },
+    "reasonLabel": "Why you",
+    "reason": {
+      "SHORT": "Fits into an hour",
+      "FREE": "Costs nothing",
+      "LOW_ENERGY": "Takes no energy",
+      "FELT_GOOD": "It felt good last time — “{category}”",
+      "FITS_WINDOW": "Falls into your free time",
+      "LIKED_CATEGORY": "One of your favourites — “{category}”",
+      "NEARBY": "{km} km from you",
+      "IN_BUDGET": "Within your budget"
     }
   },
   "discover": {
@@ -177,6 +188,7 @@
     "km": "km",
     "currencyRSD": "RSD",
     "why": {
+      "FELT_GOOD": "it felt good last time — “{category}”",
       "LIKED_CATEGORY": "you like {category}",
       "IN_BUDGET": "within your budget",
       "NEARBY": "close to you",

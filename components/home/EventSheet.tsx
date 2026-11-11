@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useCardContextText } from "@/components/home/useCardContextText";
 import { formatNumber } from "@/lib/i18n/locale";
 import { selectStory } from "@/app/actions/weekly";
 import type { DeckCard } from "@/lib/engine/discover";
@@ -33,6 +34,7 @@ export function EventSheet({
   onClose: () => void;
 }) {
   const t = useTranslations("home");
+  const ctx = useCardContextText();
   const tDiscover = useTranslations("discover");
   const tCat = useTranslations("categories");
   const tKind = useTranslations("kinds");
@@ -83,8 +85,15 @@ export function EventSheet({
         </div>
       )}
 
+      {card.when ? <p className={styles.badge}>{ctx.when(card.when)}</p> : null}
       <h1 className={styles.title}>{card.title}</h1>
       {card.description && <p className={styles.description}>{card.description}</p>}
+      {card.reason ? (
+        <p className={styles.reason}>
+          <span className={styles.reasonLabel}>{ctx.reasonLabel}</span>
+          {ctx.reason(card.reason)}
+        </p>
+      ) : null}
 
       <div className={styles.rows}>
         <div className={styles.row}>

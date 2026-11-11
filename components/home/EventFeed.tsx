@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import { useCardContextText } from "@/components/home/useCardContextText";
 import { formatNumber } from "@/lib/i18n/locale";
 import type { DeckCard } from "@/lib/engine/discover";
 import { EmptyMark } from "@/components/EmptyMark";
@@ -28,6 +29,7 @@ export function EventFeed({
   onReact: (card: DeckCard, liked: boolean) => void;
 }) {
   const t = useTranslations("home");
+  const ctx = useCardContextText();
   const tDiscover = useTranslations("discover");
   const tCat = useTranslations("categories");
   const tKind = useTranslations("kinds");
@@ -75,6 +77,9 @@ export function EventFeed({
             // а «вызов себе» против «события» — это разные обещания.
             metaRightSub={tKind(card.kind)}
             title={card.title}
+            badge={ctx.when(card.when)}
+            reason={ctx.reason(card.reason)}
+            reasonLabel={ctx.reasonLabel}
             stubTone="neutral"
             stubLabel={card.sponsored ? tWeek("sponsored") : tCat(card.category)}
             stamped={stamped?.has(card.id)}

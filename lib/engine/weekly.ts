@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { buildNudge, type Nudge } from "@/lib/engine/nudges";
 import { liveExperienceWhere } from "@/lib/engine/liveExperiences";
 import { localizeExperience } from "@/lib/i18n/experience";
+import { getFeltGoodCategories } from "@/lib/engine/feltGood";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { signedPhotoUrl } from "@/lib/storage/memoryPhotos";
 import { getWeekForecast, type DayWeather } from "@/lib/weather/openMeteo";
@@ -42,6 +43,13 @@ export function sameCity(a: string, b: string): boolean {
  * за вызовами и ритуалами: они не зависят от билетов, погоды и денег.
  */
 const MAX_EVENT_CANDIDATES = 1;
+
+/**
+ * Множитель категории, в которой человеку было хорошо. Скромный: одна
+ * удачная история не должна превращать подбор в одну категорию — за
+ * разнообразием следит портфель ниже.
+ */
+export const FELT_GOOD_BOOST = 1.3;
 
 /** Короткое впечатление — то, что помещается в час. */
 const SHORT_MINUTES = 60;
@@ -167,7 +175,7 @@ export type ExperienceForScore = {
   kind: ExperienceKind;
 };
 
-export type WhyCode = "LIKED_CATEGORY" | "IN_BUDGET" | "NEARBY" | "CURATED" | "FRESH";
+export type WhyCode = "FELT_GOOD" | "LIKED_CATEGORY" | "IN_BUDGET" | "NEARBY" | "CURATED" | "FRESH";
 
 export type Candidate = {
   experienceId: string;
@@ -266,7 +274,10 @@ function pickWhy(
   category: LifeCategory,
   inBudget: boolean,
   nearby: boolean,
+  feltGood: boolean,
 ): { whyCode: WhyCode; whyCategory: LifeCategory | null } {
+  // Прожитое с эмоцией — причина сильнее заявленного интереса.
+  if (feltGood) return { whyCode: "FELT_GOOD", whyCategory: category };
   if (liked) return { whyCode: "LIKED_CATEGORY", whyCategory: category };
   if (nearby) return { whyCode: "NEARBY", whyCategory: null };
   if (inBudget) return { whyCode: "IN_BUDGET", whyCategory: null };
@@ -329,7 +340,7 @@ export async function getWeeklyView(
       imageUrl: e.imageUrl,
       whyCode,
       // Для LIKED_CATEGORY «понравившаяся» категория = категория впечатления.
-      whyCategory: whyCode === "LIKED_CATEGORY" ? e.category : null,
+      whyCategory: whyCode === "LIKED_CATEGORY" || whyCode === "FELT_GOOD" ? e.category : null,
     };
 
     const owner = await prisma.user.findUnique({
@@ -405,7 +416,7 @@ export async function getWeeklyView(
     return { kind: "commit", weekStart: weekStartIso, story, days };
   }
 
-  const [user, prefs, experiences, reactions] = await Promise.all([
+  const [user, prefs, experiences, reactions, feltGood] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -436,6 +447,7 @@ export async function getWeeklyView(
       where: { userId, liked: true },
       select: { experienceId: true },
     }),
+    getFeltGoodCategories(userId),
   ]);
 
   const likedExperiences = new Set(reactions.map((r) => r.experienceId));
@@ -475,9 +487,14 @@ export async function getWeeklyView(
       const social = socialBoost(socialMode, e);
       // Детерминированный джиттер по id — стабильный порядок в течение недели.
       const jitter = (parseInt(e.id.replace(/\D/g, "").slice(0, 4) || "0", 10) % 17) / 100;
-      const score = relevance * feasibility * proximity * swipedRight * barrier * social + jitter;
+      // Категория, где человеку уже было хорошо (эмоция в чек-ине), — мягко
+      // вверх: это прожитый опыт, а не заявление из онбординга.
+      const felt = feltGood.has(e.category);
+      const lived = felt ? FELT_GOOD_BOOST : 1;
+      const score =
+        relevance * feasibility * proximity * swipedRight * barrier * social * lived + jitter;
 
-      return { e, score, isLiked, ...pickWhy(isLiked, e.category, inBudget, nearby) };
+      return { e, score, isLiked, ...pickWhy(isLiked, e.category, inBudget, nearby, felt) };
     })
     .sort((a, b) => b.score - a.score);
 

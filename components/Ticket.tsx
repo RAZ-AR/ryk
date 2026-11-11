@@ -55,6 +55,15 @@ type TicketProps = {
   onOpen?: () => void;
   /** Подпись зоны нажатия для скринридера. Обязательна вместе с `onOpen`. */
   openLabel?: string;
+  /**
+   * Живая метка «когда»: «Сегодня · 19:00 · ясно, +14°». Пилюля-негатив над
+   * подписью — единственное на карточке, что зависит от календаря.
+   */
+  badge?: string;
+  /** Почему это тебе — одна строка под репликой. Нет причины — нет строки. */
+  reason?: string;
+  /** Подпись строки причины для скринридера («Почему тебе»). */
+  reasonLabel?: string;
   /** «Интересно» нажато: краска растекается по оттиску (PrintArt). */
   stamped?: boolean;
   children?: ReactNode;
@@ -73,6 +82,9 @@ export function Ticket({
   actions,
   onOpen,
   openLabel,
+  badge,
+  reason,
+  reasonLabel,
   stamped = false,
   children,
 }: TicketProps) {
@@ -93,6 +105,8 @@ export function Ticket({
           )}
         </div>
 
+        {badge ? <p className={styles.badge}>{badge}</p> : null}
+
         <p className={styles.kicker}>
           {stubLabel}
           {metaRightSub ? (
@@ -109,6 +123,13 @@ export function Ticket({
         <h2 className={styles.title}>{title}</h2>
         {note ? <p className={styles.voice}>«{note}»</p> : null}
         {children ? <div className={styles.voice}>{children}</div> : null}
+        {reason ? (
+          <p className={styles.reason}>
+            <span className={styles.reasonMark} aria-hidden="true" />
+            {reasonLabel ? <span className={styles.srOnly}>{reasonLabel}: </span> : null}
+            {reason}
+          </p>
+        ) : null}
         {spec ? <p className={styles.spec}>{spec}</p> : null}
 
         {/*

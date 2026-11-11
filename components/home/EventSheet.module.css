@@ -121,3 +121,49 @@
   filter: grayscale(1) contrast(1.1);
   mix-blend-mode: screen;
 }
+
+/* Живая метка «когда» — та же пилюля-негатив, что на карточке. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  margin-top: var(--ryk-space-3);
+  padding: 0 var(--ryk-space-3);
+  border-radius: var(--ryk-radius-pill);
+  background: var(--ryk-ink);
+  color: var(--ryk-on-ink);
+  font-family: var(--ryk-font-mono);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.badge + .title {
+  margin-top: var(--ryk-space-3);
+}
+
+/* Почему тебе — панель-негатив: главный довод листа, а не строка таблицы. */
+.reason {
+  composes: paper onFoil from "../surface.module.css";
+  display: flex;
+  flex-direction: column;
+  gap: var(--ryk-space-1);
+  margin-top: var(--ryk-space-5);
+  padding: var(--ryk-space-4) var(--ryk-space-5);
+  border-radius: var(--ryk-radius-card);
+  background: var(--ryk-fill-ink);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.reasonLabel {
+  font-family: var(--ryk-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ryk-text-muted);
+}
